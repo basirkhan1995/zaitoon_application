@@ -1,0 +1,78 @@
+name: zaitoon_invoice
+description: "Invoice Maker App"
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.0
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  cupertino_icons: ^1.0.8
+  sqflite: ^2.4.1
+  sqflite_common_ffi: ^2.3.3+1
+  flutter_bloc: ^9.0.0
+  bloc: ^9.0.0
+  meta: ^1.15.0
+  equatable: ^2.0.7
+  path: ^1.9.0
+  shared_preferences: ^2.3.5
+  window_manager: ^0.4.2
+  image_picker: ^1.1.2
+  pdf: ^3.11.1
+  file_selector: ^1.0.3
+  shamsi_date: ^1.0.4
+  syncfusion_flutter_datepicker: ^26.2.11
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+  fonts:
+    - family: Dubai
+      fonts:
+        - asset: assets/fonts/Dubai/Dubai-Regular.ttf
+        - asset: assets/fonts/Dubai/Dubai-Bold.ttf
+        - asset: assets/fonts/Dubai/Dubai-Medium.ttf
+        - asset: assets/fonts/Dubai/Dubai-Light.ttf
+
+    - family: OpenSans
+      fonts:
+        - asset: assets/fonts/OpenSans/OpenSans-Regular.ttf
+        - asset: assets/fonts/OpenSans/OpenSans-Bold.ttf
+        - asset: assets/fonts/OpenSans/OpenSans-Light.ttf
+        - asset: assets/fonts/OpenSans/OpenSans-Medium.ttf
+
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto/Roboto-Bold.ttf
+        - asset: assets/fonts/Roboto/Roboto-Light.ttf
+        - asset: assets/fonts/Roboto/Roboto-Medium.ttf
+
+    - family: NotoSans
+      fonts:
+        - asset: assets/fonts/NotoSans/NotoSans-Regular.ttf
+        - asset: assets/fonts/NotoSans/NotoSans-Bold.ttf
+        - asset: assets/fonts/NotoSans/NotoSans-Medium.ttf
+        - asset: assets/fonts/NotoSans/NotoSans-Light.ttf
+        - asset: assets/fonts/NotoSans/NotoSans-Italic.ttf
+
+    - family: Amiri
+      fonts:
+        - asset: assets/fonts/Amiri/Amiri-Regular.ttf
+        - asset: assets/fonts/Amiri/Amiri-Bold.ttf
+        - asset: assets/fonts/Amiri/Amiri-Italic.ttf
+        - asset: assets/fonts/Amiri/Amiri-BoldItalic.ttf

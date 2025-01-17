@@ -1,0 +1,14 @@
+{
+  "required": "{fieldName} الزامی است",
+  "@required": {
+    "placeholders": {
+      "fieldName": {
+        "type": "String"
+      }
+    }
+  },
+  "hello": "سلام",
+  "welcome": "خوش آمدید",
+  "invoice_total": "مجموع فاکتور",
+  "databases": "دیتابیس ها"
+}

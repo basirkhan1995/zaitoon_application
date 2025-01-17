@@ -1,0 +1,14 @@
+{
+  "required": "{fieldName} is required",
+  "@required": {
+    "placeholders": {
+      "fieldName": {
+        "type": "String"
+      }
+    }
+  },
+  "hello": "Hello",
+  "welcome": "Welcome",
+  "invoice_total": "Invoice Total",
+  "databases": "Databases"
+}
