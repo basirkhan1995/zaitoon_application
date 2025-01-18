@@ -10,5 +10,8 @@
   "hello": "Hello",
   "welcome": "Welcome",
   "invoice_total": "Invoice Total",
-  "databases": "Databases"
+  "databases": "Databases",
+  "newDatabase": "New Database",
+  "browse": "Browse",
+  "recentDatabases": "Recent Databases"
 }

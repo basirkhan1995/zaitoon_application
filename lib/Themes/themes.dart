@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 
-class InvoiceTheme {
+class AppThemes {
   final TextTheme textTheme;
-  const InvoiceTheme(this.textTheme);
+  const AppThemes(this.textTheme);
 
   static ColorScheme lightScheme() {
     return const ColorScheme(
@@ -116,6 +116,7 @@ class InvoiceTheme {
 
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
     useMaterial3: true,
+    fontFamily: "Roboto",
     brightness: colorScheme.brightness,
     colorScheme: colorScheme,
     textTheme: textTheme.apply(

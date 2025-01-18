@@ -9,7 +9,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Home Screen"),
       ),
-      body: Text("Hello, Friends y"),
+      body: Text("Hello, Friends"),
     );
   }
 }

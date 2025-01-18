@@ -10,5 +10,8 @@
   "hello": "سلام",
   "welcome": "خوش آمدید",
   "invoice_total": "مجموع فاکتور",
-  "databases": "دیتابیس ها"
+  "databases": "دیتابیس ها",
+  "newDatabase": "دیتابیس جدید",
+  "browse": "باز کردن",
+  "recentDatabases": "آخرین دیتابیس ها"
 }
