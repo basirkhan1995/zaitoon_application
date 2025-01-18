@@ -12,19 +12,19 @@ class LoadAllDatabases extends StatelessWidget {
         title: Text(AppLocalizations.of(context)!.databases),
         actions: [
           SelectLanguage(
-            width: 250,
+            width: 180,
           ),
         ],
       ),
-     body: Center(
-       child: Column(
-         children: [
-           SelectLanguage(
-             width: 250,
-           ),
-         ],
-       ),
-     ),
+      body: Center(
+        child: Column(
+          children: [
+            SelectLanguage(
+              width: 250,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -6,13 +6,13 @@ class SelectLanguage extends StatefulWidget {
   final double? width;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
-  final BorderRadiusGeometry? borderRadius;
+  final double radius;
 
   const SelectLanguage({
     super.key,
     this.padding,
     this.margin,
-    this.borderRadius,
+    this.radius = 4,
     this.width,
   });
 
@@ -53,15 +53,17 @@ class _SelectLanguageState extends State<SelectLanguage> {
         key: _buttonKey, // Attach key to this container
         width: widget.width ?? double.infinity,
         padding: widget.padding ?? EdgeInsets.symmetric(horizontal: 0),
+        margin: widget.margin ?? EdgeInsets.symmetric(horizontal: 0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Main Dropdown Button
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
               decoration: BoxDecoration(
                 color: color.primary,
-                borderRadius: widget.borderRadius ?? BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(widget.radius),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black12,
@@ -71,10 +73,12 @@ class _SelectLanguageState extends State<SelectLanguage> {
                 ],
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    _languages.firstWhere((lang) => lang['code'] == currentLanguage)['name'],
+                    _languages.firstWhere(
+                        (lang) => lang['code'] == currentLanguage)['name'],
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -100,18 +104,22 @@ class _SelectLanguageState extends State<SelectLanguage> {
     final currentLanguage = localeCubit.state.languageCode;
 
     // Get the position and size of the button using the global key
-    RenderBox renderBox = _buttonKey.currentContext!.findRenderObject() as RenderBox;
+    RenderBox renderBox =
+        _buttonKey.currentContext!.findRenderObject() as RenderBox;
     Offset offset = renderBox.localToGlobal(Offset.zero);
     double buttonWidth = renderBox.size.width; // Get width of the button
 
     return OverlayEntry(
       builder: (context) => Positioned(
         left: offset.dx, // Align it exactly with the button's left edge
-        top: offset.dy + renderBox.size.height + 8, // Add extra space between header and dropdown
+        top: offset.dy +
+            renderBox.size.height +
+            8, // Add extra space between header and dropdown
         child: Material(
           color: Colors.transparent,
           child: Container(
-            width: buttonWidth, // Set the overlay width to match the button's width exactly
+            width:
+                buttonWidth, // Set the overlay width to match the button's width exactly
             padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -135,7 +143,8 @@ class _SelectLanguageState extends State<SelectLanguage> {
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: currentLanguage == lang['code']
                           ? Colors.blueAccent.withValues(alpha: .1)
