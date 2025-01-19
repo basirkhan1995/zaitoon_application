@@ -100,7 +100,7 @@ class _SelectLanguageState extends State<SelectLanguage> {
                   children: [
                     Text(
                       _languages.firstWhere(
-                              (lang) => lang['code'] == currentLanguage)['name'],
+                          (lang) => lang['code'] == currentLanguage)['name'],
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -128,7 +128,7 @@ class _SelectLanguageState extends State<SelectLanguage> {
 
     // Get the position and size of the button using the global key
     RenderBox renderBox =
-    _buttonKey.currentContext!.findRenderObject() as RenderBox;
+        _buttonKey.currentContext!.findRenderObject() as RenderBox;
     Offset offset = renderBox.localToGlobal(Offset.zero);
     double buttonWidth = renderBox.size.width; // Get width of the button
 
@@ -178,12 +178,11 @@ class _SelectLanguageState extends State<SelectLanguage> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
+                            horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: currentLanguage == lang['code']
                               ? Colors.blueAccent.withAlpha(20)
                               : Colors.transparent,
-                          borderRadius: BorderRadius.circular(0),
                         ),
                         child: Row(
                           children: [
@@ -192,6 +191,7 @@ class _SelectLanguageState extends State<SelectLanguage> {
                               color: currentLanguage == lang['code']
                                   ? Colors.blueAccent
                                   : Colors.grey,
+                              size: 18,
                             ),
                             const SizedBox(width: 12),
                             Text(
@@ -200,7 +200,7 @@ class _SelectLanguageState extends State<SelectLanguage> {
                                 color: currentLanguage == lang['code']
                                     ? Colors.blueAccent
                                     : Colors.black87,
-                                fontSize: 16,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -217,5 +217,4 @@ class _SelectLanguageState extends State<SelectLanguage> {
       ),
     );
   }
-
 }

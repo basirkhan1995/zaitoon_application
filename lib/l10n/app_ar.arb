@@ -8,10 +8,23 @@
     }
   },
   "hello": "سلام",
+  "@hello": {},
   "welcome": "خوش آمدید",
+  "@welcome": {},
   "invoice_total": "مجموع فاکتور",
+  "@invoice_total": {},
   "databases": "دیتابیسونه",
+  "@databases": {},
   "newDatabase": "نوی دیتابیس",
+  "@newDatabase": {},
   "browse": "خلاص کول",
-  "recentDatabases": "خلاص شوی دیتابیسونه"
+  "@browse": {},
+  "recentDatabases": "خلاص شوی دیتابیسونه",
+  "@recentDatabases": {},
+  "systemTheme":"تم سیستم",
+  "@systemTheme": {},
+  "darkTheme" : "تم تاریک",
+  "@darkTheme": {},
+  "lightTheme" : "تم روشن",
+  "@lightTheme": {}
 }

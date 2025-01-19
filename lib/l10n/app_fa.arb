@@ -8,10 +8,23 @@
     }
   },
   "hello": "سلام",
+  "@hello": {},
   "welcome": "خوش آمدید",
+  "@welcome": {},
   "invoice_total": "مجموع فاکتور",
+  "@invoice_total": {},
   "databases": "دیتابیس ها",
+  "@databases": {},
   "newDatabase": "دیتابیس جدید",
+  "@newDatabase": {},
   "browse": "باز کردن",
-  "recentDatabases": "آخرین دیتابیس ها"
+  "@browse": {},
+  "recentDatabases": "آخرین دیتابیس ها",
+  "@recentDatabases": {},
+  "systemTheme":"تم سیستم",
+  "@systemTheme": {},
+  "darkTheme" : "تم تاریک",
+  "@darkTheme": {},
+  "lightTheme" : "تم روشن",
+  "@lightTheme": {}
 }

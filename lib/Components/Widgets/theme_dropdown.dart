@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/ThemeCubit/theme_cubit.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AppTheme extends StatefulWidget {
   final double? width;
@@ -26,11 +27,11 @@ class _AppThemeState extends State<AppTheme> {
   final GlobalKey _buttonKey = GlobalKey(); // Key for the button
   final FocusNode _focusNode = FocusNode();
 
-  // Define available theme modes
+  // Define available theme modes (without hardcoded names)
   final List<Map<String, dynamic>> _themeModes = [
-    {'mode': 'system', 'name': 'System', 'icon': Icons.settings},
-    {'mode': 'light', 'name': 'Light', 'icon': Icons.light_mode},
-    {'mode': 'dark', 'name': 'Dark', 'icon': Icons.dark_mode},
+    {'mode': 'system', 'icon': Icons.settings},
+    {'mode': 'light', 'icon': Icons.light_mode},
+    {'mode': 'dark', 'icon': Icons.dark_mode},
   ];
 
   @override
@@ -101,9 +102,19 @@ class _AppThemeState extends State<AppTheme> {
                   children: [
                     Text(
                       _themeModes.firstWhere(
-                              (theme) =>
-                          theme['mode'] == currentTheme.name.toLowerCase(),
-                          orElse: () => _themeModes[0])['name'],
+                                  (theme) =>
+                                      theme['mode'] ==
+                                      currentTheme.name.toLowerCase(),
+                                  orElse: () => _themeModes[0])['mode'] ==
+                              'system'
+                          ? AppLocalizations.of(context)!.systemTheme
+                          : _themeModes.firstWhere((theme) =>
+                                      theme['mode'] ==
+                                      currentTheme.name
+                                          .toLowerCase())['mode'] ==
+                                  'light'
+                              ? AppLocalizations.of(context)!.lightTheme
+                              : AppLocalizations.of(context)!.darkTheme,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
@@ -127,10 +138,12 @@ class _AppThemeState extends State<AppTheme> {
   // Creates the overlay entry
   OverlayEntry _createOverlayEntry(BuildContext context) {
     final themeCubit = context.read<ThemeCubit>();
+    final selectedTheme =
+        themeCubit.state.name.toLowerCase(); // Get the selected theme name
 
     // Get the position and size of the button using the global key
     RenderBox renderBox =
-    _buttonKey.currentContext!.findRenderObject() as RenderBox;
+        _buttonKey.currentContext!.findRenderObject() as RenderBox;
     Offset offset = renderBox.localToGlobal(Offset.zero);
     double buttonWidth = renderBox.size.width; // Get width of the button
 
@@ -170,9 +183,13 @@ class _AppThemeState extends State<AppTheme> {
                 ),
                 child: Column(
                   children: _themeModes.map((theme) {
+                    bool isSelected = theme['mode'] ==
+                        selectedTheme; // Check if this is the selected theme
+
                     return GestureDetector(
                       onTap: () {
-                        themeCubit.onThemeChanged(theme['mode']); // Change theme
+                        themeCubit
+                            .onThemeChanged(theme['mode']); // Change theme
                         _overlayEntry.remove();
                         setState(() {
                           _isOpen = false;
@@ -180,22 +197,37 @@ class _AppThemeState extends State<AppTheme> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
+                            horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
+                          color: isSelected
+                              ? Colors.blueAccent.withValues(
+                                  alpha: .1) // Selected theme background
+                              : Colors
+                                  .transparent, // Transparent for unselected themes
                         ),
                         child: Row(
                           children: [
                             Icon(
                               theme['icon'],
-                              color: Colors.blueAccent,
+                              size: 18,
+                              color: isSelected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.onSurface,
                             ),
                             const SizedBox(width: 12),
                             Text(
-                              theme['name'],
-                              style: const TextStyle(
-                                color: Colors.blueAccent,
-                                fontSize: 16,
+                              theme['mode'] == 'system'
+                                  ? AppLocalizations.of(context)!.systemTheme
+                                  : theme['mode'] == 'light'
+                                      ? AppLocalizations.of(context)!.lightTheme
+                                      : AppLocalizations.of(context)!.darkTheme,
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .onSurface, // Change text color based on selection
+                                fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

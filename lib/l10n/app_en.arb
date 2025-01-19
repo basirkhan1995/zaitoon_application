@@ -8,10 +8,23 @@
     }
   },
   "hello": "Hello",
+  "@hello": {},
   "welcome": "Welcome",
+  "@welcome": {},
   "invoice_total": "Invoice Total",
+  "@invoice_total": {},
   "databases": "Databases",
+  "@databases": {},
   "newDatabase": "New Database",
+  "@newDatabase": {},
   "browse": "Browse",
-  "recentDatabases": "Recent Databases"
+  "@browse": {},
+  "recentDatabases": "Recent Databases",
+  "@recentDatabases": {},
+  "systemTheme":"System",
+  "@systemTheme": {},
+  "darkTheme" : "Dark",
+  "@darkTheme": {},
+  "lightTheme" : "Light",
+  "@lightTheme": {}
 }
