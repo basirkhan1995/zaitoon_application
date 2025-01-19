@@ -6,6 +6,5 @@ class Triggers {
     INSERT INTO (user_id, account_balance, account_status)
     VALUES (new.user_id, 0.0, 'Active');
   END;
-
   ''';
 }

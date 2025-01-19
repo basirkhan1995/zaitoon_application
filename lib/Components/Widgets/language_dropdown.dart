@@ -101,15 +101,14 @@ class _SelectLanguageState extends State<SelectLanguage> {
                     Text(
                       _languages.firstWhere(
                           (lang) => lang['code'] == currentLanguage)['name'],
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
                         fontSize: 14,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     Icon(
                       _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ],
                 ),
@@ -156,7 +155,7 @@ class _SelectLanguageState extends State<SelectLanguage> {
                 width: buttonWidth, // Match the button's width
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(4),
                   boxShadow: [
                     BoxShadow(
@@ -181,16 +180,16 @@ class _SelectLanguageState extends State<SelectLanguage> {
                             horizontal: 16, vertical: 8),
                         decoration: BoxDecoration(
                           color: currentLanguage == lang['code']
-                              ? Colors.blueAccent.withAlpha(20)
-                              : Colors.transparent,
+                              ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: .5)
+                              : Theme.of(context).colorScheme.surface
                         ),
                         child: Row(
                           children: [
                             Icon(
                               lang['icon'],
                               color: currentLanguage == lang['code']
-                                  ? Colors.blueAccent
-                                  : Colors.grey,
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.onSurface,
                               size: 18,
                             ),
                             const SizedBox(width: 12),
@@ -198,8 +197,8 @@ class _SelectLanguageState extends State<SelectLanguage> {
                               lang['name'],
                               style: TextStyle(
                                 color: currentLanguage == lang['code']
-                                    ? Colors.blueAccent
-                                    : Colors.black87,
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.onSurface,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),

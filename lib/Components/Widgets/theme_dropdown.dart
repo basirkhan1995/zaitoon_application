@@ -102,28 +102,22 @@ class _AppThemeState extends State<AppTheme> {
                   children: [
                     Text(
                       _themeModes.firstWhere(
-                                  (theme) =>
-                                      theme['mode'] ==
-                                      currentTheme.name.toLowerCase(),
+                                  (theme) => theme['mode'] == currentTheme.name.toLowerCase(),
                                   orElse: () => _themeModes[0])['mode'] ==
                               'system'
                           ? AppLocalizations.of(context)!.systemTheme
                           : _themeModes.firstWhere((theme) =>
-                                      theme['mode'] ==
-                                      currentTheme.name
-                                          .toLowerCase())['mode'] ==
-                                  'light'
+                              theme['mode'] == currentTheme.name.toLowerCase())['mode'] == 'light'
                               ? AppLocalizations.of(context)!.lightTheme
                               : AppLocalizations.of(context)!.darkTheme,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
                         fontSize: 14,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     Icon(
                       _isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                     ),
                   ],
                 ),
@@ -142,11 +136,9 @@ class _AppThemeState extends State<AppTheme> {
         themeCubit.state.name.toLowerCase(); // Get the selected theme name
 
     // Get the position and size of the button using the global key
-    RenderBox renderBox =
-        _buttonKey.currentContext!.findRenderObject() as RenderBox;
+    RenderBox renderBox = _buttonKey.currentContext!.findRenderObject() as RenderBox;
     Offset offset = renderBox.localToGlobal(Offset.zero);
     double buttonWidth = renderBox.size.width; // Get width of the button
-
     return OverlayEntry(
       builder: (context) => Stack(
         children: [
@@ -169,9 +161,10 @@ class _AppThemeState extends State<AppTheme> {
               color: Colors.transparent,
               child: Container(
                 width: buttonWidth, // Match the button's width
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: EdgeInsets.zero,
+                margin: EdgeInsets.zero,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(4),
                   boxShadow: [
                     BoxShadow(
@@ -183,13 +176,11 @@ class _AppThemeState extends State<AppTheme> {
                 ),
                 child: Column(
                   children: _themeModes.map((theme) {
-                    bool isSelected = theme['mode'] ==
-                        selectedTheme; // Check if this is the selected theme
+                    bool isSelected = theme['mode'] == selectedTheme; // Check if this is the selected theme
 
                     return GestureDetector(
                       onTap: () {
-                        themeCubit
-                            .onThemeChanged(theme['mode']); // Change theme
+                        themeCubit.onThemeChanged(theme['mode']); // Change theme
                         _overlayEntry.remove();
                         setState(() {
                           _isOpen = false;
@@ -197,13 +188,11 @@ class _AppThemeState extends State<AppTheme> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                            horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Colors.blueAccent.withValues(
-                                  alpha: .1) // Selected theme background
-                              : Colors
-                                  .transparent, // Transparent for unselected themes
+                              ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: .5)
+                              : Theme.of(context).colorScheme.surface // Transparent for unselected themes
                         ),
                         child: Row(
                           children: [
@@ -224,9 +213,7 @@ class _AppThemeState extends State<AppTheme> {
                               style: TextStyle(
                                 color: isSelected
                                     ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .onSurface, // Change text color based on selection
+                                    : Theme.of(context).colorScheme.onSurface, // Change text color based on selection
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                               ),
