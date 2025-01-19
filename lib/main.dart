@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
         builder: (context, locale) {
           return BlocBuilder<ThemeCubit, ThemeMode>(
             builder: (context, themeMode) {
-
               final theme = AppThemes(TextTheme.of(context));
               return MaterialApp(
                 title: 'Zaitoon Invoice',

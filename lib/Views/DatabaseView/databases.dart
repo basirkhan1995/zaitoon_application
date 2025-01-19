@@ -25,7 +25,8 @@ class LoadAllDatabases extends StatelessWidget {
     );
   }
 
-  Widget actionButtons({required AppLocalizations locale, required BuildContext context}) {
+  Widget actionButtons(
+      {required AppLocalizations locale, required BuildContext context}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
       child: Row(
@@ -35,6 +36,7 @@ class LoadAllDatabases extends StatelessWidget {
             onTap: () {},
             label: locale.newDatabase,
             icon: Icons.add,
+            fontSize: 18,
             color: Colors.greenAccent.withValues(alpha: .4),
             hoverColor: Colors.green,
             foregroundColor: Theme.of(context).colorScheme.onSurface,
@@ -42,6 +44,7 @@ class LoadAllDatabases extends StatelessWidget {
           HoverWidget(
             onTap: () {},
             label: locale.browse,
+            fontSize: 18,
             icon: Icons.storage_rounded,
             foregroundColor: Theme.of(context).colorScheme.onSurface,
             color: Colors.cyan.withValues(alpha: .3),
@@ -63,7 +66,7 @@ class LoadAllDatabases extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Icon(Icons.storage_rounded),
-              Text(locale.databases, style: style.titleLarge),
+              Text(locale.databases, style: style.titleMedium),
             ],
           ),
           Row(
@@ -93,8 +96,8 @@ class LoadAllDatabases extends StatelessWidget {
               spacing: 10,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Icon(Icons.sync),
-                Text(locale.recentDatabases, style: style.titleLarge),
+                Icon(Icons.sync_alt),
+                Text(locale.recentDatabases, style: style.titleMedium),
               ],
             ),
           ],

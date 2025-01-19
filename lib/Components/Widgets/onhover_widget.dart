@@ -11,6 +11,7 @@ class HoverWidget extends StatefulWidget {
   final Color? hoverForegroundColor;
   final double height;
   final double width;
+  final double? fontSize;
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
 
@@ -20,6 +21,7 @@ class HoverWidget extends StatefulWidget {
     required this.label,
     required this.icon,
     this.color,
+    this.fontSize,
     this.hoverColor,
     this.foregroundColor,
     this.hoverForegroundColor,
@@ -39,10 +41,12 @@ class _HoverWidgetState extends State<HoverWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor =
-    _isHovered ? (widget.hoverColor ?? Colors.redAccent) : (widget.color ?? Colors.redAccent.withValues(alpha: .05));
-    final textColor =
-    _isHovered ? (widget.hoverForegroundColor ?? Colors.white) : (widget.foregroundColor ?? Colors.black);
+    final backgroundColor = _isHovered
+        ? (widget.hoverColor ?? Colors.redAccent)
+        : (widget.color ?? Colors.redAccent.withValues(alpha: .05));
+    final textColor = _isHovered
+        ? (widget.hoverForegroundColor ?? Colors.white)
+        : (widget.foregroundColor ?? Colors.black);
     final iconColor = textColor;
 
     return MouseRegion(
@@ -67,7 +71,7 @@ class _HoverWidgetState extends State<HoverWidget> {
             child: ListTile(
               title: Text(
                 widget.label,
-                style: TextStyle(color: textColor),
+                style: TextStyle(color: textColor, fontSize: widget.fontSize),
               ),
               trailing: Icon(
                 widget.icon,
