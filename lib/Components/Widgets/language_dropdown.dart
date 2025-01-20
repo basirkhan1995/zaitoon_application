@@ -153,10 +153,10 @@ class _SelectLanguageState extends State<SelectLanguage> {
               color: Colors.transparent,
               child: Container(
                 width: buttonWidth, // Match the button's width
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: EdgeInsets.zero,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(5),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
@@ -177,12 +177,15 @@ class _SelectLanguageState extends State<SelectLanguage> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                            horizontal: 12, vertical: 10),
                         decoration: BoxDecoration(
-                          color: currentLanguage == lang['code']
-                              ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: .5)
-                              : Theme.of(context).colorScheme.surface
-                        ),
+                            borderRadius: BorderRadius.circular(5),
+                            color: currentLanguage == lang['code']
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer
+                                    .withValues(alpha: .5)
+                                : Theme.of(context).colorScheme.surface),
                         child: Row(
                           children: [
                             Icon(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zaitoon_invoice/Components/Other/functions.dart';
 import 'package:zaitoon_invoice/Components/Widgets/language_dropdown.dart';
 import 'package:zaitoon_invoice/Components/Widgets/onhover_widget.dart';
 import 'package:zaitoon_invoice/Components/Widgets/theme_dropdown.dart';
+import 'package:zaitoon_invoice/Views/Authentication/register.dart';
 
 class LoadAllDatabases extends StatelessWidget {
   const LoadAllDatabases({super.key});
@@ -33,7 +35,9 @@ class LoadAllDatabases extends StatelessWidget {
         spacing: 15,
         children: [
           HoverWidget(
-            onTap: () {},
+            onTap: () {
+              Env.goto(context, RegisterView());
+            },
             label: locale.newDatabase,
             icon: Icons.add,
             fontSize: 18,

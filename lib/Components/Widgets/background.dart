@@ -1,0 +1,27 @@
+import 'package:flutter/material.dart';
+
+class AppBackground extends StatelessWidget {
+  final Widget child;
+  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
+  final double borderRadius;
+  const AppBackground(
+      {super.key,
+      required this.child,
+      this.padding,
+      this.margin,
+      this.borderRadius = 5});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: margin ?? const EdgeInsets.all(10),
+      padding: padding ?? const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
+        color: Theme.of(context).colorScheme.surface,
+      ),
+      child: child,
+    );
+  }
+}

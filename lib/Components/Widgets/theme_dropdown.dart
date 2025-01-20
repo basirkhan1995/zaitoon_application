@@ -176,7 +176,7 @@ class _AppThemeState extends State<AppTheme> {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 3,
+                      blurRadius: 5,
                       offset: const Offset(0, 2),
                     ),
                   ],
@@ -197,8 +197,9 @@ class _AppThemeState extends State<AppTheme> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
+                            horizontal: 12, vertical: 10),
                         decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
                             color: isSelected
                                 ? Theme.of(context)
                                     .colorScheme
