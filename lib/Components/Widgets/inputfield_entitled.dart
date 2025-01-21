@@ -18,31 +18,32 @@ class InputFieldEntitled extends StatelessWidget {
   final Widget? trailing;
   final double width;
   final List<TextInputFormatter>? inputFormat;
-  const InputFieldEntitled(
-      {super.key,
-      required this.title,
-      this.hint,
-      this.isEnabled = true,
-      this.securePassword = false,
-      this.end,
-      this.isRequire = false,
-      this.icon,
-      this.inputFormat,
-      this.validator,
-      this.onSubmit,
-      this.controller,
-      this.onChanged,
-      this.width = .5,
-      this.trailing,
-      this.keyboardInputType,
-      this.inputAction});
+
+  const InputFieldEntitled({
+    super.key,
+    required this.title,
+    this.hint,
+    this.isEnabled = true,
+    this.securePassword = false,
+    this.end,
+    this.isRequire = false,
+    this.icon,
+    this.inputFormat,
+    this.validator,
+    this.onSubmit,
+    this.controller,
+    this.onChanged,
+    this.width = .5,
+    this.trailing,
+    this.keyboardInputType,
+    this.inputAction,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 6),
       child: SizedBox(
-        width: MediaQuery.of(context).size.width * width,
         child: Column(
           children: [
             Row(
@@ -56,7 +57,7 @@ class InputFieldEntitled extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: const TextStyle(fontWeight: FontWeight.w400),
+                          style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
                         isRequire
                             ? Text(
@@ -65,64 +66,69 @@ class InputFieldEntitled extends StatelessWidget {
                               )
                             : const SizedBox(),
                       ],
-                    )
+                    ),
                   ],
-                )
+                ),
               ],
             ),
             const SizedBox(height: 4),
             SizedBox(
-              width: MediaQuery.of(context).size.width * width,
               child: Row(
                 children: [
                   Flexible(
-                      child: TextFormField(
-                    enabled: isEnabled,
-                    validator: validator,
-                    onChanged: onChanged,
-                    onFieldSubmitted: onSubmit,
-                    obscureText: securePassword,
-                    inputFormatters: inputFormat,
-                    keyboardType: keyboardInputType,
-                    controller: controller,
-                    decoration: InputDecoration(
+                    child: TextFormField(
+                      enabled: isEnabled,
+                      validator: validator,
+                      onChanged: onChanged,
+                      onFieldSubmitted: onSubmit,
+                      obscureText: securePassword,
+                      inputFormatters: inputFormat,
+                      keyboardType: keyboardInputType,
+                      controller: controller,
+                      decoration: InputDecoration(
                         suffixIcon: trailing,
                         suffix: end,
                         disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          borderSide: BorderSide(
-                              color: Colors.grey.withValues(alpha: .1)),
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide:
+                              BorderSide(color: Colors.grey.withAlpha(10)),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          borderSide: BorderSide(
-                              color: Colors.grey.withValues(alpha: .3)),
+                          borderRadius: BorderRadius.circular(5),
+                          borderSide:
+                              BorderSide(color: Colors.grey.withAlpha(50)),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(5),
                           borderSide: BorderSide(
                               color: Theme.of(context).colorScheme.primary),
                         ),
                         focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(5),
                           borderSide: BorderSide(
                               color: Theme.of(context).colorScheme.error),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(5),
                           borderSide: BorderSide(
                               color: Theme.of(context).colorScheme.error),
                         ),
-                        prefixIcon: Icon(icon, size: 20),
+                        prefixIcon: Icon(icon, size: 18),
                         hintText: title,
                         hintStyle: const TextStyle(
                             fontWeight: FontWeight.normal,
                             fontSize: 13,
-                            color: Colors.grey)),
-                  ))
+                            color: Colors.grey),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical:
+                                5.0), // Adjust this value to control the height
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
