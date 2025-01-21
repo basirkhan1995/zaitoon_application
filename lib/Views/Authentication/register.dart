@@ -13,6 +13,8 @@ class _RegisterViewState extends State<RegisterView> {
   int _currentStep = 0; // Track the current step
   final int _totalSteps = 3; // Total number of steps
 
+
+
   // Step titles
   final List<String> steps = [
     'Step 1',
@@ -45,10 +47,10 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   // Custom widget for step indicators with different states
-  Widget _buildStepIndicator(int index) {
+  Widget _buildStepIndicator2(int index) {
     Color borderColor = Colors.transparent;
     Color backgroundColor =
-        Theme.of(context).colorScheme.primary.withValues(alpha: .5);
+    Theme.of(context).colorScheme.primary.withValues(alpha: .5);
     Widget icon = Icon(Icons.circle_outlined, color: Colors.transparent);
 
     if (index == _currentStep) {
@@ -72,6 +74,52 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 
+  // Custom widget for step indicators with different states
+  Widget _buildStepIndicator(int index) {
+    Color progressColor = Colors.grey;
+    double progressValue = 0.0;
+
+    if (index < _currentStep) {
+      // Completed step
+      progressColor = Colors.green;
+      progressValue = 1.0;
+    } else if (index == _currentStep) {
+      // Current step (in progress)
+      progressColor = Theme.of(context).colorScheme.primary;
+      progressValue = 0.5;
+    }
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Circular progress indicator
+        SizedBox(
+          height: 30,
+          width: 30,
+          child: CircularProgressIndicator(
+            value: progressValue, // Progress value: 0.0 to 1.0
+            strokeWidth: 2.0,
+            color: progressColor,
+            backgroundColor: Colors.grey.withValues(alpha: .2), // Background circle
+          ),
+        ),
+        // Icon in the center
+        Icon(
+          index < _currentStep
+              ? Icons.check // Completed step
+              : null, // Pending or in-progress step
+          color: index < _currentStep
+              ? Colors.green
+              : (index == _currentStep
+              ? Theme.of(context).colorScheme.primary
+              : Colors.grey),
+          size: 22,
+        ),
+      ],
+    );
+  }
+
+
   Widget appBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2),
@@ -91,7 +139,7 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 
-  Widget companyInformation() {
+  Widget userInformation() {
     return SingleChildScrollView(
       child: Center(
         child: AppBackground(
@@ -103,10 +151,18 @@ class _RegisterViewState extends State<RegisterView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               InputFieldEntitled(
-                title: "Full Name",
+                isRequire: true,
+                title: "Username",
                 icon: Icons.person,
               ),
-              InputFieldEntitled(title: "Business Name", icon: Icons.business),
+              InputFieldEntitled(
+                  isRequire: true,
+                  title: "Password",
+                  icon: Icons.lock),
+              InputFieldEntitled(
+                  isRequire: true,
+                  title: "Re-enter password",
+                  icon: Icons.lock),
             ],
           ),
         ),
@@ -126,12 +182,38 @@ class _RegisterViewState extends State<RegisterView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               InputFieldEntitled(
-                  title: "Phone", icon: Icons.phone_android_rounded),
+                isRequire: true,
+                title: "Full Name",
+                icon: Icons.person,
+              ),
               InputFieldEntitled(
-                  title: "Telephone", icon: Icons.phone_android_rounded),
-              InputFieldEntitled(title: "Email", icon: Icons.email),
+                  isRequire: true,
+                  title: "Business Name",
+                  icon: Icons.business),
+             Row(
+               spacing: 10,
+               children: [
+                 Expanded(
+                   child: InputFieldEntitled(
+                       isRequire: true,
+                       title: "Phone",
+                       icon: Icons.phone_android_rounded),
+                 ),
+
+                 Expanded(
+                   child: InputFieldEntitled(
+                       title: "Telephone",
+                       icon: Icons.phone_android_rounded),
+                 ),
+               ],
+             ),
               InputFieldEntitled(
-                  title: "Address", icon: Icons.phone_android_rounded),
+                  title: "Email",
+                  icon: Icons.email),
+              InputFieldEntitled(
+                  isRequire: true,
+                  title: "Address",
+                  icon: Icons.phone_android_rounded),
             ],
           ),
         ),
@@ -162,14 +244,14 @@ class _RegisterViewState extends State<RegisterView> {
   List<Widget> stepContents() {
     return [
       personalInformation(), // Step 1 content
-      companyInformation(), // Step 2 content
+      userInformation(), // Step 2 content
       databaseInformation(), // Step 3 content
     ];
   }
 
-  Widget _header() {
+  Widget stepperHeader() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start ,
       children: List.generate(_totalSteps, (index) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -177,8 +259,8 @@ class _RegisterViewState extends State<RegisterView> {
             _buildStepIndicator(index),
             if (index < _totalSteps - 1)
               Container(
-                width: 200,
-                margin: EdgeInsets.symmetric(horizontal: 8),
+                width: 193,
+                margin: EdgeInsets.symmetric(horizontal: 11),
                 height: 2,
                 color: index < _currentStep
                     ? Colors.green
@@ -230,18 +312,18 @@ class _RegisterViewState extends State<RegisterView> {
 
   Widget actionButton() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: AppBackground(
         width: 600,
         child: Row(
           spacing: 50,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ElevatedButton(
+            TextButton(
               onPressed: _previousStep,
               child: const Text('Previous'),
             ),
-            ElevatedButton(
+            TextButton(
               onPressed: _nextStep,
               child: const Text('Next'),
             ),
@@ -257,7 +339,7 @@ class _RegisterViewState extends State<RegisterView> {
       padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
       child: Column(
         children: [
-          _header(),
+          stepperHeader(),
           const SizedBox(height: 5),
           stepperTitles(),
           const SizedBox(height: 5),
@@ -267,24 +349,25 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Widget content() {
-    // Use AnimatedSwitcher to switch content based on the current step
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      child: stepContents()[
-          _currentStep], // Return the widget for the current step
+      duration: const Duration(milliseconds: 500),
+      child: stepContents()[_currentStep],
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          appBar(),
-          stepper(),
-          content(), // Show the content widget dynamically
-          actionButton(), // Navigation buttons
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            appBar(),
+            stepper(),
+            content(), // Show the content widget dynamically
+            actionButton(), // Navigation buttons
+          ],
+        ),
       ),
     );
   }
