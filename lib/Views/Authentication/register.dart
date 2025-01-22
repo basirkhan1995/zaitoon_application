@@ -12,8 +12,22 @@ class RegisterView extends StatefulWidget {
 class _RegisterViewState extends State<RegisterView> {
   int _currentStep = 0; // Track the current step
   final int _totalSteps = 3; // Total number of steps
+  final form1 = GlobalKey<FormState>();
+  final form2 = GlobalKey<FormState>();
+  final form3 = GlobalKey<FormState>();
 
+  final businessName = TextEditingController();
+  final fullName = TextEditingController();
+  final address = TextEditingController();
+  final phone = TextEditingController();
+  final telephone = TextEditingController();
+  final email = TextEditingController();
 
+  final username = TextEditingController();
+  final password = TextEditingController();
+  final confirmPassword = TextEditingController();
+
+  final databaseName = TextEditingController();
 
   // Step titles
   final List<String> steps = [
@@ -30,10 +44,20 @@ class _RegisterViewState extends State<RegisterView> {
 
   // Function to move to the next step
   void _nextStep() {
-    if (_currentStep < _totalSteps - 1) {
+    if (_currentStep == 0 && form1.currentState!.validate()) {
       setState(() {
         _currentStep++;
       });
+    } else if (_currentStep == 1 && form2.currentState!.validate()) {
+      setState(() {
+        _currentStep++;
+      });
+    }
+  }
+
+  void _create() {
+    if (_currentStep == 2 && form3.currentState!.validate()) {
+      /// Create Database
     }
   }
 
@@ -43,6 +67,8 @@ class _RegisterViewState extends State<RegisterView> {
       setState(() {
         _currentStep--;
       });
+    } else if (_currentStep == 0) {
+      Navigator.pop(context);
     }
   }
 
@@ -50,7 +76,7 @@ class _RegisterViewState extends State<RegisterView> {
   Widget _buildStepIndicator2(int index) {
     Color borderColor = Colors.transparent;
     Color backgroundColor =
-    Theme.of(context).colorScheme.primary.withValues(alpha: .5);
+        Theme.of(context).colorScheme.primary.withValues(alpha: .5);
     Widget icon = Icon(Icons.circle_outlined, color: Colors.transparent);
 
     if (index == _currentStep) {
@@ -100,7 +126,8 @@ class _RegisterViewState extends State<RegisterView> {
             value: progressValue, // Progress value: 0.0 to 1.0
             strokeWidth: 2.0,
             color: progressColor,
-            backgroundColor: Colors.grey.withValues(alpha: .2), // Background circle
+            backgroundColor:
+                Colors.grey.withValues(alpha: .2), // Background circle
           ),
         ),
         // Icon in the center
@@ -111,14 +138,13 @@ class _RegisterViewState extends State<RegisterView> {
           color: index < _currentStep
               ? Colors.green
               : (index == _currentStep
-              ? Theme.of(context).colorScheme.primary
-              : Colors.grey),
+                  ? Theme.of(context).colorScheme.primary
+                  : Colors.grey),
           size: 22,
         ),
       ],
     );
   }
-
 
   Widget appBar() {
     return Padding(
@@ -141,29 +167,59 @@ class _RegisterViewState extends State<RegisterView> {
 
   Widget userInformation() {
     return SingleChildScrollView(
-      child: Center(
-        child: AppBackground(
-          width: 600,
-          margin: EdgeInsets.symmetric(vertical: 0),
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InputFieldEntitled(
-                isRequire: true,
-                title: "Username",
-                icon: Icons.person,
-              ),
-              InputFieldEntitled(
+      child: Form(
+        key: form2,
+        child: Center(
+          child: AppBackground(
+            width: 600,
+            margin: EdgeInsets.symmetric(vertical: 0),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InputFieldEntitled(
+                  controller: username,
+                  isRequire: true,
+                  title: "Username",
+                  icon: Icons.person,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return "Username is required";
+                    }
+                    return null;
+                  },
+                ),
+                InputFieldEntitled(
+                  securePassword: true,
+                  controller: password,
                   isRequire: true,
                   title: "Password",
-                  icon: Icons.lock),
-              InputFieldEntitled(
+                  icon: Icons.lock,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return "Password is required";
+                    }
+                    return null;
+                  },
+                ),
+                InputFieldEntitled(
+                  controller: confirmPassword,
+                  securePassword: true,
                   isRequire: true,
                   title: "Re-enter password",
-                  icon: Icons.lock),
-            ],
+                  icon: Icons.lock,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return "Re-enter password is required";
+                    } else if (password.text != confirmPassword.text) {
+                      return "Passwords don't match";
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -171,50 +227,92 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Widget personalInformation() {
-    return SingleChildScrollView(
-      child: Center(
-        child: AppBackground(
-          width: 600,
-          margin: EdgeInsets.symmetric(vertical: 0),
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InputFieldEntitled(
-                isRequire: true,
-                title: "Full Name",
-                icon: Icons.person,
-              ),
-              InputFieldEntitled(
-                  isRequire: true,
-                  title: "Business Name",
-                  icon: Icons.business),
-             Row(
-               spacing: 10,
-               children: [
-                 Expanded(
-                   child: InputFieldEntitled(
-                       isRequire: true,
-                       title: "Phone",
-                       icon: Icons.phone_android_rounded),
-                 ),
-
-                 Expanded(
-                   child: InputFieldEntitled(
-                       title: "Telephone",
-                       icon: Icons.phone_android_rounded),
-                 ),
-               ],
-             ),
-              InputFieldEntitled(
-                  title: "Email",
-                  icon: Icons.email),
-              InputFieldEntitled(
+    return Form(
+      key: form1,
+      child: SingleChildScrollView(
+        child: Center(
+          child: AppBackground(
+            width: 600,
+            margin: EdgeInsets.symmetric(vertical: 0),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  spacing: 10,
+                  children: [
+                    Expanded(
+                      child: InputFieldEntitled(
+                        isRequire: true,
+                        controller: fullName,
+                        title: "Full Name",
+                        icon: Icons.person,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return "Name is required";
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: InputFieldEntitled(
+                        controller: businessName,
+                        isRequire: true,
+                        title: "Business Name",
+                        icon: Icons.business,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return "Business Name is required";
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                InputFieldEntitled(
+                    title: "Email", icon: Icons.email, controller: email),
+                Row(
+                  spacing: 10,
+                  children: [
+                    Expanded(
+                      child: InputFieldEntitled(
+                        isRequire: true,
+                        title: "Phone",
+                        controller: phone,
+                        icon: Icons.phone_android_rounded,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return "Phone is required";
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: InputFieldEntitled(
+                          title: "Telephone",
+                          controller: telephone,
+                          icon: Icons.phone_android_rounded),
+                    ),
+                  ],
+                ),
+                InputFieldEntitled(
+                  controller: address,
                   isRequire: true,
                   title: "Address",
-                  icon: Icons.phone_android_rounded),
-            ],
+                  icon: Icons.phone_android_rounded,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return "Address is required";
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -222,18 +320,30 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Widget databaseInformation() {
-    return SingleChildScrollView(
-      child: Center(
-        child: AppBackground(
-          width: 600,
-          margin: EdgeInsets.symmetric(vertical: 0),
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InputFieldEntitled(title: "Database Name", icon: Icons.storage),
-            ],
+    return Form(
+      child: SingleChildScrollView(
+        child: Center(
+          child: AppBackground(
+            width: 600,
+            margin: EdgeInsets.symmetric(vertical: 0),
+            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InputFieldEntitled(
+                  controller: databaseName,
+                  title: "Database Name",
+                  icon: Icons.storage,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return "Database is required";
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -251,7 +361,7 @@ class _RegisterViewState extends State<RegisterView> {
 
   Widget stepperHeader() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start ,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: List.generate(_totalSteps, (index) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -321,11 +431,11 @@ class _RegisterViewState extends State<RegisterView> {
           children: [
             TextButton(
               onPressed: _previousStep,
-              child: const Text('Previous'),
+              child: Text(_currentStep == 0 ? 'Back' : 'Previous'),
             ),
             TextButton(
-              onPressed: _nextStep,
-              child: const Text('Next'),
+              onPressed: _currentStep == 2 ? _create : _nextStep,
+              child: Text(_currentStep == 2 ? 'Create' : 'Next'),
             ),
           ],
         ),
@@ -348,27 +458,33 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 
-  Widget content() {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 500),
-      child: stepContents()[_currentStep],
-    );
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            appBar(),
             stepper(),
-            content(), // Show the content widget dynamically
+            registerForm(_currentStep), // Show the content widget dynamically
             actionButton(), // Navigation buttons
           ],
         ),
       ),
     );
+  }
+
+  Widget registerForm(int step) {
+    switch (step) {
+      case 0:
+        return personalInformation();
+      case 1:
+        return userInformation();
+      case 2:
+        return databaseInformation();
+      default:
+        return const Text('Unknown Step');
+    }
   }
 }
