@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/ThemeCubit/theme_cubit.dart';
+import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
 import 'package:zaitoon_invoice/Themes/themes.dart';
 import 'package:zaitoon_invoice/Views/DatabaseView/databases.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -23,6 +25,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => LanguageCubit()),
         //Theme
         BlocProvider(create: (context) => ThemeCubit()),
+        //Database Cubit
+        BlocProvider(create: (context) => DatabaseCubit()),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {

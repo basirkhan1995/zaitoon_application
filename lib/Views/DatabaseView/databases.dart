@@ -46,7 +46,9 @@ class LoadAllDatabases extends StatelessWidget {
             foregroundColor: Theme.of(context).colorScheme.onSurface,
           ),
           HoverWidget(
-            onTap: () {},
+            onTap: () {
+
+            },
             label: locale.browse,
             fontSize: 18,
             icon: Icons.storage_rounded,

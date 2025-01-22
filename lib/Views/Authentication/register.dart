@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
 
@@ -58,6 +60,7 @@ class _RegisterViewState extends State<RegisterView> {
   void _create() {
     if (_currentStep == 2 && form3.currentState!.validate()) {
       /// Create Database
+      context.read<DatabaseCubit>().createDatabaseEvent(dbName: databaseName.text);
     }
   }
 
@@ -321,6 +324,7 @@ class _RegisterViewState extends State<RegisterView> {
 
   Widget databaseInformation() {
     return Form(
+      key: form3,
       child: SingleChildScrollView(
         child: Center(
           child: AppBackground(
