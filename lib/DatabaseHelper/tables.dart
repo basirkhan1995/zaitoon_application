@@ -1,3 +1,5 @@
+import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
+
 class Tables {
   static String userTableName = "users";
   static String userRoleTableName = "userRole";
@@ -14,7 +16,9 @@ class Tables {
   static String accountTableName = 'accounts';
   static String itemUnitTableName = 'itemUnit';
 
-  static String userTable = '''
+  static Future<void> userTable() async {
+    final db = DatabaseHelper.db;
+    final stm = db.prepare('''
   CREATE TABLE IF NOT EXISTS $userTableName(
   userId INTEGER PRIMARY KEY AUTOINCREMENT,
   fullName TEXT,
@@ -26,7 +30,9 @@ class Tables {
   companyLogo BLOB,
   username TEXT UNIQUE,
   password TEXT
-  )''';
+  )''');
+    stm.execute();
+  }
 
   static String accountsTable = '''
   CREATE TABLE IF NOT EXISTS $accountTableName(

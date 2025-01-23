@@ -4,36 +4,46 @@ import 'package:sqlite3/sqlite3.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
 
 class DatabaseHelper {
-  static final DatabaseHelper instance = DatabaseHelper._constructor();
-  DatabaseHelper._constructor();
-  static Database? _db;
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+  static late final Database db;
 
-  static Future<String> _getPath(String dbName) async {
-    final databasePath = await getDownloadsDirectory();
-    final path = join(databasePath!.path, dbName);
-    return path;
-  }
+  // Private constructor
+  DatabaseHelper._privateConstructor();
 
-  // Initialize the SQLite3 Database
+  // Open the database (or create it if it doesn't exist)
   static Future<void> initDatabase(String dbName) async {
-    final databasePath = _getPath(dbName);
-    _db = sqlite3.open(databasePath.toString());
-    _createTable();
+    final path = await getApplicationDocumentsDirectory();
+    final dbPath = join(path.path, dbName);
+    db = sqlite3.open(dbPath);
+    createTables();
   }
 
-  // Create a table if it doesn't exist
-  static void _createTable() {
-    _db?.execute(Tables.userTable);
-    _db?.execute(Tables.itemUnitTable);
-    _db?.execute(Tables.accountsTable);
-    _db?.execute(Tables.accountTableName);
+  static void createTables() {
+    Tables.userTable();
   }
 
+  // // Insert a row
+  // Future<void> insertRow(String name) async {
+  //   final stmt = db.prepare('''
+  //   INSERT INTO my_table (name) VALUES (?);
+  //   ''');
+  //   stmt.execute([name]);
+  // }
 
-  // Close the database connection
+  // // Query all rows
+  // List<Map<String, dynamic>> queryAllRows() {
+  //   final rows = db.select('SELECT * FROM my_table');
+  //   return rows;
+  // }
+
+  // // Query a specific row by id
+  // static Map<String, dynamic>? queryRow(int id) {
+  //   final result = db.select('SELECT * FROM my_table WHERE id = ?', [id]);
+  //   return result.isNotEmpty ? result.first : null;
+  // }
+
+  // Close the database
   void close() {
-    _db?.dispose();
+    db.dispose();
   }
-
-
 }
