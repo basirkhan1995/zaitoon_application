@@ -16,7 +16,7 @@ class Users extends Equatable {
   final String? fullName;
   final String? email;
   final String? address;
-  final String? phone;
+  final String? mobile;
   final String? telephone;
   final Uint8List? companyLogo;
   final String? username;
@@ -28,7 +28,7 @@ class Users extends Equatable {
     this.fullName,
     this.email,
     this.address,
-    this.phone,
+    this.mobile,
     this.telephone,
     this.companyLogo,
     this.username,
@@ -53,7 +53,7 @@ class Users extends Equatable {
         fullName: fullName ?? this.fullName,
         email: email ?? this.email,
         address: address ?? this.address,
-        phone: phone ?? this.phone,
+        mobile: phone ?? this.mobile,
         telephone: telephone ?? this.telephone,
         companyLogo: companyLogo ?? this.companyLogo,
         username: username ?? this.username,
@@ -66,7 +66,7 @@ class Users extends Equatable {
         fullName: json["fullName"],
         email: json["email"],
         address: json["address"],
-        phone: json["phone"],
+        mobile: json["mobile"],
         telephone: json["telephone"],
         companyLogo: json["companyLogo"],
         username: json["username"],
@@ -79,7 +79,7 @@ class Users extends Equatable {
         "fullName": fullName,
         "email": email,
         "address": address,
-        "phone": phone,
+        "mobile": mobile,
         "telephone": telephone,
         "companyLogo": companyLogo,
         "username": username,
@@ -95,7 +95,7 @@ class Users extends Equatable {
         businessName,
         email,
         address,
-        phone,
+        mobile,
         telephone,
       ];
 }

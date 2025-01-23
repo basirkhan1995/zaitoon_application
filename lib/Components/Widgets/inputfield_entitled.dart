@@ -17,12 +17,14 @@ class InputFieldEntitled extends StatelessWidget {
   final TextEditingController? controller;
   final Widget? trailing;
   final double width;
+  final bool compactMode;
   final List<TextInputFormatter>? inputFormat;
 
   const InputFieldEntitled({
     super.key,
     required this.title,
     this.hint,
+    this.compactMode = false,
     this.isEnabled = true,
     this.securePassword = false,
     this.end,
@@ -119,7 +121,7 @@ class InputFieldEntitled extends StatelessWidget {
                             fontWeight: FontWeight.normal,
                             fontSize: 13,
                             color: Colors.grey),
-                        isDense: true,
+                        isDense: compactMode,
                         contentPadding: EdgeInsets.symmetric(
                             vertical:
                                 5.0), // Adjust this value to control the height

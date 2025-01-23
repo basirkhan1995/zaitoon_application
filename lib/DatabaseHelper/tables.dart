@@ -16,9 +16,7 @@ class Tables {
   static String accountTableName = 'accounts';
   static String itemUnitTableName = 'itemUnit';
 
-  static Future<void> userTable() async {
-    final db = DatabaseHelper.db;
-    final stm = db.prepare('''
+  static String userTable = '''
   CREATE TABLE IF NOT EXISTS $userTableName(
   userId INTEGER PRIMARY KEY AUTOINCREMENT,
   fullName TEXT,
@@ -30,9 +28,7 @@ class Tables {
   companyLogo BLOB,
   username TEXT UNIQUE,
   password TEXT
-  )''');
-    stm.execute();
-  }
+  )''';
 
   static String accountsTable = '''
   CREATE TABLE IF NOT EXISTS $accountTableName(

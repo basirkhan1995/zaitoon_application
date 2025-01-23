@@ -9,11 +9,11 @@ final class DatabaseInitial extends DatabaseState {
   List<Object> get props => [];
 }
 
-final class DatabaseCreateState extends DatabaseState{
-  final String dbName;
-  const DatabaseCreateState(this.dbName);
+final class LoadedRecentDatabasesState extends DatabaseState{
+  final List<DatabaseInfo> recentDbs;
+  const LoadedRecentDatabasesState(this.recentDbs);
   @override
-  List<Object> get props => [dbName];
+  List<Object> get props => [recentDbs];
 }
 
 final class DatabaseErrorState extends DatabaseState{

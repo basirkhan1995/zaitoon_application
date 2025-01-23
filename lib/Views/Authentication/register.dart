@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
-import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
+import 'package:zaitoon_invoice/Json/users.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -58,12 +59,25 @@ class _RegisterViewState extends State<RegisterView> {
     }
   }
 
-  void _create() {
-    if (_currentStep == 2 && form3.currentState!.validate()) {
-      /// Create Database
-      context
-          .read<DatabaseCubit>()
-          .createDatabaseEvent(dbName: databaseName.text);
+  Future<void> _create() async{
+    if (_currentStep == 2 && form3.currentState!.validate()){
+     final res = await  context.read<AuthCubit>().signUpEvent(
+          user: Users(
+            username: username.text,
+            password: password.text,
+            mobile: phone.text,
+            email: email.text,
+            address: address.text,
+            businessName: businessName.text,
+            fullName: fullName.text,
+            telephone: telephone.text
+          ), dbName: "${databaseName.text}.db");
+     if(res>0){
+       setState(() {
+         Navigator.pop(context);
+         context.read<DatabaseCubit>().loadDatabaseEvent();
+       });
+     }
     }
   }
 

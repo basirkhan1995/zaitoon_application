@@ -1,18 +1,53 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:zaitoon_invoice/DatabaseHelper/components.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
+import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
+import 'package:zaitoon_invoice/Json/database_info.dart';
+
+import '../../Json/users.dart';
 
 part 'database_state.dart';
 
 class DatabaseCubit extends Cubit<DatabaseState> {
-
   DatabaseCubit() : super(DatabaseInitial());
 
-  void createDatabaseEvent({required String dbName}){
+  Future<void> openDatabase({required String dbName})async{
     try{
-      DatabaseHelper.initDatabase(dbName);
+      await DatabaseHelper.openDB(dbName);
     }catch(e){
       emit(DatabaseErrorState(e.toString()));
     }
   }
+
+  Future<void> browseEvent({required String dbName})async{
+    try{
+      await DatabaseHelper.initDatabase(dbName);
+      await loadDatabaseEvent();
+    }catch(e){
+      emit(DatabaseErrorState(e.toString()));
+    }
+  }
+
+  Future<void> loadDatabaseEvent()async{
+    try{
+       final dbs = await DatabaseComponents.loadRecentDatabase();
+       emit(LoadedRecentDatabasesState(dbs));
+    }catch(e){
+      emit(DatabaseErrorState(e.toString()));
+    }
+  }
+
+  Future<void> removeDatabaseEvent(String dbName)async{
+    try{
+      if(dbName.isNotEmpty){
+        await DatabaseComponents.removeDatabasePath(dbName);
+        await loadDatabaseEvent();
+      }
+    }catch(e){
+      emit(DatabaseErrorState(e.toString()));
+    }
+  }
+
+
 }

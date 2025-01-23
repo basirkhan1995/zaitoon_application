@@ -7,8 +7,14 @@
       }
     }
   },
-  "hello": "سلام",
-  "@hello": {},
+  "hello": "سلام, {name}",
+  "@hello": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "welcome": "خوش آمدید",
   "@welcome": {},
   "invoice_total": "مجموع فاکتور",

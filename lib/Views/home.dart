@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -9,7 +11,14 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Home Screen"),
       ),
-      body: Text("Hello, Friends"),
+      body: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          if(state is AuthenticatedState){
+            return Text(state.user.businessName!);
+          }
+          return Text(state.toString());
+        },
+      ),
     );
   }
 }

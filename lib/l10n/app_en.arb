@@ -7,8 +7,14 @@
       }
     }
   },
-  "hello": "Hello",
-  "@hello": {},
+  "hello": "Hello, {name}",
+  "@hello": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "welcome": "Welcome",
   "@welcome": {},
   "invoice_total": "Invoice Total",

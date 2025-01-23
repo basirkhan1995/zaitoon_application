@@ -1,14 +1,39 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
+import 'package:zaitoon_invoice/Components/Other/extensions.dart';
 import 'package:zaitoon_invoice/Components/Other/functions.dart';
 import 'package:zaitoon_invoice/Components/Widgets/language_dropdown.dart';
 import 'package:zaitoon_invoice/Components/Widgets/onhover_widget.dart';
 import 'package:zaitoon_invoice/Components/Widgets/theme_dropdown.dart';
+import 'package:zaitoon_invoice/Views/Authentication/login.dart';
 import 'package:zaitoon_invoice/Views/Authentication/register.dart';
+import 'package:zaitoon_invoice/Views/home.dart';
+import '../../Bloc/AuthCubit/cubit/auth_cubit.dart';
 
-class LoadAllDatabases extends StatelessWidget {
+class LoadAllDatabases extends StatefulWidget {
   const LoadAllDatabases({super.key});
 
+  @override
+  State<LoadAllDatabases> createState() => _LoadAllDatabasesState();
+}
+
+class _LoadAllDatabasesState extends State<LoadAllDatabases> {
+  final username = TextEditingController();
+  final password = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((e){
+      context.read<DatabaseCubit>().loadDatabaseEvent();
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -46,9 +71,7 @@ class LoadAllDatabases extends StatelessWidget {
             foregroundColor: Theme.of(context).colorScheme.onSurface,
           ),
           HoverWidget(
-            onTap: () {
-
-            },
+            onTap: _browseDatabase,
             label: locale.browse,
             fontSize: 18,
             icon: Icons.storage_rounded,
@@ -97,6 +120,7 @@ class LoadAllDatabases extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
         child: Column(
+          spacing: 10,
           children: [
             Row(
               spacing: 10,
@@ -106,9 +130,86 @@ class LoadAllDatabases extends StatelessWidget {
                 Text(locale.recentDatabases, style: style.titleMedium),
               ],
             ),
+            Expanded(
+              child: BlocListener<AuthCubit, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthenticatedState) {
+                    Env.gotoReplacement(context, HomeScreen());
+                  }
+                },
+                child: BlocConsumer<DatabaseCubit, DatabaseState>(
+                  listener: (context, state) {},
+                  builder: (context, state) {
+                    if (state is DatabaseErrorState) {
+                      return Text(state.error);
+                    }
+                    if (state is LoadedRecentDatabasesState) {
+                      return ListView.builder(
+                          itemCount: state.recentDbs.length,
+                          itemBuilder: (context, index) {
+                            final dbs = state.recentDbs[index];
+
+                            return ListTile(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5)
+                              ),
+                              horizontalTitleGap: 5,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                              title: Text(state.recentDbs[index].name),
+                              subtitle: Text(state.recentDbs[index].path.getPathWithoutFileName),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                spacing: 10,
+                                children: [
+                                  Text(dbs.size.formatBytes(dbs.size).toString()),
+                                  IconButton(
+                                      onPressed: () {
+                                        context.read<DatabaseCubit>().removeDatabaseEvent(state.recentDbs[index].path);
+                                      },
+                                      icon: Icon(Icons.clear, size: 18)),
+                                ],
+                              ),
+                              onTap: () {
+                                context.read<DatabaseCubit>().openDatabase(dbName: state.recentDbs[index].path);
+                                showDialog(context: context, builder: (context){
+                                  return LoginDialog(dbInfo: dbs);
+                                });
+                              },
+                            );
+                          });
+                    }
+                    return Text(state.toString());
+                  },
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+  Future<void> _browseDatabase() async {
+    final dir = await getDownloadsDirectory();
+    FilePickerResult? result;
+    if(Platform.isAndroid || Platform.isIOS){
+      result = await FilePicker.platform.pickFiles(
+        initialDirectory: dir!.path,
+        type: FileType.any,
+      );
+    }else{
+      result = await FilePicker.platform.pickFiles(
+          initialDirectory: dir!.path,
+          type: FileType.custom,
+          allowedExtensions: ['db']
+      );
+    }
+
+    if (result != null) {
+      File dbPath = File(result.files.single.path!);
+      setState(() {
+        context.read<DatabaseCubit>().browseEvent( dbName: dbPath.path);
+      });
+    }
+
   }
 }
