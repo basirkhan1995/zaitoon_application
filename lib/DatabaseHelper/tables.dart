@@ -56,8 +56,7 @@ class Tables {
   roleId INTEGER PRIMARY KEY AUTOINCREMENT,
   roleName TEXT UNIQUE NOT NULL,
   descriptions TEXT
-  );
-  ''';
+  )''';
 
   static String permissionsTable = '''
   CREATE TABLE $permissionTableName (
