@@ -27,10 +27,11 @@
   "@browse": {},
   "recentDatabases": "آخرین دیتابیس ها",
   "@recentDatabases": {},
-  "systemTheme":"تم سیستم",
+  "systemTheme": "تم سیستم",
   "@systemTheme": {},
-  "darkTheme" : "تم تاریک",
+  "darkTheme": "تم تاریک",
   "@darkTheme": {},
-  "lightTheme" : "تم روشن",
-  "@lightTheme": {}
+  "lightTheme": "تم روشن",
+  "@lightTheme": {},
+  "accessDeniedMessage": "رمز عبور یا حساب کاربر نادرست میباشد"
 }

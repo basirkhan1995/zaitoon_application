@@ -116,11 +116,11 @@ class AppThemes {
 
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
         useMaterial3: true,
-        fontFamily: "Rototo",
+        fontFamily: "Roboto",
         brightness: colorScheme.brightness,
         colorScheme: colorScheme,
         textTheme: textTheme.apply(
-          fontFamily: "Rototo",
+          fontFamily: "Roboto",
           bodyColor: colorScheme.onSurface,
           displayColor: colorScheme.onSurface,
         ),

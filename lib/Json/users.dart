@@ -22,7 +22,7 @@ class Users extends Equatable {
   final String? username;
   final String? password;
 
-  Users({
+  const Users({
     this.userId,
     this.businessName,
     this.fullName,
@@ -53,7 +53,7 @@ class Users extends Equatable {
         fullName: fullName ?? this.fullName,
         email: email ?? this.email,
         address: address ?? this.address,
-        mobile: phone ?? this.mobile,
+        mobile: phone ?? mobile,
         telephone: telephone ?? this.telephone,
         companyLogo: companyLogo ?? this.companyLogo,
         username: username ?? this.username,

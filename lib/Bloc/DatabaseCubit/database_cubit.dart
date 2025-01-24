@@ -2,10 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/components.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
-import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
 import 'package:zaitoon_invoice/Json/database_info.dart';
 
-import '../../Json/users.dart';
 
 part 'database_state.dart';
 

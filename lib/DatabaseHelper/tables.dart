@@ -1,8 +1,7 @@
-import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
 
 class Tables {
+
   static String userTableName = "users";
-  static String userRoleTableName = "userRole";
   static String currencyTableName = "currency";
   static String salesTableName = "sales";
   static String salesItemTableName = 'salesItems';
@@ -15,20 +14,73 @@ class Tables {
   static String productCategoryTableName = 'productCategory';
   static String accountTableName = 'accounts';
   static String itemUnitTableName = 'itemUnit';
+  static String accountCategoryTableName = 'accountCategory';
+  static String permissionTableName = 'permissions';
+  static String rolePermissionTableName = 'rolePermission';
+  static String userRoleTableName = "userRole";
+  static String appMetadataTableName = 'appMetadata';
+  static String transactionsTableName = 'transactions';
+  static String transactionTypeTableName = 'transactionType';
+  static String paymentTableName = 'payments';
+  static String exchangeRatesTableName = 'exchangeRates';
+
+  //Tables
+  static String metaDataTable = '''
+  CREATE TABLE IF NOT EXISTS $appMetadataTableName (
+  bId INTEGER PRIMARY KEY AUTOINCREMENT,
+  companyName TEXT,
+  companyLogo BLOB,
+  companyLicence TEXT,
+  address TEXT,
+  phone TEXT,
+  email TEXT
+  )''';
 
   static String userTable = '''
   CREATE TABLE IF NOT EXISTS $userTableName(
   userId INTEGER PRIMARY KEY AUTOINCREMENT,
-  fullName TEXT,
-  businessName TEXT,
-  mobile TEXT,
-  telephone TEXT,
-  address TEXT,
-  email TEXT,
-  companyLogo BLOB,
+  userRoleId INTEGER,
   username TEXT UNIQUE,
-  password TEXT
+  password TEXT,
+  userStatus INTEGER,
+  businessId INTEGER NOT NULL,
+  
+  userCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  userUpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (businessId) REFERENCES $appMetadataTableName (bId) ON DELETE CASCADE,
+  FOREIGN KEY (userRoleId) REFERENCES $userRoleTableName(roleId)
   )''';
+
+  static String userRoleTable = '''
+  CREATE TABLE IF NOT EXISTS $userRoleTableName (
+  roleId INTEGER PRIMARY KEY AUTOINCREMENT,
+  roleName TEXT UNIQUE NOT NULL,
+  descriptions TEXT
+  );
+  ''';
+
+  static String permissionsTable = '''
+  CREATE TABLE $permissionTableName (
+  permissionId INTEGER PRIMARY KEY AUTOINCREMENT,
+  permissionName TEXT UNIQUE NOT NULL
+  )
+  ''' ;
+
+  static String rolesPermissionsTable = '''
+  CREATE TABLE $rolePermissionTableName (
+  rolePermissionId INTEGER PRIMARY KEY AUTOINCREMENT,
+  roleId INTEGER NOT NULL,
+  permissionId INTEGER NOT NULL,
+  FOREIGN KEY(roleId) REFERENCES roles(roleId),
+  FOREIGN KEY(permissionId) REFERENCES permissions(permissionId)
+  );
+  ''' ;
+
+  static String accountCategoryTable = '''
+  CREATE TABLE IF NOT EXISTS $accountCategoryTableName(
+  accCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
+  accCategoryName TEXT UNIQUE NOT NULL
+  )''' ;
 
   static String accountsTable = '''
   CREATE TABLE IF NOT EXISTS $accountTableName(
@@ -36,25 +88,31 @@ class Tables {
   accountNumber TEXT UNIQUE NOT NULL,
   accountHolder INTEGER,
   accountCategory INTEGER,
-  accCreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-  accUpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-  )
-  ''';
-
-  static String userRoleTable = '''
-  CREATE TABLE IF NOT EXISTS $userRoleTableName(
-  userRoleId INTEGER PRIMARY KEY AUTOINCREMENT,
-  userRoleName TEXT UNQIUE NOT NULL,
-  roleId INTEGER
+  accCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  accUpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (accountCategory) REFERENCES $accountCategoryTableName (id)
   )''';
 
   static String currencyTable = '''
-  CREATE TABLE IF NOT EXISTS $currencyTableName(
-  cId INTEGER PRIMARY KEY AUTOINCREMENT,
-  currencyName TEXT,
-  currencyCode TEXT,
-  currencyLocalName TEXT,
-  currencySymbol TEXT
+  CREATE TABLE IF NOT EXISTS $currencyTableName (
+  currencyId INTEGER PRIMARY KEY AUTOINCREMENT,
+  currencyCode TEXT NOT NULL UNIQUE,           
+  currencyName TEXT NOT NULL,                 
+  symbol TEXT,                             
+  decimalPlaces INTEGER DEFAULT 2 CHECK (decimalPlaces >= 0),
+  isDefault INTEGER DEFAULT 0 CHECK (isDefault IN (0, 1)),
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP 
+  )''';
+
+  static String currencyExchangeRateTable = '''
+  CREATE TABLE IF NOT EXISTS $exchangeRatesTableName (
+  exchangeId INTEGER PRIMARY KEY AUTOINCREMENT,
+  baseCurrencyCode TEXT NOT NULL,               
+  targetCurrencyCode TEXT NOT NULL,              
+  rate1 REAL NOT NULL CHECK (rate1 > 0),        
+  rate2 REAL NOT NULL CHECK (rate2 > 0),      
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,  
+  UNIQUE (baseCurrencyCode, targetCurrencyCode
   )''';
 
   static String salesTable = '''
@@ -65,17 +123,17 @@ class Tables {
   issueDate TEXT DEFAULT CURRENT_TIMESTAMP,
   invoiceStatus INTEGER,
   customer INTEGER,
-  invoiceCreatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
-  invoiceUpdatedAt TEXT DEFAULT CURRENT_TIMESTAMP,
   invoiceCurrency INTEGER,
   termsAndCondition INTEGER,
-
+  
+  invoiceCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  invoiceUpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (termsAndCondition) REFERENCES $termsAndConditionTableName(tcId),
-  FOREIGN KEY (invoiceCurrency) REFERENCES $currencyTableName(cId),
-  FOREIGN KEY (client) REFERENCES $customerTableName(vendorId) ON DELETE CASCADE
+  FOREIGN KEY (invoiceCurrency) REFERENCES $currencyTableName(currencyId),
+  FOREIGN KEY (customer) REFERENCES $customerTableName(clientId) ON DELETE CASCADE
   )''';
 
-  static String salesItemTable = '''
+  static String salesItemsTable = '''
   CREATE TABLE IF NOT EXISTS $salesItemTableName(
   salesItemId INTEGER PRIMARY KEY AUTOINCREMENT,
   productId INTEGER,
@@ -84,6 +142,7 @@ class Tables {
   unitPrice REAL DEFAULT 0.00,
   paymentMethod INTEGER,
   stock INTEGER,
+  
   FOREIGN KEY (stock) REFERENCES $stockTableName (stockId) ON DELETE CASCADE,
   FOREIGN KEY (paymentMethod) REFERENCES $paymentMethodTableName(paymentId) ON DELETE CASCADE,
   FOREIGN KEY (productId) REFERENCES $productTableName(productId) ON DELETE CASCADE,
@@ -113,36 +172,43 @@ class Tables {
   customerPhone TEXT,
   customerAddress TEXT,
   customerEmail TEXT,
-  customerCreatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-   )''';
+  customerCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )''';
 
   static String itemUnitTable = '''
   CREATE TABLE IF NOT EXISTS $itemUnitTableName (
-   unitId INTEGER PRIMARY KEY AUTOINCREMENT,
-   unitName TEXT UNIQUE,
-   unitLocalName TEXT UNIQUE
+  unitId INTEGER PRIMARY KEY AUTOINCREMENT,
+  unitName TEXT UNIQUE
   )''';
 
   static String paymentTable = '''
-  CREATE TABLE IF NOT EXISTS payment(
-  paymentId PRIMARY KEY AUTOINCREMENT,
-  amount REAL DEFAULT 0.00,
-  account INTEGER,
-  paymentMethod INTEGER,
-  FOREIGN KEY (account) REFERENCES $accountTableName(accountId),
-  FOREIGN KEY (paymentMethod) REFERENCES $paymentMethodTableName(paymentMethodId),
+  CREATE TABLE $paymentTableName (
+  paymentId INTEGER PRIMARY KEY AUTOINCREMENT,
+  transactionId INTEGER NOT NULL,
+  method TEXT CHECK(paymentMethod IN ('Cash', 'Card')),
+  payerId INTEGER NOT NULL,
+  payeeId INTEGER NOT NULL,
+  referenceNumber TEXT UNIQUE,
+  
+  FOREIGN KEY (transactionId) REFERENCES $transactionsTableName (transactionId),
+  FOREIGN KEY (payerId) REFERENCES $accountTableName(accountId),
+  FOREIGN KEY (payeeId) REFERENCES $accountTableName(accountId)
   )''';
 
+
+  //Not in Use
   static String paymentMethodTable = '''
   CREATE TABLE IF NOT EXISTS $paymentMethodTableName(
   paymentMethodId INTEGER PRIMARY KEY AUTOINCREMENT,
-  paymentType TEXT
+  paymentName TEXT UNIQUE NOT NULL,
+  description TEXT,
+  isActive INTEGER DEFAULT 1  
   )''';
 
   static String stockTable = '''
   CREATE TABLE IF NOT EXISTS $stockTableName(
   stockId INTEGER PRIMARY KEY AUTOINCREMENT,
-  stockName TEXT
+  stockName TEXT UNIQUE
   )''';
 
   static String termsAndConditionTable = '''
@@ -150,5 +216,17 @@ class Tables {
   tcId INTEGER PRIMARY KEY AUTOINCREMENT,
   termTitle TEXT NOT NULL,
   termDescription TEXT NOT NULL
+  )''';
+
+  static String transactionsTable = '''
+  CREATE TABLE IF NOT EXISTS $transactionsTableName (
+  transactionId INTEGER PRIMARY KEY AUTOINCREMENT,
+  transactionType INTEGER NOT NULL, -- e.g., "sale", "refund"
+  transactionNumber TEXT NOT NULL,
+  amount REAL DEFAULT 0.0 NOT NULL,
+  senderAccountId INTEGER,
+  recipientAccountId INTEGER,
+  transactionStatus INTEGER,
+  transactionDate DATETIME DEFAULT CURRENT_TIMESTAMP
   )''';
 }

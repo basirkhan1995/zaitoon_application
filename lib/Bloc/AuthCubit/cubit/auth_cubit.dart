@@ -1,13 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
 import 'package:zaitoon_invoice/Json/users.dart';
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  final Repositories _repositories;
-  AuthCubit(this._repositories) : super(AuthInitial());
+  final Repositories repositories;
+  AuthCubit(this.repositories) : super(AuthInitial());
 
   void resetState() {
     emit(AuthInitial());
@@ -16,7 +15,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<int> signUpEvent({required Users user, required String dbName}) async {
     try {
-      final res = await _repositories.createNewDatabase(usr: user, dbName: dbName);
+      final res = await repositories.createNewDatabase(usr: user, dbName: dbName);
       return res; // Return the result of the operation
     } catch (e) {
       emit(AuthErrorState(e.toString()));
@@ -28,14 +27,13 @@ class AuthCubit extends Cubit<AuthState> {
     emit(LoadingState());
     try {
       await Future.delayed(Duration(seconds: 1));
-      final response = await _repositories.login(user: user);
+      final response = await repositories.login(user: user);
       if (response) {
-        final result = await _repositories.getCurrentUser(
+        final result = await repositories.getCurrentUser(
             username: user.username);
         emit(AuthenticatedState(result));
-        print(response);
       } else {
-        emit(AuthErrorState("Authentication Failed"));
+        emit(AuthErrorState("Access Denied, Incorrect input"));
       }
     } catch (e) {
       emit(AuthErrorState(e.toString()));

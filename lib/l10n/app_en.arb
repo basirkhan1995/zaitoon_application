@@ -27,10 +27,11 @@
   "@browse": {},
   "recentDatabases": "Recent Databases",
   "@recentDatabases": {},
-  "systemTheme":"System",
+  "systemTheme": "System",
   "@systemTheme": {},
-  "darkTheme" : "Dark",
+  "darkTheme": "Dark",
   "@darkTheme": {},
-  "lightTheme" : "Light",
-  "@lightTheme": {}
+  "lightTheme": "Light",
+  "@lightTheme": {},
+  "accessDeniedMessage": "Username or password is incorrect"
 }
