@@ -59,25 +59,25 @@ class _RegisterViewState extends State<RegisterView> {
     }
   }
 
-  Future<void> _create() async{
-    if (_currentStep == 2 && form3.currentState!.validate()){
-     final res = await  context.read<AuthCubit>().signUpEvent(
+  Future<void> _create() async {
+    if (_currentStep == 2 && form3.currentState!.validate()) {
+      final res = await context.read<AuthCubit>().signUpEvent(
           user: Users(
-            username: username.text,
-            password: password.text,
-            mobile: phone.text,
-            email: email.text,
-            address: address.text,
-            businessName: businessName.text,
-            fullName: fullName.text,
-            telephone: telephone.text
-          ), dbName: "${databaseName.text}.db");
-     if(res>0){
-       setState(() {
-         Navigator.pop(context);
-         context.read<DatabaseCubit>().loadDatabaseEvent();
-       });
-     }
+              username: username.text,
+              password: password.text,
+              mobile1: phone.text,
+              email: email.text,
+              address: address.text,
+              businessName: businessName.text,
+              ownerName: fullName.text,
+              mobile2: telephone.text),
+          dbName: "${databaseName.text}.db");
+      if (res > 0) {
+        setState(() {
+          Navigator.pop(context);
+          context.read<DatabaseCubit>().loadDatabaseEvent();
+        });
+      }
     }
   }
 

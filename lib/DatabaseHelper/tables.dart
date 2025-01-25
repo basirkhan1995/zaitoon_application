@@ -1,6 +1,4 @@
-
 class Tables {
-
   static String userTableName = "users";
   static String currencyTableName = "currency";
   static String salesTableName = "sales";
@@ -28,11 +26,12 @@ class Tables {
   static String metaDataTable = '''
   CREATE TABLE IF NOT EXISTS $appMetadataTableName (
   bId INTEGER PRIMARY KEY AUTOINCREMENT,
-  companyName TEXT,
+  companyOwner TEXT NOT NULL,
+  companyName TEXT NOT NULL,
   companyLogo BLOB,
-  companyLicence TEXT,
   address TEXT,
-  phone TEXT,
+  mobile_1 TEXT,
+  mobile_2 TEXT,
   email TEXT
   )''';
 
@@ -55,31 +54,32 @@ class Tables {
   CREATE TABLE IF NOT EXISTS $userRoleTableName (
   roleId INTEGER PRIMARY KEY AUTOINCREMENT,
   roleName TEXT UNIQUE NOT NULL,
-  descriptions TEXT
+  description TEXT
   )''';
 
   static String permissionsTable = '''
   CREATE TABLE $permissionTableName (
   permissionId INTEGER PRIMARY KEY AUTOINCREMENT,
-  permissionName TEXT UNIQUE NOT NULL
+  permissionName TEXT UNIQUE NOT NULL,
+  description TEXT
   )
-  ''' ;
+  ''';
 
   static String rolesPermissionsTable = '''
   CREATE TABLE $rolePermissionTableName (
   rolePermissionId INTEGER PRIMARY KEY AUTOINCREMENT,
   roleId INTEGER NOT NULL,
   permissionId INTEGER NOT NULL,
-  FOREIGN KEY(roleId) REFERENCES roles(roleId),
-  FOREIGN KEY(permissionId) REFERENCES permissions(permissionId)
+  FOREIGN KEY(roleId) REFERENCES $userRoleTableName(roleId),
+  FOREIGN KEY(permissionId) REFERENCES $permissionTableName(permissionId)
   );
-  ''' ;
+  ''';
 
   static String accountCategoryTable = '''
   CREATE TABLE IF NOT EXISTS $accountCategoryTableName(
   accCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
   accCategoryName TEXT UNIQUE NOT NULL
-  )''' ;
+  )''';
 
   static String accountsTable = '''
   CREATE TABLE IF NOT EXISTS $accountTableName(
@@ -193,7 +193,6 @@ class Tables {
   FOREIGN KEY (payerId) REFERENCES $accountTableName(accountId),
   FOREIGN KEY (payeeId) REFERENCES $accountTableName(accountId)
   )''';
-
 
   //Not in Use
   static String paymentMethodTable = '''
