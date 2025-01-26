@@ -64,7 +64,7 @@ class _RegisterViewState extends State<RegisterView> {
       final res = await context.read<AuthCubit>().signUpEvent(
           user: Users(
               userRoleId: 1,
-              userStatus: 1,
+              userStatus: 0,
               username: username.text,
               password: password.text,
               mobile1: mobile1.text,

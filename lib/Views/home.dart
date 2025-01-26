@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
           if (state is AuthenticatedState) {
-            return Text(state.user.userRoleId.toString()!);
+            return Text(state.user.businessName!);
           }
           return Text(state.toString());
         },

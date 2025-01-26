@@ -47,10 +47,16 @@ class Repositories {
   Future<bool> login({required Users user}) async {
     final db = DatabaseHelper.db;
     final result = db.select('''
-    SELECT * FROM ${Tables.userTableName} WHERE username = ? AND userStatus = 0
+    SELECT * FROM ${Tables.userTableName} WHERE username = ?
     ''', [user.username]);
     if (result.isNotEmpty) {
       final storedHashedPassword = result.first['password'];
+      final usrStatus = result.first['userStatus'];
+      if (usrStatus == 0) {
+        print(usrStatus);
+        print("You are blocked");
+        return false;
+      }
       if (DatabaseComponents.verifyPassword(
           user.password!, storedHashedPassword)) {
         return true;
