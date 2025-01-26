@@ -21,10 +21,10 @@ class _RegisterViewState extends State<RegisterView> {
   final form3 = GlobalKey<FormState>();
 
   final businessName = TextEditingController();
-  final fullName = TextEditingController();
+  final ownerName = TextEditingController();
   final address = TextEditingController();
-  final phone = TextEditingController();
-  final telephone = TextEditingController();
+  final mobile1 = TextEditingController();
+  final mobile2 = TextEditingController();
   final email = TextEditingController();
 
   final username = TextEditingController();
@@ -63,14 +63,16 @@ class _RegisterViewState extends State<RegisterView> {
     if (_currentStep == 2 && form3.currentState!.validate()) {
       final res = await context.read<AuthCubit>().signUpEvent(
           user: Users(
+              userRoleId: 1,
+              userStatus: 1,
               username: username.text,
               password: password.text,
-              mobile1: phone.text,
+              mobile1: mobile1.text,
               email: email.text,
               address: address.text,
               businessName: businessName.text,
-              ownerName: fullName.text,
-              mobile2: telephone.text),
+              ownerName: ownerName.text,
+              mobile2: mobile2.text),
           dbName: "${databaseName.text}.db");
       if (res > 0) {
         setState(() {
@@ -265,12 +267,12 @@ class _RegisterViewState extends State<RegisterView> {
                     Expanded(
                       child: InputFieldEntitled(
                         isRequire: true,
-                        controller: fullName,
-                        title: "Full Name",
+                        controller: ownerName,
+                        title: "Owner Name",
                         icon: Icons.person,
                         validator: (value) {
                           if (value.isEmpty) {
-                            return "Name is required";
+                            return "Owner Name is required";
                           }
                           return null;
                         },
@@ -301,7 +303,7 @@ class _RegisterViewState extends State<RegisterView> {
                       child: InputFieldEntitled(
                         isRequire: true,
                         title: "Phone",
-                        controller: phone,
+                        controller: mobile1,
                         icon: Icons.phone_android_rounded,
                         validator: (value) {
                           if (value.isEmpty) {
@@ -314,7 +316,7 @@ class _RegisterViewState extends State<RegisterView> {
                     Expanded(
                       child: InputFieldEntitled(
                           title: "Telephone",
-                          controller: telephone,
+                          controller: mobile2,
                           icon: Icons.phone_android_rounded),
                     ),
                   ],

@@ -26,12 +26,12 @@ class Tables {
   static String metaDataTable = '''
   CREATE TABLE IF NOT EXISTS $appMetadataTableName (
   bId INTEGER PRIMARY KEY AUTOINCREMENT,
-  companyOwner TEXT NOT NULL,
-  companyName TEXT NOT NULL,
+  ownerName TEXT NOT NULL,
+  businessName TEXT NOT NULL,
   companyLogo BLOB,
   address TEXT,
-  mobile_1 TEXT,
-  mobile_2 TEXT,
+  mobile1 TEXT,
+  mobile2 TEXT,
   email TEXT
   )''';
 
@@ -53,17 +53,15 @@ class Tables {
   static String userRoleTable = '''
   CREATE TABLE IF NOT EXISTS $userRoleTableName (
   roleId INTEGER PRIMARY KEY AUTOINCREMENT,
-  roleName TEXT UNIQUE NOT NULL,
-  description TEXT
+  roleName TEXT UNIQUE NOT NULL
   )''';
 
   static String permissionsTable = '''
   CREATE TABLE $permissionTableName (
   permissionId INTEGER PRIMARY KEY AUTOINCREMENT,
-  permissionName TEXT UNIQUE NOT NULL,
-  description TEXT
+  permissionName TEXT UNIQUE NOT NULL
   )
-  ''';
+''';
 
   static String rolesPermissionsTable = '''
   CREATE TABLE $rolePermissionTableName (

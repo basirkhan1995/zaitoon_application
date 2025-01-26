@@ -9,10 +9,14 @@ class Repositories {
       {required Users usr, required String dbName}) async {
     await DatabaseHelper.initDatabase(dbName);
     final db = DatabaseHelper.db;
+
     final stmt = db.prepare('''INSERT INTO ${Tables.appMetadataTableName}
-         (fullName,businessName,email,address,mobile,telephone,username,password)
-         values (?,?,?,?,?,?,?,?)''');
-    final hashedPassword = DatabaseComponents.hashPassword(usr.password!);
+    (ownerName,businessName,email,address,mobile1,mobile2) values (?,?,?,?,?,?)''');
+
+    final stmt2 = db.prepare('''INSERT INTO ${Tables.userTableName}
+    (businessId, userStatus, userRoleId, username,password) 
+    values(?,?,?,?,?)''');
+
     stmt.execute([
       usr.ownerName,
       usr.businessName,
@@ -20,20 +24,31 @@ class Repositories {
       usr.address,
       usr.mobile1,
       usr.mobile2,
-      usr.username,
-      hashedPassword
     ]);
+    final businessId = db.lastInsertRowId;
     stmt.dispose();
-    final lastInsertedId = db.lastInsertRowId;
-    return lastInsertedId;
+
+    if (businessId > 0) {
+      final hashedPassword = DatabaseComponents.hashPassword(usr.password!);
+      stmt2.execute([
+        businessId, //Business Id
+        usr.userStatus, //User Status default 1
+        usr.userRoleId, //User Role default 1 = admin
+        usr.username,
+        hashedPassword, // Encripted Password
+      ]);
+      stmt2.dispose();
+    }
+
+    return businessId;
   }
 
   //Login
   Future<bool> login({required Users user}) async {
     final db = DatabaseHelper.db;
     final result = db.select('''
-    SELECT * FROM ${Tables.userTableName} WHERE username = ?
-   ''', [user.username]);
+    SELECT * FROM ${Tables.userTableName} WHERE username = ? AND userStatus = 0
+    ''', [user.username]);
     if (result.isNotEmpty) {
       final storedHashedPassword = result.first['password'];
       if (DatabaseComponents.verifyPassword(
@@ -51,8 +66,11 @@ class Repositories {
   Future<Users> getCurrentUser({required username}) async {
     final db = DatabaseHelper.db;
     final usr = db.select('''
-    SELECT * FROM ${Tables.userTableName} WHERE username = ?
-    ''', [username]);
+    SELECT u.*, a.*
+    FROM ${Tables.userTableName} as u JOIN ${Tables.appMetadataTableName} as a
+    ON u.businessId = a.bId
+    WHERE username = ?
+   ''', [username]);
     if (usr.isNotEmpty) {
       return Users.fromMap(usr.first);
     } else {

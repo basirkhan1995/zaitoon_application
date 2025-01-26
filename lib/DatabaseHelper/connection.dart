@@ -6,7 +6,7 @@ import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
-  static late Database _db;
+  static Database? _db;
 
   // Private constructor
   DatabaseHelper._privateConstructor();
@@ -15,42 +15,42 @@ class DatabaseHelper {
   static Future<void> initDatabase(String dbName) async {
     final path = await getApplicationDocumentsDirectory();
     final dbPath = join(path.path, dbName);
+
+    if (_db != null) {
+      close();
+    }
     _db = sqlite3.open(dbPath);
     initTables();
     await DatabaseComponents.saveDatabasePath(dbPath);
   }
 
-  // Open the database (or create it if it doesn't exist)
+  // Only open Database method
   static Future<void> openDB(String completePath) async {
+    // Close any previously opened database connection
+    if (_db != null) {
+      close();
+    }
     _db = sqlite3.open(completePath);
   }
 
-  static void initTables() {
-    _db.execute(Tables.userTable);
+  static Future<void> initTables() async {
+    if (_db != null) {
+      _db!.execute(Tables.metaDataTable);
+      _db!.execute(Tables.rolesPermissionsTable);
+      _db!.execute(Tables.userRoleTable);
+      _db!.execute(Tables.userTable);
+    }
   }
 
-  // // Insert a row
-  // Future<void> insertRow(String name) async {
-  //   final stmt = db.prepare('''
-  //   INSERT INTO my_table (name) VALUES (?);
-  //   ''');
-  //   stmt.execute([name]);
-  // }
+  static Database get db => _db!;
 
-  // // Query all rows
-  // List<Map<String, dynamic>> queryAllRows() {
-  //   final rows = db.select('SELECT * FROM my_table');
-  //   return rows;
-  // }
+  //static void close() => _db!.dispose();
 
-  // // Query a specific row by id
-  // static Map<String, dynamic>? queryRow(int id) {
-  //   final result = db.select('SELECT * FROM my_table WHERE id = ?', [id]);
-  //   return result.isNotEmpty ? result.first : null;
-  // }
-
-
-  static Database get db => _db;
-
-  static void close() => _db.dispose();
+  // Close the database connection
+  static void close() {
+    if (_db != null) {
+      _db!.dispose();
+      _db = null;
+    }
+  }
 }

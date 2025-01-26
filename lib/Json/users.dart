@@ -9,6 +9,7 @@ String usersToMap(Users data) => json.encode(data.toMap());
 class Users extends Equatable {
   final int? userId;
   final String? businessName;
+  final int? businessId;
   final String? ownerName;
   final String? email;
   final String? address;
@@ -24,6 +25,7 @@ class Users extends Equatable {
   const Users({
     this.userId,
     this.businessName,
+    this.businessId,
     this.ownerName,
     this.email,
     this.address,
@@ -40,6 +42,7 @@ class Users extends Equatable {
   Users copyWith({
     int? userId,
     String? businessName,
+    int? businessId,
     String? ownerName,
     String? email,
     String? address,
@@ -55,6 +58,7 @@ class Users extends Equatable {
       Users(
           userId: userId ?? this.userId,
           businessName: businessName ?? this.businessName,
+          businessId: businessId ?? this.businessId,
           ownerName: ownerName ?? this.ownerName,
           email: email ?? this.email,
           address: address ?? this.address,
@@ -70,6 +74,7 @@ class Users extends Equatable {
   factory Users.fromMap(Map<String, dynamic> json) => Users(
         userId: json["userId"],
         businessName: json["businessName"],
+        businessId: json["businessId"],
         ownerName: json["ownerName"],
         email: json["email"],
         address: json["address"],
@@ -86,6 +91,7 @@ class Users extends Equatable {
   Map<String, dynamic> toMap() => {
         "userId": userId,
         "businessName": businessName,
+        "businessId": businessId,
         "fullName": ownerName,
         "email": email,
         "address": address,

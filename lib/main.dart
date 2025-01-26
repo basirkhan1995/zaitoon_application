@@ -14,7 +14,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if(Platform.isWindows || Platform.isMacOS){
+  if (Platform.isWindows || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     windowManager.setMinimumSize(const Size(750, 500));
   }
@@ -36,7 +36,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => DatabaseCubit()..loadDatabaseEvent()),
         //Auth Cubit
         BlocProvider(create: (context) => AuthCubit(Repositories())),
-
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {
