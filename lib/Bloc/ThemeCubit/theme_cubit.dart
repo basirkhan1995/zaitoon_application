@@ -11,19 +11,17 @@ class ThemeCubit extends Cubit<ThemeMode> {
   Future<void> _loadSavedTheme() async {
     final prefs = await SharedPreferences.getInstance();
     String? savedTheme = prefs.getString('themeMode');
-    if (savedTheme != null) {
-      switch (savedTheme) {
-        case 'light':
-          emit(ThemeMode.light);
-          break;
-        case 'dark':
-          emit(ThemeMode.dark);
-          break;
-        case 'system':
-        default:
-          emit(ThemeMode.system);
-          break;
-      }
+    switch (savedTheme) {
+      case 'light':
+        emit(ThemeMode.light);
+        break;
+      case 'dark':
+        emit(ThemeMode.dark);
+        break;
+      case 'system':
+      default:
+        emit(ThemeMode.system);
+        break;
     }
   }
 

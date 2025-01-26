@@ -33,5 +33,11 @@
   "@darkTheme": {},
   "lightTheme": "تم روشن",
   "@lightTheme": {},
-  "accessDeniedMessage": "رمز عبور یا حساب کاربر نادرست میباشد"
+  "accessDeniedMessage": "رمز عبور یا حساب کاربر نادرست میباشد",
+  "userNotFound": "کاربر یافت نشد.",
+  "incorrectPassword": "رمز عبور اشتباه است.",
+  "userInactive": "حساب کاربری غیرفعال است.",
+  "loginSuccess": "ورود موفقیت‌آمیز بود."
+  
+  
 }

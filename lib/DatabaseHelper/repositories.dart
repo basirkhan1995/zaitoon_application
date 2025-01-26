@@ -43,28 +43,29 @@ class Repositories {
     return businessId;
   }
 
-  //Login
-  Future<bool> login({required Users user}) async {
+  Future<Map<String, dynamic>> login({required Users user}) async {
     final db = DatabaseHelper.db;
+
     final result = db.select('''
     SELECT * FROM ${Tables.userTableName} WHERE username = ?
-    ''', [user.username]);
+  ''', [user.username]);
+
     if (result.isNotEmpty) {
       final storedHashedPassword = result.first['password'];
       final usrStatus = result.first['userStatus'];
+
       if (usrStatus == 0) {
-        print(usrStatus);
-        print("You are blocked");
-        return false;
+        return {'success': false, 'code': 'USER_INACTIVE'};
       }
+
       if (DatabaseComponents.verifyPassword(
           user.password!, storedHashedPassword)) {
-        return true;
+        return {'success': true, 'code': 'LOGIN_SUCCESS'};
       } else {
-        return false;
+        return {'success': false, 'code': 'WRONG_PASSWORD'};
       }
     } else {
-      return false;
+      return {'success': false, 'code': 'USER_NOT_FOUND'};
     }
   }
 
@@ -73,7 +74,7 @@ class Repositories {
     final db = DatabaseHelper.db;
     final usr = db.select('''
     SELECT u.*, a.*
-    FROM ${Tables.userTableName} as u JOIN ${Tables.appMetadataTableName} as a
+    FROM ${Tables.userTableName} as u INNER JOIN ${Tables.appMetadataTableName} as a
     ON u.businessId = a.bId
     WHERE username = ?
    ''', [username]);

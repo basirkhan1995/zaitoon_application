@@ -9,7 +9,8 @@ sealed class AuthState extends Equatable {
 
 final class AuthInitial extends AuthState {}
 
-final class LoadingState extends AuthState{}
+final class LoadingState extends AuthState {}
+
 final class AuthenticatedState extends AuthState {
   final Users user;
   const AuthenticatedState(this.user);
@@ -17,12 +18,13 @@ final class AuthenticatedState extends AuthState {
   List<Object> get props => [user];
 }
 
-final class UnAuthenticatedState extends AuthState{
+final class UnAuthenticatedState extends AuthState {
   @override
   List<Object> get props => [];
 }
 
 final class AuthErrorState extends AuthState {
   final String error;
-  const AuthErrorState(this.error);
+  final String? code;
+  const AuthErrorState(this.error, this.code);
 }

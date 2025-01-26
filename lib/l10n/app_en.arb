@@ -33,5 +33,12 @@
   "@darkTheme": {},
   "lightTheme": "Light",
   "@lightTheme": {},
-  "accessDeniedMessage": "Username or password is incorrect"
+  "accessDeniedMessage": "Username or password is incorrect",
+  
+  "userNotFound": "User not found.",
+  "incorrectPassword": "Incorrect password.",
+  "userInactive": "User account is inactive.",
+  "loginSuccess": "Login successful."
+ 
+
 }

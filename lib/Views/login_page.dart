@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
-          if(state is AuthenticatedState){
+          if (state is AuthenticatedState) {
             Env.gotoReplacement(context, HomeScreen());
           }
         },
@@ -32,11 +32,14 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               InputFieldEntitled(title: "Username", controller: username),
               InputFieldEntitled(title: "Username", controller: password),
-              TextButton(onPressed: () {
-                context.read<AuthCubit>().loginEvent(user: Users(
-                    username: username.text, password: password.text));
-              }, child: Text("LOGIN"))
-
+              TextButton(
+                  onPressed: () {
+                    context.read<AuthCubit>().loginEvent(
+                        context: context,
+                        user: Users(
+                            username: username.text, password: password.text));
+                  },
+                  child: Text("LOGIN"))
             ],
           );
         },

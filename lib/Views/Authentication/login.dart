@@ -9,7 +9,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginDialog extends StatefulWidget {
   final DatabaseInfo dbInfo;
-  const LoginDialog({super.key,required this.dbInfo});
+  const LoginDialog({super.key, required this.dbInfo});
 
   @override
   State<LoginDialog> createState() => _LoginDialogState();
@@ -72,7 +72,10 @@ class _LoginDialogState extends State<LoginDialog> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(AppLocalizations.of(context)!.hello(widget.dbInfo.name),style: Theme.of(context).textTheme.titleMedium,),
+                      Text(
+                        AppLocalizations.of(context)!.hello(widget.dbInfo.name),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                     ],
                   ),
                   InputFieldEntitled(
@@ -126,9 +129,11 @@ class _LoginDialogState extends State<LoginDialog> {
                       height: 50,
                       label: state is LoadingState
                           ? Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: CircularProgressIndicator(strokeWidth: 5,color: Theme.of(context).colorScheme.surface),
-                          )
+                              padding: const EdgeInsets.all(4.0),
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 5,
+                                  color: Theme.of(context).colorScheme.surface),
+                            )
                           : Text("LOGIN")),
                   SizedBox(height: 20),
                 ],
@@ -143,7 +148,8 @@ class _LoginDialogState extends State<LoginDialog> {
   void login() {
     if (formKey.currentState!.validate()) {
       context.read<AuthCubit>().loginEvent(
-              user: Users(
+          context: context,
+          user: Users(
             username: username.text,
             password: password.text,
           ));

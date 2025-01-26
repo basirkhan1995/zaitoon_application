@@ -19,8 +19,6 @@ class LanguageCubit extends Cubit<Locale> {
     String? languageCode = prefs.getString('languageCode');
     String? countryCode = prefs.getString('countryCode');
 
-    if (languageCode != null) {
-      emit(Locale(languageCode, countryCode!.isNotEmpty ? countryCode : null));
-    }
+    emit(Locale(languageCode!, countryCode!.isNotEmpty ? countryCode : null));
   }
 }
