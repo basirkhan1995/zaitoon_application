@@ -57,11 +57,10 @@ class Tables {
   )''';
 
   static String permissionsTable = '''
-  CREATE TABLE $permissionTableName (
+  CREATE TABLE IF NOT EXISTS $permissionTableName (
   permissionId INTEGER PRIMARY KEY AUTOINCREMENT,
   permissionName TEXT UNIQUE NOT NULL
-  )
-''';
+  )''';
 
   static String rolesPermissionsTable = '''
   CREATE TABLE $rolePermissionTableName (

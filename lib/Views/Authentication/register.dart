@@ -1,7 +1,13 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
+import 'package:zaitoon_invoice/Components/Other/extensions.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
 import 'package:zaitoon_invoice/Json/users.dart';
@@ -30,8 +36,46 @@ class _RegisterViewState extends State<RegisterView> {
   final username = TextEditingController();
   final password = TextEditingController();
   final confirmPassword = TextEditingController();
-
   final databaseName = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+  String? documentDirectory;
+
+  Future<String?> _getDirectoryPath() async {
+    Directory? directory = await getApplicationDocumentsDirectory();
+    setState(() {
+      documentDirectory = directory.path;
+    });
+    return documentDirectory;
+  }
+
+  //To pick a custom directory | Database
+  Future<void> _pickDirectory() async {
+    String? dirPath = await FilePicker.platform.getDirectoryPath();
+    if (dirPath == null) {
+      await _getDirectoryPath();
+    } else {
+      setState(() {
+        documentDirectory = dirPath;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Request focus for the first TextFormField when the page is opened
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getDirectoryPath();
+      focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    // Dispose of the FocusNode to avoid memory leaks
+    focusNode.dispose();
+    super.dispose();
+  }
 
   // Step titles
   final List<String> steps = [
@@ -63,8 +107,8 @@ class _RegisterViewState extends State<RegisterView> {
     if (_currentStep == 2 && form3.currentState!.validate()) {
       final res = await context.read<AuthCubit>().signUpEvent(
           user: Users(
-              userRoleId: 1,
-              userStatus: 0,
+              userRoleId: 1, // Default Admin Role
+              userStatus: 1, // Active User
               username: username.text,
               password: password.text,
               mobile1: mobile1.text,
@@ -73,6 +117,7 @@ class _RegisterViewState extends State<RegisterView> {
               businessName: businessName.text,
               ownerName: ownerName.text,
               mobile2: mobile2.text),
+          path: documentDirectory ?? "",
           dbName: "${databaseName.text}.db");
       if (res > 0) {
         setState(() {
@@ -92,34 +137,6 @@ class _RegisterViewState extends State<RegisterView> {
     } else if (_currentStep == 0) {
       Navigator.pop(context);
     }
-  }
-
-  // Custom widget for step indicators with different states
-  Widget _buildStepIndicator2(int index) {
-    Color borderColor = Colors.transparent;
-    Color backgroundColor =
-        Theme.of(context).colorScheme.primary.withValues(alpha: .5);
-    Widget icon = Icon(Icons.circle_outlined, color: Colors.transparent);
-
-    if (index == _currentStep) {
-      borderColor = Theme.of(context).colorScheme.primary;
-      backgroundColor = Theme.of(context).colorScheme.surface;
-      icon = Icon(Icons.circle, color: Theme.of(context).colorScheme.primary);
-    } else if (index < _currentStep) {
-      borderColor = Colors.green;
-      backgroundColor = Colors.green.withValues(alpha: .2);
-      icon = Icon(Icons.check, color: Colors.green);
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(1.5),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: borderColor, width: 1.5),
-        color: backgroundColor,
-      ),
-      child: icon,
-    );
   }
 
   // Custom widget for step indicators with different states
@@ -266,13 +283,15 @@ class _RegisterViewState extends State<RegisterView> {
                   children: [
                     Expanded(
                       child: InputFieldEntitled(
+                        focusNode: focusNode,
+                        inputAction: TextInputAction.next,
                         isRequire: true,
                         controller: ownerName,
-                        title: "Owner Name",
+                        title: "Your Name",
                         icon: Icons.person,
                         validator: (value) {
                           if (value.isEmpty) {
-                            return "Owner Name is required";
+                            return "Your Name is required";
                           }
                           return null;
                         },
@@ -280,6 +299,7 @@ class _RegisterViewState extends State<RegisterView> {
                     ),
                     Expanded(
                       child: InputFieldEntitled(
+                        inputAction: TextInputAction.next,
                         controller: businessName,
                         isRequire: true,
                         title: "Business Name",
@@ -295,19 +315,24 @@ class _RegisterViewState extends State<RegisterView> {
                   ],
                 ),
                 InputFieldEntitled(
-                    title: "Email", icon: Icons.email, controller: email),
+                    inputAction: TextInputAction.next,
+                    title: "Email",
+                    icon: Icons.email,
+                    controller: email),
                 Row(
                   spacing: 10,
                   children: [
                     Expanded(
                       child: InputFieldEntitled(
+                        inputAction: TextInputAction.next,
+                        inputFormat: [FilteringTextInputFormatter.digitsOnly],
                         isRequire: true,
-                        title: "Phone",
+                        title: "Moble 1",
                         controller: mobile1,
                         icon: Icons.phone_android_rounded,
                         validator: (value) {
                           if (value.isEmpty) {
-                            return "Phone is required";
+                            return "Mobile is required";
                           }
                           return null;
                         },
@@ -315,13 +340,16 @@ class _RegisterViewState extends State<RegisterView> {
                     ),
                     Expanded(
                       child: InputFieldEntitled(
-                          title: "Telephone",
+                          inputFormat: [FilteringTextInputFormatter.digitsOnly],
+                          inputAction: TextInputAction.next,
+                          title: "Mobile 2",
                           controller: mobile2,
                           icon: Icons.phone_android_rounded),
                     ),
                   ],
                 ),
                 InputFieldEntitled(
+                  inputAction: TextInputAction.done,
                   controller: address,
                   isRequire: true,
                   title: "Address",
@@ -355,9 +383,19 @@ class _RegisterViewState extends State<RegisterView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 InputFieldEntitled(
+                  info: documentDirectory ?? "",
+                  inputFormat: [
+                    FilteringTextInputFormatter.deny(RegExp(r'\s'))
+                  ], // Deny space characters],
+                  trailing: IconButton(
+                      onPressed: _pickDirectory, icon: Icon(Icons.folder)),
+                  inputAction: TextInputAction.done,
                   controller: databaseName,
                   title: "Database Name",
                   icon: Icons.storage,
+                  onChanged: (text) {
+                    databaseName.text.removeWhiteSpace(databaseName.text);
+                  },
                   validator: (value) {
                     if (value.isEmpty) {
                       return "Database is required";
@@ -392,7 +430,7 @@ class _RegisterViewState extends State<RegisterView> {
             _buildStepIndicator(index),
             if (index < _totalSteps - 1)
               Container(
-                width: 193,
+                width: 20,
                 margin: EdgeInsets.symmetric(horizontal: 11),
                 height: 2,
                 color: index < _currentStep
@@ -483,7 +521,11 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
+    databaseName.text = businessName.text.removeWhiteSpace(businessName.text);
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Register Company"),
+      ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

@@ -8,16 +8,20 @@ part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final Repositories repositories;
+
   AuthCubit(this.repositories) : super(AuthInitial());
 
   void resetState() {
     emit(AuthInitial());
   }
 
-  Future<int> signUpEvent({required Users user, required String dbName}) async {
+  Future<int> signUpEvent(
+      {required Users user,
+      required String path,
+      required String dbName}) async {
     try {
-      final res =
-          await repositories.createNewDatabase(usr: user, dbName: dbName);
+      final res = await repositories.createNewDatabase(
+          usr: user, path: path, dbName: dbName);
       return res; // Return the result of the operation
     } catch (e) {
       emit(AuthErrorState(e.toString(), null));
@@ -25,7 +29,8 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  void loginEvent({required BuildContext context, required Users user}) async {
+  void loginEvent(
+      {required Users user, required AppLocalizations localizations}) async {
     emit(LoadingState());
     await Future.delayed(Duration(seconds: 1));
     final result = await repositories.login(user: user);
@@ -35,7 +40,6 @@ class AuthCubit extends Cubit<AuthState> {
       final usr = await repositories.getCurrentUser(username: user.username);
       emit(AuthenticatedState(usr));
     } else {
-      final localizations = AppLocalizations.of(context)!;
       String message;
 
       switch (result['code']) {

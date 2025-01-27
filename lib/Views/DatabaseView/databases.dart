@@ -29,11 +29,12 @@ class _LoadAllDatabasesState extends State<LoadAllDatabases> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((e){
+    WidgetsBinding.instance.addPostFrameCallback((e) {
       context.read<DatabaseCubit>().loadDatabaseEvent();
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -151,34 +152,43 @@ class _LoadAllDatabasesState extends State<LoadAllDatabases> {
 
                             return ListTile(
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5)
-                              ),
+                                  borderRadius: BorderRadius.circular(5)),
                               horizontalTitleGap: 5,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 10),
                               title: Text(state.recentDbs[index].name),
-                              subtitle: Text(state.recentDbs[index].path.getPathWithoutFileName),
+                              subtitle: Text(state.recentDbs[index].path
+                                  .getPathWithoutFileName),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 spacing: 10,
                                 children: [
-                                  Text(dbs.size.formatBytes(dbs.size).toString()),
+                                  Text(dbs.size
+                                      .formatBytes(dbs.size)
+                                      .toString()),
                                   IconButton(
                                       onPressed: () {
-                                        context.read<DatabaseCubit>().removeDatabaseEvent(state.recentDbs[index].path);
+                                        context
+                                            .read<DatabaseCubit>()
+                                            .removeDatabaseEvent(
+                                                state.recentDbs[index].path);
                                       },
                                       icon: Icon(Icons.clear, size: 18)),
                                 ],
                               ),
                               onTap: () {
-                                context.read<DatabaseCubit>().openDatabase(dbName: state.recentDbs[index].path);
-                                showDialog(context: context, builder: (context){
-                                  return LoginDialog(dbInfo: dbs);
-                                });
+                                context.read<DatabaseCubit>().openDatabase(
+                                    dbName: state.recentDbs[index].path);
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return LoginDialog(dbInfo: dbs);
+                                    });
                               },
                             );
                           });
                     }
-                    return Text(state.toString());
+                    return CircularProgressIndicator();
                   },
                 ),
               ),
@@ -188,28 +198,29 @@ class _LoadAllDatabasesState extends State<LoadAllDatabases> {
       ),
     );
   }
+
   Future<void> _browseDatabase() async {
     final dir = await getDownloadsDirectory();
     FilePickerResult? result;
-    if(Platform.isAndroid || Platform.isIOS){
+    if (Platform.isAndroid || Platform.isIOS) {
       result = await FilePicker.platform.pickFiles(
         initialDirectory: dir!.path,
         type: FileType.any,
       );
-    }else{
+    } else {
       result = await FilePicker.platform.pickFiles(
           initialDirectory: dir!.path,
           type: FileType.custom,
-          allowedExtensions: ['db']
-      );
+          allowedExtensions: ['db']);
     }
 
     if (result != null) {
       File dbPath = File(result.files.single.path!);
       setState(() {
-        context.read<DatabaseCubit>().browseEvent( dbName: dbPath.path);
+        context
+            .read<DatabaseCubit>()
+            .browseEvent(dbPath: dbPath.path, dbName: dbPath.path);
       });
     }
-
   }
 }

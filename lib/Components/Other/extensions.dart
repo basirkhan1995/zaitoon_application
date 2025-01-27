@@ -23,18 +23,25 @@ extension GetPathExtension on String {
 extension GetFirstLetterExtension on String {
   /// Returns a string containing the first letter of each word in uppercase.
   String get getFirstLetter {
-    return split(RegExp(r'\s+'))                // Split by spaces
-        .where((word) => word.isNotEmpty)     // Filter out empty strings
-        .map((word) => word[0].toUpperCase()) // Take the first letter and capitalize
-        .join();                              // Join the letters into a single string
+    return split(RegExp(r'\s+')) // Split by spaces
+        .where((word) => word.isNotEmpty) // Filter out empty strings
+        .map((word) =>
+            word[0].toUpperCase()) // Take the first letter and capitalize
+        .join(); // Join the letters into a single string
   }
 }
 
-extension FormatDataExtension on int{
-   String formatBytes(int bytes, [int decimals = 0]) {
+extension FormatDataExtension on int {
+  String formatBytes(int bytes, [int decimals = 0]) {
     if (bytes <= 0) return "0 B";
     const suffixes = ["B", "KB", "MB", "GB", "TB"];
     var i = (math.log(bytes) / math.log(1024)).floor();
     return '${(bytes / math.pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
+  }
+}
+
+extension RemoveWhiteSpaceExtension on String {
+  String removeWhiteSpace(String text) {
+    return text.replaceAll(RegExp(r'\s+'), '');
   }
 }

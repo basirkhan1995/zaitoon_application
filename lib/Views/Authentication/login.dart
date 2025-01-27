@@ -21,16 +21,27 @@ class _LoginDialogState extends State<LoginDialog> {
   bool isError = false;
   final formKey = GlobalKey<FormState>();
 
+  final FocusNode focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    // Dispose of the FocusNode to avoid memory leaks
+    focusNode.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((e) {
       context.read<AuthCubit>().resetState();
+      focusNode.requestFocus();
     });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       insetPadding: EdgeInsets.zero,
@@ -79,10 +90,11 @@ class _LoginDialogState extends State<LoginDialog> {
                     ],
                   ),
                   InputFieldEntitled(
+                    focusNode: focusNode,
                     icon: Icons.account_circle_rounded,
                     title: "Username",
                     controller: username,
-                    onSubmit: (value) => login(),
+                    onSubmit: (value) => login(localizations: localizations!),
                     validator: (value) {
                       if (value.isEmpty) {
                         return "Username is required";
@@ -100,7 +112,7 @@ class _LoginDialogState extends State<LoginDialog> {
                       }
                       return null;
                     },
-                    onSubmit: (value) => login(),
+                    onSubmit: (value) => login(localizations: localizations!),
                   ),
                   SizedBox(height: 5),
                   BlocBuilder<AuthCubit, AuthState>(
@@ -124,7 +136,7 @@ class _LoginDialogState extends State<LoginDialog> {
                     },
                   ),
                   Button(
-                      onPressed: () => login(),
+                      onPressed: () => login(localizations: localizations!),
                       width: MediaQuery.sizeOf(context).width * .9,
                       height: 50,
                       label: state is LoadingState
@@ -145,10 +157,10 @@ class _LoginDialogState extends State<LoginDialog> {
     );
   }
 
-  void login() {
+  void login({required AppLocalizations localizations}) {
     if (formKey.currentState!.validate()) {
       context.read<AuthCubit>().loginEvent(
-          context: context,
+          localizations: localizations,
           user: Users(
             username: username.text,
             password: password.text,

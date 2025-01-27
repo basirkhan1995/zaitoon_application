@@ -1,7 +1,7 @@
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/components.dart';
+import 'package:zaitoon_invoice/DatabaseHelper/default.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
 
 class DatabaseHelper {
@@ -12,15 +12,28 @@ class DatabaseHelper {
   DatabaseHelper._privateConstructor();
 
   // Open the database (or create it if it doesn't exist)
-  static Future<void> initDatabase(String dbName) async {
-    final path = await getApplicationDocumentsDirectory();
-    final dbPath = join(path.path, dbName);
+  static Future<void> initDatabase(
+      {required String dbName, required String path}) async {
+    final dbPath = join(path, dbName);
 
     if (_db != null) {
       close();
     }
     _db = sqlite3.open(dbPath);
     initTables();
+    feedDatabase();
+    await DatabaseComponents.saveDatabasePath(dbPath);
+  }
+
+  // Open the database (or create it if it doesn't exist)
+  static Future<void> browseDatabase(
+      {required String dbName, required String path}) async {
+    final dbPath = join(path, dbName);
+
+    if (_db != null) {
+      close();
+    }
+    _db = sqlite3.open(dbPath);
     await DatabaseComponents.saveDatabasePath(dbPath);
   }
 
@@ -39,6 +52,12 @@ class DatabaseHelper {
       _db!.execute(Tables.rolesPermissionsTable);
       _db!.execute(Tables.userRoleTable);
       _db!.execute(Tables.userTable);
+    }
+  }
+
+  static Future<void> feedDatabase() async {
+    if (_db != null) {
+      _db!.execute(DefaultValues.defaultUserRoles);
     }
   }
 

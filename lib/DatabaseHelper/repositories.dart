@@ -6,8 +6,10 @@ import 'package:zaitoon_invoice/Json/users.dart';
 class Repositories {
   //Register User With New Database
   Future<int> createNewDatabase(
-      {required Users usr, required String dbName}) async {
-    await DatabaseHelper.initDatabase(dbName);
+      {required Users usr,
+      required String path,
+      required String dbName}) async {
+    await DatabaseHelper.initDatabase(path: path, dbName: dbName);
     final db = DatabaseHelper.db;
 
     final stmt = db.prepare('''INSERT INTO ${Tables.appMetadataTableName}
@@ -46,26 +48,32 @@ class Repositories {
   Future<Map<String, dynamic>> login({required Users user}) async {
     final db = DatabaseHelper.db;
 
+    // Query to check if the user exists in the database
     final result = db.select('''
     SELECT * FROM ${Tables.userTableName} WHERE username = ?
-  ''', [user.username]);
+    ''', [user.username]);
 
     if (result.isNotEmpty) {
       final storedHashedPassword = result.first['password'];
       final usrStatus = result.first['userStatus'];
 
-      if (usrStatus == 0) {
-        return {'success': false, 'code': 'USER_INACTIVE'};
-      }
-
+      // First, verify if the password is correct
       if (DatabaseComponents.verifyPassword(
           user.password!, storedHashedPassword)) {
-        return {'success': true, 'code': 'LOGIN_SUCCESS'};
+        // If the password is correct, check the user's status
+        if (usrStatus == 0) {
+          return {'success': false, 'code': 'USER_INACTIVE'}; // User is blocked
+        } else {
+          return {'success': true, 'code': 'LOGIN_SUCCESS'}; // Login successful
+        }
       } else {
-        return {'success': false, 'code': 'WRONG_PASSWORD'};
+        return {
+          'success': false,
+          'code': 'WRONG_PASSWORD'
+        }; // Incorrect password
       }
     } else {
-      return {'success': false, 'code': 'USER_NOT_FOUND'};
+      return {'success': false, 'code': 'USER_NOT_FOUND'}; // Username not found
     }
   }
 
@@ -73,9 +81,10 @@ class Repositories {
   Future<Users> getCurrentUser({required username}) async {
     final db = DatabaseHelper.db;
     final usr = db.select('''
-    SELECT u.*, a.*
-    FROM ${Tables.userTableName} as u INNER JOIN ${Tables.appMetadataTableName} as a
-    ON u.businessId = a.bId
+    SELECT user.*, meta.*, role.*
+    FROM ${Tables.userTableName} as user INNER JOIN ${Tables.appMetadataTableName} as meta
+    ON user.businessId = meta.bId INNER JOIN ${Tables.userRoleTableName} as role
+    ON user.userRoleId = role.roleId
     WHERE username = ?
    ''', [username]);
     if (usr.isNotEmpty) {

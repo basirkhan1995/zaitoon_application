@@ -7,6 +7,7 @@ class InputFieldEntitled extends StatelessWidget {
   final bool isRequire;
   final bool isEnabled;
   final IconData? icon;
+  final String info;
   final Widget? end;
   final bool securePassword;
   final TextInputAction? inputAction;
@@ -15,6 +16,7 @@ class InputFieldEntitled extends StatelessWidget {
   final FormFieldValidator? validator;
   final TextInputType? keyboardInputType;
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final Widget? trailing;
   final double width;
   final bool compactMode;
@@ -24,10 +26,12 @@ class InputFieldEntitled extends StatelessWidget {
     super.key,
     required this.title,
     this.hint,
+    this.info = "",
     this.compactMode = false,
     this.isEnabled = true,
     this.securePassword = false,
     this.end,
+    this.focusNode,
     this.isRequire = false,
     this.icon,
     this.inputFormat,
@@ -79,6 +83,7 @@ class InputFieldEntitled extends StatelessWidget {
                 children: [
                   Flexible(
                     child: TextFormField(
+                      focusNode: focusNode,
                       enabled: isEnabled,
                       validator: validator,
                       onChanged: onChanged,
@@ -131,6 +136,15 @@ class InputFieldEntitled extends StatelessWidget {
                 ],
               ),
             ),
+            info.isNotEmpty
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [Text(info)],
+                    ),
+                  )
+                : SizedBox()
           ],
         ),
       ),

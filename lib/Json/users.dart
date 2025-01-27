@@ -100,7 +100,9 @@ class Users extends Equatable {
         "companyLogo": companyLogo,
         "username": username,
         "password": password,
-        "userStatus": userStatus
+        "userStatus": userStatus,
+        "userRoleName": userRoleName,
+        "userRoleId": userRoleId
       };
 
   @override
@@ -114,5 +116,7 @@ class Users extends Equatable {
         address,
         mobile1,
         mobile2,
+        userRoleName,
+        userRoleId
       ];
 }
