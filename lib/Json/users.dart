@@ -84,8 +84,8 @@ class Users extends Equatable {
         username: json["username"],
         password: json["password"],
         userStatus: json["userStatus"],
-        userRoleId: json["userRoleId"],
-        userRoleName: json["userRoleName"],
+        userRoleId: json["roleId"],
+        userRoleName: json["roleName"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -101,8 +101,8 @@ class Users extends Equatable {
         "username": username,
         "password": password,
         "userStatus": userStatus,
-        "userRoleName": userRoleName,
-        "userRoleId": userRoleId
+        "roleName": userRoleName,
+        "roleId": userRoleId
       };
 
   @override

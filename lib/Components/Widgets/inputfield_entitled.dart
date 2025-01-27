@@ -98,7 +98,7 @@ class InputFieldEntitled extends StatelessWidget {
                         disabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),
                           borderSide:
-                              BorderSide(color: Colors.grey.withAlpha(10)),
+                              BorderSide(color: Colors.grey.withAlpha(50)),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),

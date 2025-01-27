@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
 import 'package:zaitoon_invoice/Json/users.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
