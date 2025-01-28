@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
+import 'package:zaitoon_invoice/Components/Other/functions.dart';
+import 'package:zaitoon_invoice/Views/DatabaseView/databases.dart';
 import 'package:zaitoon_invoice/Views/Menu/menu.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -8,9 +10,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-
-      body: MenuPage()
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is UnAuthenticatedState) {
+          Env.gotoReplacement(context, LoadAllDatabases());
+        }
+      },
+      child: Scaffold(body: MenuPage()),
     );
   }
 }

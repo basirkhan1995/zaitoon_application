@@ -4,6 +4,7 @@ import 'package:window_manager/window_manager.dart';
 import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/Menu/cubit/menu_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/ThemeCubit/theme_cubit.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
 import 'package:zaitoon_invoice/Themes/themes.dart';
@@ -36,6 +37,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => DatabaseCubit()..loadDatabaseEvent()),
         //Auth Cubit
         BlocProvider(create: (context) => AuthCubit(Repositories())),
+        //Side Menu Cubit
+        BlocProvider(
+            create: (context) => MenuCubit()..onChangedMenuEvent(index: 0)),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {
@@ -43,7 +47,7 @@ class MyApp extends StatelessWidget {
             builder: (context, themeMode) {
               final theme = AppThemes(TextTheme.of(context));
               return MaterialApp(
-                title: 'Zaitoon Invoice',
+                title: 'Zaitoon System',
                 debugShowCheckedModeBanner: false,
                 localizationsDelegates: [
                   AppLocalizations.delegate,

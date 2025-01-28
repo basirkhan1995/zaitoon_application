@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:zaitoon_invoice/Bloc/Menu/cubit/menu_cubit.dart';
+import 'package:zaitoon_invoice/Views/Menu/Components/components.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/dashboard.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/invoice.dart';
 import '../../Bloc/AuthCubit/cubit/auth_cubit.dart';
 
 class MenuPage extends StatefulWidget {
@@ -11,45 +15,50 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
+  bool isSelected = false;
+  int currentIndex = 0;
+  bool isExpanded = true;
   @override
   Widget build(BuildContext context) {
-    List<String> menuItems = [
-      "Dashboard",
-      "Invoice",
-      "Estimate",
-      "Customers",
-    ];
+    final local = AppLocalizations.of(context)!;
 
-    List<IconData> icons = [
-      Icons.home,
-      Icons.document_scanner_rounded,
-      Icons.file_copy,
-      Icons.account_circle_rounded
+    List<MenuComponents> items = [
+      MenuComponents(
+          icon: Icons.home, title: "Dashborad", screen: DashboardView()),
+      MenuComponents(
+          icon: Icons.document_scanner,
+          title: "Invoice",
+          screen: InvoiceView()),
+      MenuComponents(
+          icon: Icons.document_scanner,
+          title: "Estimate",
+          screen: InvoiceView()),
     ];
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        box(menuItems, icons),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              BlocBuilder<AuthCubit, AuthState>(
-                builder: (context, state) {
-                  if (state is AuthenticatedState) {
-                    return Text(state.user.userRoleName ?? "null");
-                  }
-                  return Text(state.toString());
-                },
-              ),
-            ],
+        //Side Menu
+        sideMenu(items: items),
+        //Screen Views
+        Expanded(
+          child: BlocBuilder<MenuCubit, MenuState>(
+            builder: (context, state) {
+              if (state is SelectedMenuState) {
+                currentIndex = state.index;
+              }
+              return PageView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    return items[currentIndex].screen;
+                  });
+            },
           ),
-        )
+        ),
       ],
     );
   }
 
-  Widget box(List<String> items, List<IconData> icons) {
+  Widget sideMenu({required List<MenuComponents> items}) {
     return Container(
         margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         decoration: BoxDecoration(
@@ -70,23 +79,106 @@ class _MenuPageState extends State<MenuPage> {
               builder: (context, state) {
                 if (state is AuthenticatedState) {
                   return ListTile(
-                    title: Text(state.user.ownerName??""),
-                    subtitle: Text(state.user.userRoleName??""),
+                    title: Text(state.user.ownerName ?? "null"),
+                    subtitle: Text(state.user.userRoleName ?? "null"),
                   );
                 }
-                return Container();
+                return Text(state.toString());
               },
             ),
             Expanded(
-              child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      dense: true,
-                      leading: Icon(icons[index]),
-                      title: Text(items[index]),
-                    );
-                  }),
+              child: BlocBuilder<MenuCubit, MenuState>(
+                builder: (context, state) {
+                  if (state is SelectedMenuState) {
+                    currentIndex = state.index;
+                  }
+                  return ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final theme = Theme.of(context).colorScheme;
+                        bool isSelected =
+                            currentIndex == index; // Currently selected item
+                        return Stack(
+                          children: [
+                            Container(
+                              width: 3,
+                              height: 35,
+                              decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? theme.primary
+                                      : theme.surface),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                context
+                                    .read<MenuCubit>()
+                                    .onChangedMenuEvent(index: index);
+                              },
+                              child: Container(
+                                height: 35,
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? theme.primary.withValues(alpha: .05)
+                                        : theme.surface),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Icon(items[index].icon,
+                                        color: isSelected
+                                            ? theme.primary
+                                            : Colors.black),
+                                    Text(
+                                      items[index].title,
+                                      style: TextStyle(
+                                          color: isSelected
+                                              ? theme.primary
+                                              : Colors.black),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        );
+                      });
+                },
+              ),
+            ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                spacing: 10,
+                children: [
+                  GestureDetector(
+                    onTap: () {},
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      spacing: 10,
+                      children: [
+                        Icon(Icons.settings),
+                        Text("Settings"),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      context.read<AuthCubit>().logout();
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      spacing: 10,
+                      children: [
+                        Icon(Icons.logout_rounded),
+                        Text("LOGOUT"),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ));
