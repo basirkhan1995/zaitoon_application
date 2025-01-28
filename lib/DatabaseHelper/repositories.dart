@@ -93,4 +93,19 @@ class Repositories {
       throw "Username [$username] not found";
     }
   }
+
+
+  Future<void> changePassword({required String oldPassword, required String newPassword, required int userId, required String message})async{
+    final db = DatabaseHelper.db;
+    final response = db.select('''SELECT * FROM ${Tables.userTableName} WHERE userId = ? ''',[userId]);
+    final encryptedPassword = response.first['password'];
+    if (response.isNotEmpty && DatabaseComponents.verifyPassword(oldPassword, encryptedPassword)) {
+      final newEncryptedPassword = DatabaseComponents.hashPassword(newPassword);
+      final stmt = db.prepare('''UPDATE ${Tables.userTableName} SET password = ? WHERE userId = ?
+      ''');
+      stmt.execute([newEncryptedPassword, userId]);
+     } else {
+      throw message; // Password verification failed
+    }
+  }
 }

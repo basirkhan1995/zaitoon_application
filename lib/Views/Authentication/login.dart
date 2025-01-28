@@ -105,6 +105,7 @@ class _LoginDialogState extends State<LoginDialog> {
                   InputFieldEntitled(
                     icon: Icons.lock,
                     title: "Password",
+                    securePassword: true,
                     controller: password,
                     validator: (value) {
                       if (value.isEmpty) {

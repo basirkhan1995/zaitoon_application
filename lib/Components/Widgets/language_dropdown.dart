@@ -2,25 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 
-class SelectLanguage extends StatefulWidget {
+class AppLanguage extends StatefulWidget {
   final double? width;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
+  final String title;
   final double radius;
 
-  const SelectLanguage({
+  const AppLanguage({
     super.key,
     this.padding,
     this.margin,
     this.radius = 4,
     this.width,
+    this.title = ""
   });
 
   @override
-  State<SelectLanguage> createState() => _SelectLanguageState();
+  State<AppLanguage> createState() => _AppLanguageState();
 }
 
-class _SelectLanguageState extends State<SelectLanguage> {
+class _AppLanguageState extends State<AppLanguage> {
   bool _isOpen = false;
   late OverlayEntry _overlayEntry;
   final GlobalKey _buttonKey = GlobalKey(); // Key for the button
@@ -80,6 +82,15 @@ class _SelectLanguageState extends State<SelectLanguage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              widget.title.isNotEmpty? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(widget.title,style: Theme.of(context).textTheme.titleMedium),
+                  ],
+                ),
+              ): SizedBox(),
               // Main Dropdown Button
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),

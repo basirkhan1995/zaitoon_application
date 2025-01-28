@@ -11,6 +11,7 @@ import 'package:zaitoon_invoice/Components/Other/functions.dart';
 import 'package:zaitoon_invoice/Components/Widgets/language_dropdown.dart';
 import 'package:zaitoon_invoice/Components/Widgets/onhover_widget.dart';
 import 'package:zaitoon_invoice/Components/Widgets/theme_dropdown.dart';
+import 'package:zaitoon_invoice/Components/Widgets/zdialog.dart';
 import 'package:zaitoon_invoice/Views/Authentication/login.dart';
 import 'package:zaitoon_invoice/Views/Authentication/register.dart';
 import 'package:zaitoon_invoice/Views/home.dart';
@@ -105,7 +106,7 @@ class _LoadAllDatabasesState extends State<LoadAllDatabases> {
               AppTheme(
                 width: 150,
               ),
-              SelectLanguage(
+              AppLanguage(
                 width: 150,
               ),
             ],
@@ -168,10 +169,19 @@ class _LoadAllDatabasesState extends State<LoadAllDatabases> {
                                       .toString()),
                                   IconButton(
                                       onPressed: () {
-                                        context
-                                            .read<DatabaseCubit>()
-                                            .removeDatabaseEvent(
-                                                state.recentDbs[index].path);
+                                        showDialog(context: context, builder: (context){
+                                         return ZAlertDialog(
+                                            title: locale.alertTitle,
+                                            content: locale.removeMessage,
+                                            icon: Icons.delete,
+                                            onYes: (){
+                                              context
+                                                  .read<DatabaseCubit>()
+                                                  .removeDatabaseEvent(
+                                                  state.recentDbs[index].path);
+                                            },
+                                          );
+                                        });
                                       },
                                       icon: Icon(Icons.clear, size: 18)),
                                 ],

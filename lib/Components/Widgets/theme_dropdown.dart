@@ -8,6 +8,7 @@ class AppTheme extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final double radius;
+  final String title;
 
   const AppTheme({
     super.key,
@@ -15,6 +16,7 @@ class AppTheme extends StatefulWidget {
     this.margin,
     this.radius = 4,
     this.width,
+    this.title = ""
   });
 
   @override
@@ -45,7 +47,6 @@ class _AppThemeState extends State<AppTheme> {
     final themeCubit = context.read<ThemeCubit>();
     final currentTheme = themeCubit.state; // Get current theme mode
     final color = Theme.of(context).colorScheme;
-
     return Focus(
       focusNode: _focusNode,
       onFocusChange: (hasFocus) {
@@ -83,6 +84,15 @@ class _AppThemeState extends State<AppTheme> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              widget.title.isNotEmpty? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(widget.title,style: Theme.of(context).textTheme.titleMedium),
+                  ],
+                ),
+              ): SizedBox(),
               // Main Dropdown Button
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),

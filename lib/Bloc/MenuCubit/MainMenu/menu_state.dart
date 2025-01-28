@@ -7,9 +7,9 @@ sealed class MenuState extends Equatable {
   List<Object> get props => [];
 }
 
-final class SelectedMenuState extends MenuState {
+final class SelectedState extends MenuState {
   final int index;
-  const SelectedMenuState({required this.index});
+  const SelectedState({required this.index});
   @override
   List<Object> get props => [index];
 }

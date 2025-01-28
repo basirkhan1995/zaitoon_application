@@ -4,7 +4,8 @@ import 'package:window_manager/window_manager.dart';
 import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
-import 'package:zaitoon_invoice/Bloc/Menu/cubit/menu_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/MenuCubit/General/general_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/PasswordCubit/password_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/ThemeCubit/theme_cubit.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
 import 'package:zaitoon_invoice/Themes/themes.dart';
@@ -12,6 +13,7 @@ import 'package:zaitoon_invoice/Views/DatabaseView/databases.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'Bloc/MenuCubit/MainMenu/menu_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,8 +40,11 @@ class MyApp extends StatelessWidget {
         //Auth Cubit
         BlocProvider(create: (context) => AuthCubit(Repositories())),
         //Side Menu Cubit
-        BlocProvider(
-            create: (context) => MenuCubit()..onChangedMenuEvent(index: 0)),
+        BlocProvider(create: (context) => MenuCubit()..onChangedEvent(index: 0)),
+        // General settings Menu Cubit
+        BlocProvider(create: (context) => GeneralCubit()..onChangedEvent(index: 0)),
+        //Password
+        BlocProvider(create: (context) => PasswordCubit(Repositories())),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {
