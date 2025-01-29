@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/General/general_cubit.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/account_settings.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/password_settings.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/system_settings.dart';
 import '../../../Components/components.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../estimate.dart';
-import '../../invoice.dart';
 
 class GeneralSettings extends StatefulWidget {
   const GeneralSettings({super.key});
@@ -21,23 +21,20 @@ class _GeneralSettingsState extends State<GeneralSettings> {
 
   @override
   Widget build(BuildContext context) {
-
     final locale = AppLocalizations.of(context)!;
     List<MenuComponents> items = [
+      MenuComponents(
+          icon: Icons.account_balance_rounded,
+          title: locale.accountSettings,
+          screen: AccountSettings()),
       MenuComponents(
           icon: Icons.add_home_outlined,
           title: locale.systemSettings,
           screen: SystemSettingsView()),
-
       MenuComponents(
           icon: Icons.lock,
           title: locale.changePasswordTitle,
           screen: PasswordSettings()),
-
-      MenuComponents(
-          icon: Icons.event_note,
-          title: locale.estimate,
-          screen: EstimateView()),
     ];
 
     return Row(
@@ -91,7 +88,8 @@ class _GeneralSettingsState extends State<GeneralSettings> {
               child: ListView.builder(
                   itemCount: items.length,
                   itemBuilder: (context, index) {
-                    bool isSelected = currentIndex == index; // Currently selected item
+                    bool isSelected =
+                        currentIndex == index; // Currently selected item
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5.0),
                       child: Stack(
@@ -100,9 +98,8 @@ class _GeneralSettingsState extends State<GeneralSettings> {
                             width: 3,
                             height: 35,
                             decoration: BoxDecoration(
-                                color: isSelected
-                                    ? theme.primary
-                                    : theme.surface),
+                                color:
+                                    isSelected ? theme.primary : theme.surface),
                           ),
                           GestureDetector(
                             onTap: () {
@@ -124,7 +121,7 @@ class _GeneralSettingsState extends State<GeneralSettings> {
                                       color: isSelected
                                           ? theme.primary
                                           : theme.secondary),
-                                   Text(
+                                  Text(
                                     items[index].title,
                                     style: TextStyle(
                                         fontWeight: FontWeight.w500,

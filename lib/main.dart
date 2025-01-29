@@ -40,9 +40,11 @@ class MyApp extends StatelessWidget {
         //Auth Cubit
         BlocProvider(create: (context) => AuthCubit(Repositories())),
         //Side Menu Cubit
-        BlocProvider(create: (context) => MenuCubit()..onChangedEvent(index: 0)),
+        BlocProvider(
+            create: (context) => MenuCubit()..onChangedEvent(index: 0)),
         // General settings Menu Cubit
-        BlocProvider(create: (context) => GeneralCubit()..onChangedEvent(index: 0)),
+        BlocProvider(
+            create: (context) => GeneralCubit()..onChangedEvent(index: 0)),
         //Password
         BlocProvider(create: (context) => PasswordCubit(Repositories())),
       ],
