@@ -43,8 +43,8 @@ class _SettingsViewState extends State<SettingsView> with SingleTickerProviderSt
         actionsPadding: EdgeInsets.zero,
         content: Container(
         padding: EdgeInsets.zero,
-        height: MediaQuery.sizeOf(context).height *.9,
-    width: MediaQuery.sizeOf(context).width *.9,
+        height: MediaQuery.sizeOf(context).height *.93,
+    width: MediaQuery.sizeOf(context).width *.93,
     decoration: BoxDecoration(
     color: Theme.of(context).colorScheme.surfaceContainer,
     borderRadius: BorderRadius.circular(8)

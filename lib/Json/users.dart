@@ -112,6 +112,7 @@ class Users extends Equatable {
         password,
         ownerName,
         businessName,
+        companyLogo,
         email,
         address,
         mobile1,

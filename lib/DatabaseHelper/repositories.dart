@@ -133,7 +133,20 @@ class Repositories {
     user.businessId,
     ]);
    return db.updatedRows;
+  }
 
+  Future<int> uploadLogo({required Users user}) async {
+    final db = DatabaseHelper.db;
+    final stmt = db.prepare('''
+    UPDATE ${Tables.appMetadataTableName} SET 
+    companyLogo = ?
+    WHERE bId = ?
+    ''');
+    stmt.execute([
+      user.companyLogo,
+      user.businessId,
+    ]);
+    return db.updatedRows;
   }
 
   Future<int> changePassword({

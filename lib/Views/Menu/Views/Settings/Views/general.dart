@@ -32,7 +32,7 @@ class _GeneralSettingsState extends State<GeneralSettings> {
           screen: SystemSettingsView()),
       MenuComponents(
           icon: Icons.lock_clock_rounded,
-          title: locale.changePasswordTitle,
+          title: locale.password,
           screen: PasswordSettings()),
     ];
 

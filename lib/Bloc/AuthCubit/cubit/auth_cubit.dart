@@ -73,6 +73,20 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<void> uploadLogoEvent({required Users user}) async {
+    try {
+      final res = await repositories.uploadLogo(user: user);
+      print("updatedRow: $res");
+      if(res>0){
+        final usr = await repositories.getUserById(userId: user.userId!);
+        emit(AuthenticatedState(usr));
+      }
+    } catch (e) {
+      emit(AuthErrorState(e.toString(), null));
+      print(e.toString());
+    }
+  }
+
   Future<void> logout() async {
     emit(UnAuthenticatedState());
   }

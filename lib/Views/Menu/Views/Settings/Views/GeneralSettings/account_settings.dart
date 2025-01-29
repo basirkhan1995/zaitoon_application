@@ -205,10 +205,14 @@ class _AccountSettingsState extends State<AccountSettings> {
                           ? TextButton(
                               onPressed: () {
                                 if (formKey.currentState!.validate()) {
+
                                   _companyLogo.isNotEmpty
-                                      ? context.read<AuthCubit>().updateAccount(
-                                          user: Users(
-                                              companyLogo: usr!.companyLogo))
+                                      ? context.read<AuthCubit>().uploadLogoEvent(
+                                          user: usr!.copyWith(
+                                             businessId: businessId,
+                                             userId: userId,
+                                             companyLogo: _companyLogo
+                                          ))
                                       : null;
 
                                   !readOnly
