@@ -6,7 +6,6 @@ import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/system_settings.dart';
 import '../../../Components/components.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../../estimate.dart';
 
 class GeneralSettings extends StatefulWidget {
   const GeneralSettings({super.key});
@@ -24,15 +23,15 @@ class _GeneralSettingsState extends State<GeneralSettings> {
     final locale = AppLocalizations.of(context)!;
     List<MenuComponents> items = [
       MenuComponents(
-          icon: Icons.account_balance_rounded,
+          icon: Icons.account_circle,
           title: locale.accountSettings,
           screen: AccountSettings()),
       MenuComponents(
-          icon: Icons.add_home_outlined,
+          icon: Icons.add_home,
           title: locale.systemSettings,
           screen: SystemSettingsView()),
       MenuComponents(
-          icon: Icons.lock,
+          icon: Icons.lock_clock_rounded,
           title: locale.changePasswordTitle,
           screen: PasswordSettings()),
     ];
@@ -118,12 +117,14 @@ class _GeneralSettingsState extends State<GeneralSettings> {
                                 spacing: 5,
                                 children: [
                                   Icon(items[index].icon,
+                                      size: 18,
                                       color: isSelected
                                           ? theme.primary
                                           : theme.secondary),
                                   Text(
                                     items[index].title,
                                     style: TextStyle(
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w500,
                                         color: isSelected
                                             ? theme.primary

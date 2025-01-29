@@ -6,6 +6,7 @@ class InputFieldEntitled extends StatelessWidget {
   final String? hint;
   final bool isRequire;
   final bool isEnabled;
+  final bool readOnly;
   final IconData? icon;
   final String info;
   final Widget? end;
@@ -26,6 +27,7 @@ class InputFieldEntitled extends StatelessWidget {
     super.key,
     required this.title,
     this.hint,
+    this.readOnly = false,
     this.info = "",
     this.compactMode = false,
     this.isEnabled = true,
@@ -83,6 +85,7 @@ class InputFieldEntitled extends StatelessWidget {
                 children: [
                   Flexible(
                     child: TextFormField(
+                      readOnly: readOnly,
                       focusNode: focusNode,
                       enabled: isEnabled,
                       validator: validator,

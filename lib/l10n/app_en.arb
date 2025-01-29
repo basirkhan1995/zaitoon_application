@@ -68,5 +68,13 @@
   "passwordNotMatch": "Passwords don't match!",
   "changePasswordTitle": "Change Password",
   "confirmPassword": "Re-enter password",
-  "passwordSettingHint": "Verify your current password"
+  "passwordSettingHint": "Verify your current password",
+  "mobile": "Mobile",
+  "mobile2": "Mobile 2",
+  "yourName": "Your name",
+  "businessName": "Business name",
+  "address": "Address",
+  "email": "Email",
+  "edit": "EDIT",
+  "cancel": "CANCEL"
 }

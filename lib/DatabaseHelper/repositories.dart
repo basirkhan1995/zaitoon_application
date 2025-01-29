@@ -102,7 +102,7 @@ class Repositories {
     FROM ${Tables.userTableName} as user INNER JOIN ${Tables.appMetadataTableName} as meta
     ON user.businessId = meta.bId INNER JOIN ${Tables.userRoleTableName} as role
     ON user.userRoleId = role.roleId
-    WHERE userId = ?
+    WHERE user.userId = ?
    ''', [userId]);
     if (usr.isNotEmpty) {
       return Users.fromMap(usr.first);
@@ -111,7 +111,7 @@ class Repositories {
     }
   }
 
-  Future<void> updateAccount({required Users user}) async {
+  Future<int> updateAccount({required Users user}) async {
     final db = DatabaseHelper.db;
     final stmt = db.prepare('''
     UPDATE ${Tables.appMetadataTableName} SET 
@@ -120,30 +120,29 @@ class Repositories {
     mobile1 = ?, 
     mobile2 = ?, 
     address = ?, 
-    email = ?, 
+    email = ?
     WHERE bId = ?
     ''');
-
-    stmt.execute([
-      user.copyWith(
-        businessName: user.businessName,
-        ownerName: user.ownerName,
-        mobile1: user.mobile1,
-        mobile2: user.mobile2,
-        address: user.address,
-        email: user.email,
-        businessId: user.businessId,
-      ),
+   stmt.execute([
+    user.businessName,
+    user.ownerName,
+    user.mobile1,
+    user.mobile2,
+    user.address,
+    user.email,
+    user.businessId,
     ]);
+   return db.updatedRows;
+
   }
 
-  Future<void> changePassword(
-      {required String oldPassword,
+  Future<int> changePassword({
+      required String oldPassword,
       required String newPassword,
       required int userId,
       required String message}) async {
-    final db = DatabaseHelper.db;
-    final response = db.select(
+      final db = DatabaseHelper.db;
+      final response = db.select(
         '''SELECT * FROM ${Tables.userTableName} WHERE userId = ? ''',
         [userId]);
     final encryptedPassword = response.first['password'];
@@ -154,6 +153,8 @@ class Repositories {
           '''UPDATE ${Tables.userTableName} SET password = ? WHERE userId = ?
       ''');
       stmt.execute([newEncryptedPassword, userId]);
+      db.dispose();
+      return db.updatedRows;
     } else {
       throw message; // Password verification failed
     }

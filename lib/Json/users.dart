@@ -74,7 +74,7 @@ class Users extends Equatable {
   factory Users.fromMap(Map<String, dynamic> json) => Users(
         userId: json["userId"],
         businessName: json["businessName"],
-        businessId: json["businessId"],
+        businessId: json["bId"],
         ownerName: json["ownerName"],
         email: json["email"],
         address: json["address"],
@@ -91,7 +91,7 @@ class Users extends Equatable {
   Map<String, dynamic> toMap() => {
         "userId": userId,
         "businessName": businessName,
-        "businessId": businessId,
+        "bId": businessId,
         "fullName": ownerName,
         "email": email,
         "address": address,

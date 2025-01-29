@@ -68,5 +68,13 @@
   "passwordNotMatch": "رمز عبور یو شی نه دی",
   "changePasswordTitle": "رمز تغییر ورکول",
   "confirmPassword": "رمز عبور تکرار",
-  "passwordSettingHint": "رمز عبور قبلی خود را تائید نماید"
+  "passwordSettingHint": "رمز عبور قبلی خود را تائید نماید",
+  "mobile": "مبایل",
+  "mobile2": "مبایل 2",
+  "yourName": "نوم او کورنی نوم",
+  "businessName": " شرکت نوم",
+  "address": "پته",
+  "email": "الکترونیکی پته",
+  "edit": "تغییر ورکول",
+  "cancel": "لغوه کول"
 }

@@ -61,11 +61,15 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> updateAccount({required Users user}) async {
     try {
-      await repositories.updateAccount(user: user);
-      final usr = await repositories.getUserById(userId: user.userId!);
-      emit(AuthenticatedState(usr));
+      final res = await repositories.updateAccount(user: user);
+      print("updatedRow: $res");
+      if(res>0){
+        final usr = await repositories.getUserById(userId: user.userId!);
+        emit(AuthenticatedState(usr));
+      }
     } catch (e) {
       emit(AuthErrorState(e.toString(), null));
+      print(e.toString());
     }
   }
 

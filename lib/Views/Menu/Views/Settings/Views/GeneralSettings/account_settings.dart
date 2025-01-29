@@ -24,9 +24,10 @@ class _AccountSettingsState extends State<AccountSettings> {
   final email = TextEditingController();
   final address = TextEditingController();
 
-  bool _isEnabled = false;
+  bool readOnly = true;
   Users? usr;
   int? businessId;
+  int? userId;
   final formKey = GlobalKey<FormState>();
   Uint8List _companyLogo = Uint8List(0);
 
@@ -40,13 +41,9 @@ class _AccountSettingsState extends State<AccountSettings> {
     }
   }
 
-  // Future<void> _changeLogo()async{
-  //   context.read<AuthCubit>().UpdateCompanyLogoEvent(logo: _companyLogo, userId: usr!.userId!);
-  // }
-
   @override
   void initState() {
-    _isEnabled = false;
+    readOnly = true;
     super.initState();
   }
 
@@ -59,46 +56,52 @@ class _AccountSettingsState extends State<AccountSettings> {
     mobile2.dispose();
     email.dispose();
     address.dispose();
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          BlocBuilder<AuthCubit, AuthState>(
-            builder: (context, state) {
-              if (state is AuthenticatedState) {
-                usr = state.user;
-                ownerName.text = usr?.ownerName ?? "";
-                businessName.text = usr?.businessName ?? "";
-                email.text = usr?.email ?? "";
-                mobile1.text = usr?.mobile1 ?? "";
-                mobile2.text = usr?.mobile2 ?? "";
-                address.text = usr?.address ?? "";
-              }
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SingleChildScrollView(
-                  child: Row(
-                    children: [
-                      accountSettings(),
-                    ],
-                  ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    if (state is AuthenticatedState) {
+                      usr = state.user;
+                      userId = state.user.userId;
+                      businessId = state.user.businessId;
+
+                      ownerName.text = usr?.ownerName ?? "";
+                      businessName.text = usr?.businessName ?? "";
+                      email.text = usr?.email ?? "";
+                      mobile1.text = usr?.mobile1 ?? "";
+                      mobile2.text = usr?.mobile2 ?? "";
+                      address.text = usr?.address ?? "";
+                    }
+                    return Padding(
+                      padding: EdgeInsets.zero,
+                      child: Row(
+                        children: [
+                          accountSettings(),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget accountSettings() {
+    final localization = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 9),
       width: MediaQuery.of(context).size.width * .5,
@@ -143,13 +146,13 @@ class _AccountSettingsState extends State<AccountSettings> {
                             ),
                           ),
                         ),
-                        _isEnabled
+                        !readOnly
                             ? Positioned(
                                 top: 59,
                                 left: 57,
                                 child: IconButton(
                                     onPressed: () {
-                                      _isEnabled == true
+                                      readOnly == false
                                           ? _pickLogoImage()
                                           : null;
                                     },
@@ -181,25 +184,24 @@ class _AccountSettingsState extends State<AccountSettings> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      _isEnabled
-                          ? const SizedBox()
-                          : TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _isEnabled = true;
-                                });
-                              },
-                              child: Text("EDIT")),
-                      _isEnabled
+                      readOnly
                           ? TextButton(
                               onPressed: () {
                                 setState(() {
-                                  _isEnabled = false;
+                                  readOnly = false;
                                 });
                               },
-                              child: Text("CANCEL"))
+                              child: Text(localization.edit)) : const SizedBox(),
+                      !readOnly
+                          ? TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  readOnly = true;
+                                });
+                              },
+                              child: Text(localization.cancel))
                           : const SizedBox(),
-                      _isEnabled
+                      !readOnly
                           ? TextButton(
                               onPressed: () {
                                 if (formKey.currentState!.validate()) {
@@ -209,10 +211,11 @@ class _AccountSettingsState extends State<AccountSettings> {
                                               companyLogo: usr!.companyLogo))
                                       : null;
 
-                                  _isEnabled
+                                  !readOnly
                                       ? context.read<AuthCubit>().updateAccount(
                                           user: Users(
-                                              businessId: usr!.businessId,
+                                              userId: userId,
+                                              businessId: businessId,
                                               ownerName: ownerName.text,
                                               businessName: businessName.text,
                                               address: address.text,
@@ -221,11 +224,11 @@ class _AccountSettingsState extends State<AccountSettings> {
                                               mobile2: mobile2.text))
                                       : null;
                                   setState(() {
-                                    _isEnabled = false;
+                                    readOnly = true;
                                   });
                                 }
                               },
-                              child: Text("UPDATE"))
+                              child: Text(localization.update))
                           : const SizedBox(),
                     ],
                   ),
@@ -237,14 +240,14 @@ class _AccountSettingsState extends State<AccountSettings> {
               children: [
                 Expanded(
                   child: InputFieldEntitled(
-                    isEnabled: _isEnabled,
+                    readOnly: readOnly,
                     icon: Icons.account_circle_rounded,
                     controller: ownerName,
-                    title: "Your name",
+                    title: localization.yourName,
                     validator: (value) {
                       if (value.isEmpty) {
                         return AppLocalizations.of(context)!
-                            .required("your name");
+                            .required(localization.yourName);
                       }
                       return null;
                     },
@@ -253,14 +256,14 @@ class _AccountSettingsState extends State<AccountSettings> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: InputFieldEntitled(
-                    isEnabled: _isEnabled,
+                    readOnly: readOnly,
                     controller: businessName,
                     icon: Icons.business,
-                    title: "Business name",
+                    title: localization.businessName,
                     validator: (value) {
                       if (value.isEmpty) {
                         return AppLocalizations.of(context)!
-                            .required("business name");
+                            .required(localization.businessName);
                       }
                       return null;
                     },
@@ -269,34 +272,34 @@ class _AccountSettingsState extends State<AccountSettings> {
               ],
             ),
             InputFieldEntitled(
-              isEnabled: _isEnabled,
+              readOnly: readOnly,
               controller: email,
               icon: Icons.email,
-              title: "email",
+              title: localization.email,
             ),
             InputFieldEntitled(
-              isEnabled: _isEnabled,
+              readOnly: readOnly,
               controller: address,
               icon: Icons.location_on_rounded,
-              title: "address",
+              title: localization.address,
             ),
             Row(
               children: [
                 Expanded(
                   child: InputFieldEntitled(
-                    isEnabled: _isEnabled,
+                    readOnly: readOnly,
                     controller: mobile1,
                     icon: Icons.phone,
-                    title: "mobile1",
+                    title: localization.mobile,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: InputFieldEntitled(
-                    isEnabled: _isEnabled,
+                    readOnly: readOnly,
                     controller: mobile2,
                     icon: Icons.phone_android_rounded,
-                    title: "mobile",
+                    title: localization.mobile2,
                   ),
                 ),
               ],

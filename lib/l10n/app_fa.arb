@@ -68,5 +68,13 @@
   "passwordNotMatch": "رمز عبور همخوانی ندارد",
   "changePasswordTitle": "تغییر رمز عبور",
   "confirmPassword": "تکرار رمز عبور",
-  "passwordSettingHint": "رمز عبور قبلی خود را تائید نماید"
+  "passwordSettingHint": "رمز عبور قبلی خود را تائید نماید",
+  "mobile": "مبایل",
+  "mobile2": "مبایل 2",
+  "yourName": "نام و نام خانوادگی",
+  "businessName": "اسم شرکت",
+  "address": "آدرس",
+  "email": "آدرس الکترونیکی",
+  "edit": "تغییر آوردن",
+  "cancel": "انصراف"
 }
