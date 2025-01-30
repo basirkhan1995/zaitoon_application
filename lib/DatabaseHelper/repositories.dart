@@ -123,16 +123,16 @@ class Repositories {
     email = ?
     WHERE bId = ?
     ''');
-   stmt.execute([
-    user.businessName,
-    user.ownerName,
-    user.mobile1,
-    user.mobile2,
-    user.address,
-    user.email,
-    user.businessId,
+    stmt.execute([
+      user.businessName,
+      user.ownerName,
+      user.mobile1,
+      user.mobile2,
+      user.address,
+      user.email,
+      user.businessId,
     ]);
-   return db.updatedRows;
+    return db.updatedRows;
   }
 
   Future<int> uploadLogo({required Users user}) async {
@@ -149,13 +149,13 @@ class Repositories {
     return db.updatedRows;
   }
 
-  Future<int> changePassword({
-      required String oldPassword,
+  Future<int> changePassword(
+      {required String oldPassword,
       required String newPassword,
       required int userId,
       required String message}) async {
-      final db = DatabaseHelper.db;
-      final response = db.select(
+    final db = DatabaseHelper.db;
+    final response = db.select(
         '''SELECT * FROM ${Tables.userTableName} WHERE userId = ? ''',
         [userId]);
     final encryptedPassword = response.first['password'];

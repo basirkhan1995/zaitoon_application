@@ -191,7 +191,8 @@ class _AccountSettingsState extends State<AccountSettings> {
                                   readOnly = false;
                                 });
                               },
-                              child: Text(localization.edit)) : const SizedBox(),
+                              child: Text(localization.edit))
+                          : const SizedBox(),
                       !readOnly
                           ? TextButton(
                               onPressed: () {
@@ -205,14 +206,14 @@ class _AccountSettingsState extends State<AccountSettings> {
                           ? TextButton(
                               onPressed: () {
                                 if (formKey.currentState!.validate()) {
-
                                   _companyLogo.isNotEmpty
-                                      ? context.read<AuthCubit>().uploadLogoEvent(
-                                          user: usr!.copyWith(
-                                             businessId: businessId,
-                                             userId: userId,
-                                             companyLogo: _companyLogo
-                                          ))
+                                      ? context
+                                          .read<AuthCubit>()
+                                          .uploadLogoEvent(
+                                              user: usr!.copyWith(
+                                                  businessId: businessId,
+                                                  userId: userId,
+                                                  companyLogo: _companyLogo))
                                       : null;
 
                                   !readOnly

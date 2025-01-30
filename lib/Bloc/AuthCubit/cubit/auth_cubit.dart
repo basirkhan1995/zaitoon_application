@@ -63,7 +63,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final res = await repositories.updateAccount(user: user);
       print("updatedRow: $res");
-      if(res>0){
+      if (res > 0) {
         final usr = await repositories.getUserById(userId: user.userId!);
         emit(AuthenticatedState(usr));
       }
@@ -77,7 +77,7 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final res = await repositories.uploadLogo(user: user);
       print("updatedRow: $res");
-      if(res>0){
+      if (res > 0) {
         final usr = await repositories.getUserById(userId: user.userId!);
         emit(AuthenticatedState(usr));
       }

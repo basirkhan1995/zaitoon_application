@@ -3,12 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/button.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
-import 'package:zaitoon_invoice/Json/database_info.dart';
+import 'package:zaitoon_invoice/Json/databases.dart';
 import 'package:zaitoon_invoice/Json/users.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginDialog extends StatefulWidget {
-  final DatabaseInfo dbInfo;
+  final Databases dbInfo;
   const LoginDialog({super.key, required this.dbInfo});
 
   @override

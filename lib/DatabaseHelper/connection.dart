@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/components.dart';
@@ -14,15 +16,23 @@ class DatabaseHelper {
   // Open the database (or create it if it doesn't exist)
   static Future<void> initDatabase(
       {required String dbName, required String path}) async {
-    final dbPath = join(path, dbName);
+    final dbPath = Directory(join(path, "ZaitoonSystem"));
+
+    //Create a directory 'Invoices' inside the destination
+    if (!await dbPath.exists()) {
+      await dbPath.create(
+          recursive: true); // Create the custom folder if it doesn't exist
+    }
+    //'Zaitoon System' Directory
+    final dbDestination = join(dbPath.path, dbName);
 
     if (_db != null) {
       close();
     }
-    _db = sqlite3.open(dbPath);
+    _db = sqlite3.open(dbDestination);
     initTables();
     feedDatabase();
-    await DatabaseComponents.saveDatabasePath(dbPath);
+    await DatabaseComponents.saveDatabasePath(dbDestination);
   }
 
   // Open the database (or create it if it doesn't exist)

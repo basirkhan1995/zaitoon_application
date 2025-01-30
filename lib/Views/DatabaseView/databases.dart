@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +11,7 @@ import 'package:zaitoon_invoice/Components/Widgets/language_dropdown.dart';
 import 'package:zaitoon_invoice/Components/Widgets/onhover_widget.dart';
 import 'package:zaitoon_invoice/Components/Widgets/theme_dropdown.dart';
 import 'package:zaitoon_invoice/Components/Widgets/zdialog.dart';
+import 'package:zaitoon_invoice/Json/info.dart';
 import 'package:zaitoon_invoice/Views/Authentication/login.dart';
 import 'package:zaitoon_invoice/Views/Authentication/register.dart';
 import 'package:zaitoon_invoice/Views/home.dart';
@@ -147,9 +147,9 @@ class _LoadAllDatabasesState extends State<LoadAllDatabases> {
                     }
                     if (state is LoadedRecentDatabasesState) {
                       return ListView.builder(
-                          itemCount: state.recentDbs.length,
+                          itemCount: state.allDatabases.length,
                           itemBuilder: (context, index) {
-                            final dbs = state.recentDbs[index];
+                            final dbs = state.allDatabases[index];
 
                             return ListTile(
                               shape: RoundedRectangleBorder(
@@ -157,8 +157,8 @@ class _LoadAllDatabasesState extends State<LoadAllDatabases> {
                               horizontalTitleGap: 5,
                               contentPadding:
                                   EdgeInsets.symmetric(horizontal: 10),
-                              title: Text(state.recentDbs[index].name),
-                              subtitle: Text(state.recentDbs[index].path
+                              title: Text(state.allDatabases[index].name),
+                              subtitle: Text(state.allDatabases[index].path
                                   .getPathWithoutFileName),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -169,26 +169,43 @@ class _LoadAllDatabasesState extends State<LoadAllDatabases> {
                                       .toString()),
                                   IconButton(
                                       onPressed: () {
-                                        showDialog(context: context, builder: (context){
-                                         return ZAlertDialog(
-                                            title: locale.alertTitle,
-                                            content: locale.removeMessage,
-                                            icon: Icons.delete,
-                                            onYes: (){
-                                              context
-                                                  .read<DatabaseCubit>()
-                                                  .removeDatabaseEvent(
-                                                  state.recentDbs[index].path);
-                                            },
-                                          );
-                                        });
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return ZAlertDialog(
+                                                title: locale.alertTitle,
+                                                content: locale.removeMessage,
+                                                icon: Icons.delete,
+                                                onYes: () {
+                                                  context
+                                                      .read<DatabaseCubit>()
+                                                      .removeDatabaseEvent(state
+                                                          .allDatabases[index]
+                                                          .path);
+                                                },
+                                              );
+                                            });
                                       },
                                       icon: Icon(Icons.clear, size: 18)),
                                 ],
                               ),
                               onTap: () {
                                 context.read<DatabaseCubit>().openDatabase(
-                                    dbName: state.recentDbs[index].path);
+                                    dbName: state.allDatabases[index].path);
+
+                                context
+                                    .read<DatabaseCubit>()
+                                    .getDatabaseByIdEvent(
+                                        dbInfo: DatabaseInfo(
+                                            name:
+                                                state.allDatabases[index].name,
+                                            path:
+                                                state.allDatabases[index].path,
+                                            size:
+                                                state.allDatabases[index].size,
+                                            backupDirectory: state
+                                                .allDatabases[index]
+                                                .backupDirectory));
                                 showDialog(
                                     context: context,
                                     builder: (context) {
