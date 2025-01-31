@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:zaitoon_invoice/Components/Other/extensions.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/components.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
 import 'package:zaitoon_invoice/Json/backup_model.dart';
@@ -10,6 +11,9 @@ part 'database_state.dart';
 
 class DatabaseCubit extends Cubit<DatabaseState> {
   DatabaseCubit() : super(DatabaseInitial());
+
+  DatabaseInfo? _selectedDatabase;
+  DatabaseInfo? get selectedDatabase => _selectedDatabase;
 
   Future<void> openDatabase({required String dbName}) async {
     try {
@@ -38,38 +42,61 @@ class DatabaseCubit extends Cubit<DatabaseState> {
     }
   }
 
-  Future<void> loadDatabaseBackupEvent() async {
+  Future<void> loadDatabaseBackupEvent({required String path}) async {
     try {
-      final dbs = await DatabaseComponents.loadRecentBackupDatabase();
       final currentState = state;
       if (currentState is LoadedRecentDatabasesState) {
         emit(LoadedRecentDatabasesState(
             allDatabases: currentState.allDatabases,
-            selectedDatabase: currentState.selectedDatabase,
-            allBackupDatabases: dbs));
+            selectedDatabase: currentState.selectedDatabase));
       }
     } catch (e) {
       emit(DatabaseErrorState(e.toString()));
     }
   }
 
-  Future<void> getDatabaseByIdEvent({required DatabaseInfo dbInfo}) async {
+  Future<void> loadBackupEvent({required String path}) async {
+    if (path.isEmpty) {
+      emit(DatabaseErrorState("Backup path is empty"));
+      return;
+    }
+    emit(DatabaseLoadingState());
+    try {
+      final backup = await DatabaseComponents.loadDatabaseBackups(path: path);
+      emit(LoadBackupState(backup));
+    } catch (e) {
+      emit(DatabaseErrorState(e.toString()));
+    }
+  }
+
+  Future<void> backupEvent({required String path, required String dbName}) async {
+    if (path.isEmpty || dbName.isEmpty) {
+      emit(DatabaseErrorState("Path is empty"));
+      return;
+    }
+    try {
+      await DatabaseComponents.createDatabaseBackup(
+        databasePath: path.getPathWithoutFileName,
+        databaseName: dbName,
+      );
+      emit(BackupSuccessState()); // Notify UI of successful backup
+    } catch (e) {
+      emit(DatabaseErrorState(e.toString()));
+    }
+  }
+
+  Future<void> getDatabaseByIdEvent(DatabaseInfo dbInfo) async {
     try {
       final currentState = state;
-
       if (currentState is LoadedRecentDatabasesState) {
-        // Only emit the new state if the database info has changed
+        _selectedDatabase = dbInfo;
         emit(LoadedRecentDatabasesState(
           allDatabases: currentState.allDatabases,
-          selectedDatabase: dbInfo, // Set the selected database here
-          allBackupDatabases: currentState.allBackupDatabases,
+          selectedDatabase: _selectedDatabase,
         ));
-        print(currentState.selectedDatabase?.name ?? "null");
       }
     } catch (e) {
-      print(e.toString());
-      emit(DatabaseErrorState(
-          e.toString())); // Emit error if something goes wrong
+      emit(DatabaseErrorState(e.toString()));
     }
   }
 

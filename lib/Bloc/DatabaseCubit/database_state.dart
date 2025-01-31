@@ -9,6 +9,23 @@ final class DatabaseInitial extends DatabaseState {
   List<Object> get props => [];
 }
 
+final class DatabaseLoadingState extends DatabaseState{
+  @override
+  List<Object> get props => [];
+}
+
+final class LoadBackupState extends DatabaseState {
+  final List<DatabaseBackupInfo> backup;
+  const LoadBackupState(this.backup);
+  @override
+  List<Object> get props => [backup];
+}
+
+final class BackupSuccessState extends DatabaseState{
+  @override
+  List<Object> get props => [];
+}
+
 final class LoadedRecentDatabasesState extends DatabaseState {
   final List<Databases> allDatabases;
   final DatabaseInfo? selectedDatabase;

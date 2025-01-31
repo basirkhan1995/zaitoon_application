@@ -21,6 +21,7 @@ class InputFieldEntitled extends StatelessWidget {
   final Widget? trailing;
   final double width;
   final bool compactMode;
+  final bool autoFocus;
   final List<TextInputFormatter>? inputFormat;
 
   const InputFieldEntitled({
@@ -29,6 +30,7 @@ class InputFieldEntitled extends StatelessWidget {
     this.hint,
     this.readOnly = false,
     this.info = "",
+    this.autoFocus = true,
     this.compactMode = false,
     this.isEnabled = true,
     this.securePassword = false,
@@ -87,6 +89,7 @@ class InputFieldEntitled extends StatelessWidget {
                     child: TextFormField(
                       readOnly: readOnly,
                       focusNode: focusNode,
+                      autofocus: autoFocus,
                       enabled: isEnabled,
                       validator: validator,
                       onChanged: onChanged,

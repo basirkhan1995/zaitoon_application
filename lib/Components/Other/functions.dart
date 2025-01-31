@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'dart:typed_data';
 
 class Env {
+
   static Future<Uint8List?> pickImage() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
 

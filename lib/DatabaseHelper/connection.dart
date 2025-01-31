@@ -16,7 +16,7 @@ class DatabaseHelper {
   // Open the database (or create it if it doesn't exist)
   static Future<void> initDatabase(
       {required String dbName, required String path}) async {
-    final dbPath = Directory(join(path, "ZaitoonSystem"));
+    final dbPath = Directory(join(path, "Zaitoon"));
 
     //Create a directory 'Invoices' inside the destination
     if (!await dbPath.exists()) {
@@ -45,6 +45,17 @@ class DatabaseHelper {
     }
     _db = sqlite3.open(dbPath);
     await DatabaseComponents.saveDatabasePath(dbPath);
+  }
+
+  // Open the database (or create it if it doesn't exist)
+  static Future<void> backupOpener(
+      {required String path}) async {
+
+    if (_db != null) {
+      close();
+    }
+    _db = sqlite3.open(path);
+    await DatabaseComponents.saveDatabasePath(path);
   }
 
   // Only open Database method

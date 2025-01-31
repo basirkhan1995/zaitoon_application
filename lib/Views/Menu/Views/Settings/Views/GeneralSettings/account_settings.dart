@@ -23,6 +23,8 @@ class _AccountSettingsState extends State<AccountSettings> {
   final mobile2 = TextEditingController();
   final email = TextEditingController();
   final address = TextEditingController();
+  final FocusNode focusNode = FocusNode();
+
 
   bool readOnly = true;
   Users? usr;
@@ -44,6 +46,7 @@ class _AccountSettingsState extends State<AccountSettings> {
   @override
   void initState() {
     readOnly = true;
+    focusNode.requestFocus();
     super.initState();
   }
 
@@ -56,6 +59,7 @@ class _AccountSettingsState extends State<AccountSettings> {
     mobile2.dispose();
     email.dispose();
     address.dispose();
+    focusNode.dispose();
     super.dispose();
   }
 

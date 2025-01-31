@@ -2,12 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 import 'package:zaitoon_invoice/Json/backup_model.dart';
-import 'package:zaitoon_invoice/Json/info.dart';
 import '../Json/databases.dart';
 
 class DatabaseComponents {
@@ -66,10 +64,9 @@ class DatabaseComponents {
             backupDirectory: backup,
           ));
         } else {
-          print('File not found: $path');
         }
       } catch (e) {
-        print('Error processing file at $path: ${e.toString()}');
+        throw e.toString();
       }
     }
 
@@ -90,41 +87,42 @@ class DatabaseComponents {
     }
   }
 
-  //Load Backup
-  static Future<List<DatabaseBackupInfo>> loadRecentBackupDatabase() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> dbPaths = prefs.getStringList('recent_backup_paths') ?? [];
-    List<DatabaseBackupInfo> dbInfoList = [];
-    for (String path in dbPaths) {
-      try {
-        final file = File(path);
-        if (await file.exists()) {
-          String name = p.basenameWithoutExtension(path); // Extract file name
-          int size = await file.length(); // Get file size in bytes
-          final lastModified = await file.lastModified();
-          final createdDate =
-              DateFormat('yyyy-MM-dd HH:mm:ss').format(lastModified);
-          dbInfoList.add(DatabaseBackupInfo(
-              name: name,
-              path: path,
-              size: size,
-              dateTime: DateTime.parse(createdDate)));
-        } else {
-          print('File not found: $path');
-        }
-      } catch (e) {
-        print('Error processing file at $path: ${e.toString()}');
-      }
+
+  static Future<List<DatabaseBackupInfo>> loadDatabaseBackups({
+    required String path,
+  }) async {
+    final directory = Directory(path);
+
+    // Check if the directory exists
+    if (!await directory.exists()) {
+      return []; // Return an empty list if the directory does not exist
     }
 
-    // Optionally, update SharedPreferences to remove invalid paths
-    List<String> validPaths = dbInfoList.map((db) => db.path).toList();
-    await prefs.setStringList('recent_backup_paths', validPaths);
-    return dbInfoList;
-  }
+    // List all files in the directory
+    final files = await directory.list().toList();
 
-  static Future<bool> _isDatabaseExists(String databasePath) async {
-    return File(databasePath).existsSync();
+    // Filter files with .db or .sqlite extensions
+    final dbFiles = files.whereType<File>().where((file) {
+      final ext = p.extension(file.path);
+      return ext == '.db' || ext == '.sqlite';
+    }).toList();
+
+    // Load backup information for each file
+    final backupInfos = await Future.wait(dbFiles.map((file) async {
+      final fileStat = await FileStat.stat(file.path); // Get file metadata
+      final fileSize = await file.length();
+      return DatabaseBackupInfo(
+        name: p.basename(file.path), // Use p.basename to get the file name
+        path: file.path,
+        size: fileSize,
+        dateTime: fileStat.accessed, // Use the file's last modified date
+      );
+    }));
+
+    // Sort the backups by dateTime in descending order (most recent first)
+    backupInfos.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
+    return backupInfos;
   }
 
   static Future<Directory> createBackupDirectory(
@@ -133,102 +131,77 @@ class DatabaseComponents {
     if (!await backupDir.exists()) {
       try {
         await backupDir.create(recursive: true);
-        print('Backup directory created at: ${backupDir.path}');
       } catch (e) {
-        print('Error creating backup directory: $e');
+        throw e.toString();
       }
     }
     return backupDir;
   }
 
-  // Helper method to generate a unique backup name
-  static Future<String> _generateUniqueBackupName(
-      String backupDirectoryPath, String databaseName) async {
-    int counter = 1;
-
-    // Construct the base name without the counter.
-    String baseDatabaseName = databaseName;
-
-    // We will continue to increment until we find a unique name that doesn't exist.
-    while (
-        await File(join(backupDirectoryPath, '$baseDatabaseName ($counter).db'))
-            .exists()) {
-      counter++; // Increment the counter each time.
-    }
-    // Return the final unique name.
-    return '$baseDatabaseName ($counter).db';
-  }
-
-  static Future<void> createDatabaseBackup(
-      {required String databasePath, required String databaseName}) async {
+  static Future<void> createDatabaseBackup({
+    required String databasePath,
+    required String databaseName,
+  }) async {
     try {
       // Create Backup Directory
       final backupDirectory =
-          await createBackupDirectory(databasePath, databaseName);
+      await createBackupDirectory(databasePath, databaseName);
 
       // Database File Path
-      final dbFilePath = join(databasePath, '$databaseName.db');
+      final dbFilePath = p.join(databasePath, '$databaseName.db');
 
-      // Find a unique name for the backup file
-      String uniqueDatabaseName = await _generateUniqueBackupName(
-        backupDirectory.path,
-        databaseName,
-      );
+      // Find the next available backup counter globally
+      final nextCounter = await _findNextBackupCounter(backupDirectory.path, databaseName);
 
-      // Backup Destination
-      final backupFilePath = join(backupDirectory.path, uniqueDatabaseName);
+      // Generate the backup filename
+      final backupFileName = '$databaseName $nextCounter.db';
+      final backupFilePath = p.join(backupDirectory.path, backupFileName);
 
       // Check if the database file exists
       final dbFile = File(dbFilePath);
       if (await dbFile.exists()) {
         // Copy the database file to the backup location
         await dbFile.copy(backupFilePath);
+      } else {
       }
-    } on PlatformException catch (e) {
-      print("Error during backup: $e");
+    } on PlatformException {
+      throw "some error happened";
     }
   }
 
-  //To store selected db from list, to access it later on
-  static Future<void> saveSelectedDatabase(Databases dbInfo) async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = dbInfo.toJson();
-    await prefs.setString('selected_database', jsonEncode(jsonString));
-  }
+  /// Helper function to find the next available backup counter globally
+  static Future<int> _findNextBackupCounter(String backupDirectoryPath, String databaseName) async {
+    final backupDirectory = Directory(backupDirectoryPath);
 
-  //To get the stored db info
-  static Future<Databases?> getSelectedDatabaseInfo() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString('selected_database');
-
-    if (jsonString != null) {
-      final Map<String, dynamic> json = jsonDecode(jsonString);
-      return Databases.fromJson(json);
+    // Check if the backup directory exists
+    if (!await backupDirectory.exists()) {
+      return 1; // Start with 1 if no backups exist
     }
-    return null; // No database selected
-  }
 
-  static Future<List<DatabaseBackupInfo>> loadDatabaseBackupFiles(
-      {required String path}) async {
-    final directory = Directory(path);
-    final dbFiles = directory.listSync(recursive: false).where((file) {
-      final ext = p.extension(file.path);
-      return ext == '.db' || ext == '.sqlite';
-    });
+    // List all files in the backup directory
+    final files = backupDirectory.listSync();
 
-    return dbFiles.map((file) {
-      final fileName = p.basenameWithoutExtension(file.path);
-      final fileSize = File(file.path).lengthSync(); // Get file size in bytes
-      return DatabaseBackupInfo(
-        name: fileName,
-        path: file.path,
-        size: fileSize,
-        dateTime: DateTime.now(),
-      );
+    // Filter files that match the backup naming pattern (e.g., "Zaitoon X.db")
+    final backupFiles = files.whereType<File>().where((file) {
+      final fileName = p.basename(file.path);
+      return fileName.startsWith('$databaseName ') && fileName.endsWith('.db');
     }).toList();
+
+    // Extract counters from the filenames
+    final counters = backupFiles.map((file) {
+      final fileName = p.basename(file.path);
+      final counterString = fileName
+          .substring(databaseName.length + 1, fileName.length - 3) // Remove "Zaitoon " and ".db"
+          .trim();
+      return int.tryParse(counterString) ?? 0; // Parse the counter or default to 0
+    }).toList();
+
+    // Find the highest counter and increment it
+    if (counters.isEmpty) {
+      return 1; // Start with 1 if no valid backups are found
+    } else {
+      return counters.reduce((a, b) => a > b ? a : b) + 1;
+    }
   }
 
-  Future<DatabaseInfo> getDb({required String info}) async {
-    return DatabaseInfo(name: info, path: info, size: 0, backupDirectory: info);
-  }
 }

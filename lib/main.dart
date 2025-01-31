@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/BackupBloc/database_backup_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/General/general_cubit.dart';
@@ -47,6 +48,8 @@ class MyApp extends StatelessWidget {
             create: (context) => GeneralCubit()..onChangedEvent(index: 0)),
         //Password
         BlocProvider(create: (context) => PasswordCubit(Repositories())),
+        //
+        BlocProvider(create: (context) => BackupBloc()),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {
@@ -71,7 +74,7 @@ class MyApp extends StatelessWidget {
                 themeMode: themeMode,
                 darkTheme: theme.dark(),
                 theme: theme.light(),
-                home: const LoadAllDatabases(),
+                home: const DatabaseManager(),
               );
             },
           );

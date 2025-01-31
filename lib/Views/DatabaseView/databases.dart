@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Components/Other/extensions.dart';
 import 'package:zaitoon_invoice/Components/Other/functions.dart';
+import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:zaitoon_invoice/Components/Widgets/language_dropdown.dart';
 import 'package:zaitoon_invoice/Components/Widgets/onhover_widget.dart';
 import 'package:zaitoon_invoice/Components/Widgets/theme_dropdown.dart';
@@ -17,14 +18,14 @@ import 'package:zaitoon_invoice/Views/Authentication/register.dart';
 import 'package:zaitoon_invoice/Views/home.dart';
 import '../../Bloc/AuthCubit/cubit/auth_cubit.dart';
 
-class LoadAllDatabases extends StatefulWidget {
-  const LoadAllDatabases({super.key});
+class DatabaseManager extends StatefulWidget {
+  const DatabaseManager({super.key});
 
   @override
-  State<LoadAllDatabases> createState() => _LoadAllDatabasesState();
+  State<DatabaseManager> createState() => _DatabaseManagerState();
 }
 
-class _LoadAllDatabasesState extends State<LoadAllDatabases> {
+class _DatabaseManagerState extends State<DatabaseManager> {
   final username = TextEditingController();
   final password = TextEditingController();
 
@@ -151,67 +152,68 @@ class _LoadAllDatabasesState extends State<LoadAllDatabases> {
                           itemBuilder: (context, index) {
                             final dbs = state.allDatabases[index];
 
-                            return ListTile(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5)),
-                              horizontalTitleGap: 5,
-                              contentPadding:
-                                  EdgeInsets.symmetric(horizontal: 10),
-                              title: Text(state.allDatabases[index].name),
-                              subtitle: Text(state.allDatabases[index].path
-                                  .getPathWithoutFileName),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                spacing: 10,
-                                children: [
-                                  Text(dbs.size
-                                      .formatBytes(dbs.size)
-                                      .toString()),
-                                  IconButton(
-                                      onPressed: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return ZAlertDialog(
-                                                title: locale.alertTitle,
-                                                content: locale.removeMessage,
-                                                icon: Icons.delete,
-                                                onYes: () {
-                                                  context
-                                                      .read<DatabaseCubit>()
-                                                      .removeDatabaseEvent(state
-                                                          .allDatabases[index]
-                                                          .path);
-                                                },
-                                              );
-                                            });
-                                      },
-                                      icon: Icon(Icons.clear, size: 18)),
-                                ],
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 0.0,vertical: 4),
+                              child: ListTile(
+                                hoverColor: Theme.of(context).colorScheme.surface.withValues(alpha: .25,blue: .25,green: .25),
+                                splashColor: Theme.of(context).colorScheme.onPrimary,
+                                tileColor: Theme.of(context).colorScheme.surface,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5)),
+                                horizontalTitleGap: 5,
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 10),
+                                title: Text(state.allDatabases[index].name),
+                                subtitle: Text(state.allDatabases[index].path
+                                    .getPathWithoutFileName),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  spacing: 10,
+                                  children: [
+                                    Text(dbs.size
+                                        .formatBytes(dbs.size)
+                                        .toString()),
+                                    IconButton(
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return ZAlertDialog(
+                                                  title: locale.alertTitle,
+                                                  content: locale.removeMessage,
+                                                  icon: Icons.delete,
+                                                  onYes: () {
+                                                    context
+                                                        .read<DatabaseCubit>()
+                                                        .removeDatabaseEvent(state
+                                                            .allDatabases[index]
+                                                            .path);
+                                                  },
+                                                );
+                                              });
+                                        },
+                                        icon: Icon(Icons.clear, size: 18)),
+                                  ],
+                                ),
+                                onTap: () {
+                                  context.read<DatabaseCubit>().openDatabase(
+                                      dbName: state.allDatabases[index].path);
+                                  final selectedDb = state.allDatabases[index];
+                                  context
+                                      .read<DatabaseCubit>()
+                                      .getDatabaseByIdEvent(DatabaseInfo(
+                                          name: selectedDb.name,
+                                          path: selectedDb.path,
+                                          size: selectedDb.size,
+                                          backupDirectory:
+                                              selectedDb.backupDirectory));
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return LoginDialog(dbInfo: dbs);
+                                      });
+                                },
                               ),
-                              onTap: () {
-                                context.read<DatabaseCubit>().openDatabase(
-                                    dbName: state.allDatabases[index].path);
-
-                                context
-                                    .read<DatabaseCubit>()
-                                    .getDatabaseByIdEvent(
-                                        dbInfo: DatabaseInfo(
-                                            name:
-                                                state.allDatabases[index].name,
-                                            path:
-                                                state.allDatabases[index].path,
-                                            size:
-                                                state.allDatabases[index].size,
-                                            backupDirectory: state
-                                                .allDatabases[index]
-                                                .backupDirectory));
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return LoginDialog(dbInfo: dbs);
-                                    });
-                              },
                             );
                           });
                     }

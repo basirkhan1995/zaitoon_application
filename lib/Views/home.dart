@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is UnAuthenticatedState) {
-          Env.gotoReplacement(context, LoadAllDatabases());
+          Env.gotoReplacement(context, DatabaseManager());
         }
       },
       child: Scaffold(body: MenuPage()),
