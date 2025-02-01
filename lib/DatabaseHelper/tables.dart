@@ -47,19 +47,40 @@ class Tables {
   userCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   userUpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (businessId) REFERENCES $appMetadataTableName (bId) ON DELETE CASCADE,
+  FOREIGN KEY (permissionId) REFERENCES $permissionTableName (id) ON DELETE CASCADE,
   FOREIGN KEY (userRoleId) REFERENCES $userRoleTableName(roleId)
   )''';
 
   static String userRoleTable = '''
   CREATE TABLE IF NOT EXISTS $userRoleTableName (
-  roleId INTEGER PRIMARY KEY AUTOINCREMENT,
-  roleName TEXT UNIQUE NOT NULL
+  roleId INTEGER PRIMARY KEY,
+  roleName TEXT UNIQUE NOT NULL,
+  roleLanguageCode TEXT UNIQUE
   )''';
 
   static String permissionsTable = '''
   CREATE TABLE IF NOT EXISTS $permissionTableName (
-  permissionId INTEGER PRIMARY KEY AUTOINCREMENT,
-  permissionName TEXT UNIQUE NOT NULL
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+  viewDatabaseSettings INTEGER,
+  viewCurrencySettings INTEGER,
+
+  viewAccounts INTEGER,
+  createAccount INTEGER,
+  updateAccount INTEGER,
+  deleteAccount INTEGER,
+  
+  viewExchange INTEGER,
+  createExchange INTEGER,
+  updateExchange INTEGER,
+  deleteExchange INTEGER,
+
+  viewTransfer INTEGER,
+  createTransfer INTEGER,
+  updateTransfer INTEGER,
+  deleteTransfer INTEGER
+  
+  
   )''';
 
   static String rolesPermissionsTable = '''
@@ -75,7 +96,6 @@ class Tables {
   static String accountCategoryTable = '''
   CREATE TABLE IF NOT EXISTS $accountCategoryTableName(
   accCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
-  accCategorytype TEXT UNIQUE NOT NULL,
   accCategoryName TEXT,
   languageCode TEXT UNIQUE
   )''';

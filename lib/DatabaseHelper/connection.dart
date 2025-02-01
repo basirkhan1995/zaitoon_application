@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:path/path.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/components.dart';
@@ -48,9 +47,7 @@ class DatabaseHelper {
   }
 
   // Open the database (or create it if it doesn't exist)
-  static Future<void> backupOpener(
-      {required String path}) async {
-
+  static Future<void> backupOpener({required String path}) async {
     if (_db != null) {
       close();
     }
