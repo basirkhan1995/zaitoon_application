@@ -75,7 +75,9 @@ class Tables {
   static String accountCategoryTable = '''
   CREATE TABLE IF NOT EXISTS $accountCategoryTableName(
   accCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
-  accCategoryName TEXT UNIQUE NOT NULL
+  accCategorytype TEXT UNIQUE NOT NULL,
+  accCategoryName TEXT,
+  languageCode TEXT UNIQUE
   )''';
 
   static String accountsTable = '''
