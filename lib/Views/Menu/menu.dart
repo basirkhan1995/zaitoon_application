@@ -6,7 +6,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/settings.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/accounts.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/dashboard.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/estimate.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/invoice.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/reports.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/transport.dart';

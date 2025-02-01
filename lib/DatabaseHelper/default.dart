@@ -5,6 +5,16 @@ class DefaultValues {
   INSERT INTO ${Tables.userRoleTableName} (roleName) VALUES 
   ('admin'),
   ('editor'),
-  ('viewer') 
+  ('viewer')''';
+
+  static String defaultAccountCategory = '''
+  INSERT INTO ${Tables.accountCategoryTableName} () VALUES
+  ('user'),
+  (),
+  (),
+  (),
+  (),
+  (),
+
   ''';
 }
