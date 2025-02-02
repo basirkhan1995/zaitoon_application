@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/General/general_cubit.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/account_settings.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/advanced.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/password_settings.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/system_settings.dart';
 import '../../../Components/components.dart';
@@ -34,6 +35,8 @@ class _GeneralSettingsState extends State<GeneralSettings> {
           icon: Icons.lock_clock_rounded,
           title: locale.password,
           screen: PasswordSettings()),
+      MenuComponents(
+          icon: Icons.settings, title: locale.password, screen: AdvancedView()),
     ];
 
     return Row(
