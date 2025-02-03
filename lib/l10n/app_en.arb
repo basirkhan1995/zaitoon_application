@@ -78,5 +78,8 @@
   "edit": "EDIT",
   "cancel": "CANCEL",
   "backupMessage": "Backup successfully",
-  "refresh": "Refresh"
+  "refresh": "Refresh",
+  "advanced": "Advanced Settings",
+  "enable": "Enable",
+  "enabled": "Enabled"
 }

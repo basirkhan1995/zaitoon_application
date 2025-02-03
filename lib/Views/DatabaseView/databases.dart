@@ -7,7 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Components/Other/extensions.dart';
 import 'package:zaitoon_invoice/Components/Other/functions.dart';
-import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:zaitoon_invoice/Components/Widgets/language_dropdown.dart';
 import 'package:zaitoon_invoice/Components/Widgets/onhover_widget.dart';
 import 'package:zaitoon_invoice/Components/Widgets/theme_dropdown.dart';
@@ -153,11 +152,18 @@ class _DatabaseManagerState extends State<DatabaseManager> {
                             final dbs = state.allDatabases[index];
 
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 0.0,vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 0.0, vertical: 4),
                               child: ListTile(
-                                hoverColor: Theme.of(context).colorScheme.surface.withValues(alpha: .25,blue: .25,green: .25),
-                                splashColor: Theme.of(context).colorScheme.onPrimary,
-                                tileColor: Theme.of(context).colorScheme.surface,
+                                hoverColor: Theme.of(context)
+                                    .colorScheme
+                                    .surface
+                                    .withValues(
+                                        alpha: .25, blue: .25, green: .25),
+                                splashColor:
+                                    Theme.of(context).colorScheme.onPrimary,
+                                tileColor:
+                                    Theme.of(context).colorScheme.surface,
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(5)),
                                 horizontalTitleGap: 5,
@@ -185,9 +191,11 @@ class _DatabaseManagerState extends State<DatabaseManager> {
                                                   onYes: () {
                                                     context
                                                         .read<DatabaseCubit>()
-                                                        .removeDatabaseEvent(state
-                                                            .allDatabases[index]
-                                                            .path);
+                                                        .removeDatabaseEvent(
+                                                            state
+                                                                .allDatabases[
+                                                                    index]
+                                                                .path);
                                                   },
                                                 );
                                               });

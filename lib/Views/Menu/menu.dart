@@ -12,6 +12,7 @@ import 'package:zaitoon_invoice/Views/Menu/Views/reports.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/transport.dart';
 import '../../Bloc/AuthCubit/cubit/auth_cubit.dart';
 import '../../Bloc/MenuCubit/MainMenu/menu_cubit.dart';
+import 'dart:typed_data';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -27,6 +28,7 @@ class _MenuPageState extends State<MenuPage> {
   double expandedMode = 190;
   double compactMode = 60;
   bool isVisible = false;
+  final Uint8List _companyLogo = Uint8List(0);
   @override
   Widget build(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -121,12 +123,60 @@ class _MenuPageState extends State<MenuPage> {
               ],
             ),
 
+            //Logo
+            isExpanded ? BlocBuilder<AuthCubit, AuthState>(
+              builder: (context, state) {
+                if (state is AuthenticatedState) {
+                  final usr = state.user;
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                        height: 85,
+                        width: 85,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: theme.surfaceContainerHighest),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(5), // Match the container's border radius
+                          child: usr.companyLogo == null && _companyLogo.isEmpty
+                              ? Center(
+                            child: Text(
+                              usr.businessName![0],
+                              style: Theme.of(context).textTheme.displayLarge,
+                            ),
+                          )
+                              : Image.memory(
+                            _companyLogo.isEmpty ? usr.companyLogo! : _companyLogo,
+                            fit: BoxFit.cover, // Ensure the image covers the container
+                            width: 85, // Match the container's width
+                            height: 85, // Match the container's height
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                return Container();
+              },
+            ) : SizedBox(),
+
             //User Info
             isExpanded
                 ? BlocBuilder<AuthCubit, AuthState>(
                     builder: (context, state) {
                       if (state is AuthenticatedState) {
                         return ListTile(
+                          hoverColor: theme.primary,
+                          splashColor: theme.primary,
+                          onTap: (){
+                            showDialog(context: context, builder: (context){
+                              return SettingsView();
+                            });
+                          },
+                          minVerticalPadding: 0,
                           title: Text(
                             state.user.ownerName ?? "null",
                             style: textTheme.titleMedium,
@@ -138,6 +188,8 @@ class _MenuPageState extends State<MenuPage> {
                     },
                   )
                 : SizedBox(),
+
+            //Menu Items
             Expanded(
               child: BlocBuilder<MenuCubit, MenuState>(
                 builder: (context, state) {

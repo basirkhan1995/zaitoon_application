@@ -5,7 +5,6 @@ import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Components/Other/functions.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
 import 'dart:typed_data';
-
 import 'package:zaitoon_invoice/Json/users.dart';
 
 class AccountSettings extends StatefulWidget {

@@ -100,8 +100,8 @@ class _AppLanguageState extends State<AppLanguage> {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
+                      blurRadius: 1,
+                      offset: const Offset(0, 1),
                     ),
                   ],
                 ),
@@ -113,7 +113,7 @@ class _AppLanguageState extends State<AppLanguage> {
                       _languages.firstWhere(
                           (lang) => lang['code'] == currentLanguage)['name'],
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.surface,
+                        color: color.surface,
                         fontSize: 14,
                       ),
                     ),
@@ -167,7 +167,7 @@ class _AppLanguageState extends State<AppLanguage> {
                 padding: EdgeInsets.zero,
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(widget.radius),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,

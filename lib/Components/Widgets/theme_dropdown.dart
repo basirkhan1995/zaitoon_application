@@ -102,7 +102,7 @@ class _AppThemeState extends State<AppTheme> {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 5,
+                      blurRadius: 1,
                       offset: const Offset(0, 2),
                     ),
                   ],

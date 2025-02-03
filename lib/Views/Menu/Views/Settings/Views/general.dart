@@ -24,19 +24,19 @@ class _GeneralSettingsState extends State<GeneralSettings> {
     final locale = AppLocalizations.of(context)!;
     List<MenuComponents> items = [
       MenuComponents(
-          icon: Icons.account_circle,
+          icon: Icons.account_circle_outlined,
           title: locale.accountSettings,
           screen: AccountSettings()),
       MenuComponents(
-          icon: Icons.add_home,
+          icon: Icons.settings_outlined,
           title: locale.systemSettings,
           screen: SystemSettingsView()),
       MenuComponents(
-          icon: Icons.lock_clock_rounded,
+          icon: Icons.lock_clock_outlined,
           title: locale.password,
           screen: PasswordSettings()),
       MenuComponents(
-          icon: Icons.settings, title: locale.password, screen: AdvancedView()),
+          icon: Icons.lock_open_rounded, title: locale.advanced, screen: AdvancedView()),
     ];
 
     return Row(
@@ -78,7 +78,7 @@ class _GeneralSettingsState extends State<GeneralSettings> {
           borderRadius: BorderRadius.circular(5),
           color: theme.surface,
         ),
-        width: 190,
+        width: 220,
         height: double.infinity,
         child: BlocBuilder<GeneralCubit, GeneralState>(
           builder: (context, state) {
@@ -120,7 +120,7 @@ class _GeneralSettingsState extends State<GeneralSettings> {
                                 spacing: 5,
                                 children: [
                                   Icon(items[index].icon,
-                                      size: 18,
+                                      size: 22,
                                       color: isSelected
                                           ? theme.primary
                                           : theme.secondary),
