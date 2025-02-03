@@ -9,7 +9,10 @@ sealed class MenuState extends Equatable {
 
 final class SelectedState extends MenuState {
   final int index;
-  const SelectedState({required this.index});
+  final Map<int, bool> visibleItems; // Track visibility of menu items
+
+  const SelectedState({required this.index, required this.visibleItems});
+
   @override
-  List<Object> get props => [index];
+  List<Object> get props => [index, visibleItems];
 }

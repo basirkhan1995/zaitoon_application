@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_invoice/Bloc/SettingsCubit/cubit/settings_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/zdialog.dart';
 import 'package:zaitoon_invoice/Views/Menu/Components/components.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -142,22 +141,17 @@ class _MenuPageState extends State<MenuPage> {
             Expanded(
               child: BlocBuilder<MenuCubit, MenuState>(
                 builder: (context, state) {
-                  if (state is SelectedState) {
-                    currentIndex = state.index;
-                  }
+                  final currentState = state as SelectedState;
+                  final visibleItems = currentState.visibleItems;
+
                   return ListView.builder(
-                      itemCount: items.length,
+                      itemCount: visibleItems.length,
                       itemBuilder: (context, index) {
                         bool isSelected =
                             currentIndex == index; // Currently selected item
-                        // isVisible = context.watch<SettingsCubit>().isVisible;
-                        // if (isVisible == false &&
-                        //         items[index].title == "Transport" ||
-                        //     items[index].title == "حمل و نقل" ||
-                        //     items[index].title == "حمل او نقل") {
-                        //   return SizedBox.shrink();
-                        // }
-
+                        if (!visibleItems[index]!) {
+                          return SizedBox.shrink(); // Hide the item
+                        }
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4.0),
                           child: Stack(

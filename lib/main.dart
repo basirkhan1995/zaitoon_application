@@ -7,7 +7,6 @@ import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/General/general_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/PasswordCubit/password_cubit.dart';
-import 'package:zaitoon_invoice/Bloc/SettingsCubit/cubit/settings_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/ThemeCubit/theme_cubit.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
 import 'package:zaitoon_invoice/Themes/themes.dart';
@@ -51,8 +50,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => PasswordCubit(Repositories())),
         //Backup
         BlocProvider(create: (context) => BackupBloc()),
-        //Settings
-        BlocProvider(create: (context) => SettingsCubit()),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {
