@@ -50,25 +50,25 @@ class Tables {
 
   static String userRoleTable = '''
   CREATE TABLE IF NOT EXISTS $userRoleTableName (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  userRoleId INTEGER PRIMARY KEY AUTOINCREMENT,
   roleName TEXT
   )''';
 
-  static String rolesPermmisionsTable = '''
+  static String rolesPermissionsTable = '''
   CREATE TABLE IF NOT EXISTS $rolePermissionTableName (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  roleId INTEGER,
-  permissionId INTEGER,
-  userId INTEGER,
+  rolePermissionId INTEGER PRIMARY KEY AUTOINCREMENT,
+  role INTEGER,
+  permission INTEGER,
+  user INTEGER,
 
-  FOREIGN KEY (roleId) REFERENCES $userRoleTableName(id) ON DELETE CASCADE,
-  FOREIGN KEY (permissionId) REFERENCES $permissionTableName(id) ON DELETE CASCADE,
-  FOREIGN KEY (userId) REFERENCES $userTableName(usrId) ON DELETE CASCADE
+  FOREIGN KEY (role) REFERENCES $userRoleTableName(userRoleId) ON DELETE CASCADE,
+  FOREIGN KEY (permission) REFERENCES $permissionTableName(permissionId) ON DELETE CASCADE,
+  FOREIGN KEY (user) REFERENCES $userTableName(usrId) ON DELETE CASCADE
   )''';
 
   static String permissionsTable = '''
   CREATE TABLE IF NOT EXISTS $permissionTableName (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  permissionId INTEGER PRIMARY KEY AUTOINCREMENT,
 
   viewDatabaseSettings INTEGER,
   viewCurrencySettings INTEGER,
@@ -97,21 +97,24 @@ class Tables {
   static String accountCategoryTable = '''
   CREATE TABLE IF NOT EXISTS $accountCategoryTableName(
   accCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
-  accCategoryName TEXT,
-  languageCode TEXT
+  accCategoryName TEXT
   )''';
 
   static String accountsTable = '''
   CREATE TABLE IF NOT EXISTS $accountTableName(
   accId INTEGER PRIMARY KEY AUTOINCREMENT,
-  accountNumber TEXT UNIQUE NOT NULL,
+  accountNumber TEXT UNIQUE,
+  accountName TEXT NOT NULL,
+  mobile TEXT,
+  address TEXT,
+  email TEXT,
   accountCategory INTEGER,
-  createdBy INTGER,
+  createdBy INTEGER,
   accountDefaultCurrency INTEGER,
   accCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   accUpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   
-  FOREIGN KEY (accountCategory) REFERENCES $accountCategoryTableName (id),
+  FOREIGN KEY (accountCategory) REFERENCES $accountCategoryTableName (accCategoryId),
   FOREIGN KEY (accountDefaultCurrency) REFERENCES $currencyTableName (currencyId)
   )''';
 

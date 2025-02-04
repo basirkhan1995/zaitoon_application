@@ -1,30 +1,23 @@
 import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
 
 class DefaultValues {
+
+  static String defaultRoles = '''
+  INSERT INTO ${Tables.userRoleTableName} (roleName) VALUES
+  ('admin'),
+  ('manager')
+  ''';
+
   static String defaultAccountCategory = '''
   
-  INSERT INTO ${Tables.accountCategoryTableName} (accCategoryId, accCategoryName, languageCode) VALUES
-  (1,'User','en'),
-  (2,'Bank','en'),
-  (3,'Customer','en'),
-  (4,'Saraf','en'),
-  (5,'Expense','en'),
-  (6,'Company','en'),
-  (7,'System','en'),
-  
-  (8,'یوزر','fa'),
-  (9,'بانک','fa'),
-  (10,'مشتری','fa'),
-  (11,'صراف','fa'),
-  (12,'مصرف','fa'),
-  (13,'شرکت','fa'),
-  (14,'سیستم','fa'),
-
-  (15, 'یوزر' , 'ar'),
-  (16, 'بانک' , 'ar'),
-  (17, 'پیرودونکی','ar'),
-  (18, 'صراف' , 'ar'),
-  (19, 'مصرف' , 'ar'),
-  (20, 'شرکت' , 'ar'),
-  (21, 'سیستم' , 'ar')''';
+  INSERT INTO ${Tables.accountCategoryTableName} (accCategoryId, accCategoryName) VALUES
+  (1,'User'),
+  (2,'Bank'),
+  (3,'Customer'),
+  (4,'Saraf'),
+  (5,'Expense'),
+  (6,'Company'),
+  (7,'System'),
+  (8,'Admin')
+  ''';
 }

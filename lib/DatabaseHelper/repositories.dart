@@ -4,9 +4,10 @@ import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
 import 'package:zaitoon_invoice/Json/users.dart';
 
 class Repositories {
+
   //Register User With New Database
-  Future<int> createNewDatabase(
-      {required Users usr,
+  Future<int> createNewDatabase({
+      required Users usr,
       required String path,
       required String dbName}) async {
     await DatabaseHelper.initDatabase(path: path, dbName: dbName);
@@ -15,15 +16,7 @@ class Repositories {
     final stmt = db.prepare('''INSERT INTO ${Tables.appMetadataTableName}
     (ownerName,businessName,email,address,mobile1,mobile2) values (?,?,?,?,?,?)''');
 
-    final stmt2 = db.prepare('''INSERT INTO ${Tables.userTableName}
-    (businessId, userStatus, username, password) 
-    values(?,?,?,?)''');
-
-    final stmt3 = db.prepare(''' INSERT INTO ${Tables.permissionTableName} 
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?''');
-    stmt3.execute(
-        [usr.userId, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
-
+    //Business
     stmt.execute([
       usr.ownerName,
       usr.businessName,
@@ -32,20 +25,64 @@ class Repositories {
       usr.mobile1,
       usr.mobile2,
     ]);
+
     final businessId = db.lastInsertRowId;
     stmt.dispose();
 
-    if (businessId > 0) {
+    /////////////////////////////////////////////////////////////////////
+
+
+    final stmt2 = db.prepare('''INSERT INTO ${Tables.userTableName}
+    (businessId, userStatus, username, password, createdBy) 
+    values(?,?,?,?,?)''');
+
+
       final hashedPassword = DatabaseComponents.hashPassword(usr.password!);
       stmt2.execute([
         businessId, //Business Id
         usr.userStatus, //User Status default 1
-        usr.userRoleId, //User Role default 1 = admin
-        usr.username,
-        hashedPassword, // Encripted Password
+        usr.username,  //Username//CreatedBy - userId
+        hashedPassword, // Encrypted Password
+        usr.userId ?? businessId,
       ]);
+      final userId = db.lastInsertRowId;
       stmt2.dispose();
-    }
+
+
+    final stmt3 = db.prepare('''INSERT INTO ${Tables.permissionTableName} 
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''');
+
+    //Permissions
+    stmt3.execute([usr.userId, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+    final permissionId = db.lastInsertRowId;
+    stmt.dispose();
+
+
+    final stmt4 = db.prepare( '''INSERT INTO ${Tables.rolePermissionTableName} 
+    (role, permission, user) VALUES (?,?,?)''');
+
+    stmt4.execute([
+      1,permissionId, userId
+    ]);
+    stmt4.dispose();
+
+
+    final stmt5 = db.prepare('''INSERT INTO ${Tables.accountTableName} 
+    (accountName, mobile, address, email, createdBy, accountCategory, accountDefaultCurrency)
+    VALUES (?,?,?,?,?,?,?)
+     ''');
+
+    //Create New Account
+    stmt5.execute([
+      usr.ownerName, // Account Name
+      usr.mobile1,   // Mobile
+      usr.address,   // Address
+      usr.email,     //  Email
+      userId,        //  Created By
+      8,             // Account Category
+      1              // currency
+    ]);
+    stmt5.dispose();
 
     return businessId;
   }

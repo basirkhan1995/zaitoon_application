@@ -13,13 +13,13 @@ class Triggers {
   ''';
 
   static String accountNumberTrigger = '''
-  CREATE TRIGGER auto_account_number
+  CREATE TRIGGER set_accountNumber
   AFTER INSERT ON ${Tables.accountTableName}
   FOR EACH ROW
   BEGIN
-  UPDATE ${Tables.accountTableName}
-  SET accountNumber = (SELECT COALESCE(MAX(accountNumber), 99) + 1 FROM ${Tables.accountTableName})
-  WHERE accId = NEW.accId;
+    UPDATE ${Tables.accountTableName}
+     SET accountNumber = 'ACC' || strftime('%Y%m%d', NEW.accCreatedAt) || printf('%04d', NEW.accId)
+    WHERE accId = NEW.accId;
   END;
   ''';
 }
