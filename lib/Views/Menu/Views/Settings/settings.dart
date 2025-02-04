@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/Currency/currency.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/about.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/database_settings.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/general.dart';
@@ -20,7 +21,7 @@ class _SettingsViewState extends State<SettingsView>
   void initState() {
     isExpanded = true;
     isSelected = false;
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
     super.initState();
   }
 
@@ -119,6 +120,7 @@ class _SettingsViewState extends State<SettingsView>
                                 ],
                               ),
                             ),
+
                             //Invoice Settings Tab
                             Tab(
                               child: Row(
@@ -126,6 +128,16 @@ class _SettingsViewState extends State<SettingsView>
                                   const Icon(Icons.fact_check_outlined),
                                   const SizedBox(width: 6),
                                   Text(localization.invoiceSettings),
+                                ],
+                              ),
+                            ),
+
+                            Tab(
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.currency_bitcoin),
+                                  const SizedBox(width: 6),
+                                  Text("Currency"),
                                 ],
                               ),
                             ),
@@ -166,6 +178,7 @@ class _SettingsViewState extends State<SettingsView>
                   children: const [
                     GeneralSettings(),
                     InvoiceSettings(),
+                    CurrencySettingsView(),
                     DatabaseSettings(),
                     AboutView(),
                   ],

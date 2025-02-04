@@ -37,25 +37,33 @@ class Tables {
 
   static String userTable = '''
   CREATE TABLE IF NOT EXISTS $userTableName(
-  userId INTEGER PRIMARY KEY AUTOINCREMENT,
-  userRoleId INTEGER,
+  usrId INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE,
   password TEXT,
   userStatus INTEGER,
   businessId INTEGER NOT NULL,
-  
+  createdBy INTEGER,
   userCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   userUpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (businessId) REFERENCES $appMetadataTableName (bId) ON DELETE CASCADE,
-  FOREIGN KEY (permissionId) REFERENCES $permissionTableName (id) ON DELETE CASCADE,
-  FOREIGN KEY (userRoleId) REFERENCES $userRoleTableName(roleId)
+  FOREIGN KEY (businessId) REFERENCES $appMetadataTableName (bId) ON DELETE CASCADE
   )''';
 
   static String userRoleTable = '''
   CREATE TABLE IF NOT EXISTS $userRoleTableName (
-  roleId INTEGER PRIMARY KEY,
-  roleName TEXT UNIQUE NOT NULL,
-  roleLanguageCode TEXT UNIQUE
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  roleName TEXT
+  )''';
+
+  static String rolesPermmisionsTable = '''
+  CREATE TABLE IF NOT EXISTS $rolePermissionTableName (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  roleId INTEGER,
+  permissionId INTEGER,
+  userId INTEGER,
+
+  FOREIGN KEY (roleId) REFERENCES $userRoleTableName(id) ON DELETE CASCADE,
+  FOREIGN KEY (permissionId) REFERENCES $permissionTableName(id) ON DELETE CASCADE,
+  FOREIGN KEY (userId) REFERENCES $userTableName(usrId) ON DELETE CASCADE
   )''';
 
   static String permissionsTable = '''
@@ -78,37 +86,33 @@ class Tables {
   viewTransfer INTEGER,
   createTransfer INTEGER,
   updateTransfer INTEGER,
-  deleteTransfer INTEGER
-  
-  
-  )''';
+  deleteTransfer INTEGER,
 
-  static String rolesPermissionsTable = '''
-  CREATE TABLE $rolePermissionTableName (
-  rolePermissionId INTEGER PRIMARY KEY AUTOINCREMENT,
-  roleId INTEGER NOT NULL,
-  permissionId INTEGER NOT NULL,
-  FOREIGN KEY(roleId) REFERENCES $userRoleTableName(roleId),
-  FOREIGN KEY(permissionId) REFERENCES $permissionTableName(permissionId)
-  );
-  ''';
+  viewTransaction INTEGER,
+  createTransaction INTEGER,
+  updateTransaction INTEGER,
+  deleteTransaction INTEGER
+  )''';
 
   static String accountCategoryTable = '''
   CREATE TABLE IF NOT EXISTS $accountCategoryTableName(
   accCategoryId INTEGER PRIMARY KEY AUTOINCREMENT,
   accCategoryName TEXT,
-  languageCode TEXT UNIQUE
+  languageCode TEXT
   )''';
 
   static String accountsTable = '''
   CREATE TABLE IF NOT EXISTS $accountTableName(
   accId INTEGER PRIMARY KEY AUTOINCREMENT,
   accountNumber TEXT UNIQUE NOT NULL,
-  accountHolder INTEGER,
   accountCategory INTEGER,
+  createdBy INTGER,
+  accountDefaultCurrency INTEGER,
   accCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   accUpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (accountCategory) REFERENCES $accountCategoryTableName (id)
+  
+  FOREIGN KEY (accountCategory) REFERENCES $accountCategoryTableName (id),
+  FOREIGN KEY (accountDefaultCurrency) REFERENCES $currencyTableName (currencyId)
   )''';
 
   static String currencyTable = '''
@@ -116,8 +120,8 @@ class Tables {
   currencyId INTEGER PRIMARY KEY AUTOINCREMENT,
   currencyCode TEXT NOT NULL UNIQUE,           
   currencyName TEXT NOT NULL,                 
-  symbol TEXT,                             
-  decimalPlaces INTEGER DEFAULT 2 CHECK (decimalPlaces >= 0),
+  symbol TEXT NOT NULL,                             
+  decimalPlaces INTEGER DEFAULT 2 CHECK (decimalPlaces >= 0),  -- Optional decimal check
   isDefault INTEGER DEFAULT 0 CHECK (isDefault IN (0, 1)),
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP 
   )''';
@@ -125,12 +129,14 @@ class Tables {
   static String currencyExchangeRateTable = '''
   CREATE TABLE IF NOT EXISTS $exchangeRatesTableName (
   exchangeId INTEGER PRIMARY KEY AUTOINCREMENT,
-  baseCurrencyCode TEXT NOT NULL,               
-  targetCurrencyCode TEXT NOT NULL,              
-  rate1 REAL NOT NULL CHECK (rate1 > 0),        
-  rate2 REAL NOT NULL CHECK (rate2 > 0),      
-  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,  
-  UNIQUE (baseCurrencyCode, targetCurrencyCode
+  baseCurrencyId INTEGER NOT NULL,               
+  targetCurrencyId INTEGER NOT NULL,              
+  rate1 REAL NOT NULL CHECK (rate1 > 0),          
+  rate2 REAL NOT NULL CHECK (rate2 > 0),          
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,   
+  UNIQUE (baseCurrencyId, targetCurrencyId),      
+  FOREIGN KEY (baseCurrencyId) REFERENCES $currencyTableName(currencyId),
+  FOREIGN KEY (targetCurrencyId) REFERENCES $currencyTableName(currencyId)
   )''';
 
   static String salesTable = '''

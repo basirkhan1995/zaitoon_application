@@ -16,8 +16,13 @@ class Repositories {
     (ownerName,businessName,email,address,mobile1,mobile2) values (?,?,?,?,?,?)''');
 
     final stmt2 = db.prepare('''INSERT INTO ${Tables.userTableName}
-    (businessId, userStatus, userRoleId, username,password) 
-    values(?,?,?,?,?)''');
+    (businessId, userStatus, username, password) 
+    values(?,?,?,?)''');
+
+    final stmt3 = db.prepare(''' INSERT INTO ${Tables.permissionTableName} 
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?''');
+    stmt3.execute(
+        [usr.userId, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
 
     stmt.execute([
       usr.ownerName,
