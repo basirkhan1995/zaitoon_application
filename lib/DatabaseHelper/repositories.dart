@@ -1,13 +1,13 @@
 import 'package:zaitoon_invoice/DatabaseHelper/components.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
+import 'package:zaitoon_invoice/Json/accounts_model.dart';
 import 'package:zaitoon_invoice/Json/users.dart';
 
 class Repositories {
-
   //Register User With New Database
-  Future<int> createNewDatabase({
-      required Users usr,
+  Future<int> createNewDatabase(
+      {required Users usr,
       required String path,
       required String dbName}) async {
     await DatabaseHelper.initDatabase(path: path, dbName: dbName);
@@ -29,43 +29,35 @@ class Repositories {
     final businessId = db.lastInsertRowId;
     stmt.dispose();
 
-    /////////////////////////////////////////////////////////////////////
-
-
     final stmt2 = db.prepare('''INSERT INTO ${Tables.userTableName}
     (businessId, userStatus, username, password, createdBy) 
     values(?,?,?,?,?)''');
 
-
-      final hashedPassword = DatabaseComponents.hashPassword(usr.password!);
-      stmt2.execute([
-        businessId, //Business Id
-        usr.userStatus, //User Status default 1
-        usr.username,  //Username//CreatedBy - userId
-        hashedPassword, // Encrypted Password
-        usr.userId ?? businessId,
-      ]);
-      final userId = db.lastInsertRowId;
-      stmt2.dispose();
-
+    final hashedPassword = DatabaseComponents.hashPassword(usr.password!);
+    stmt2.execute([
+      businessId, //Business Id
+      usr.userStatus, //User Status default 1
+      usr.username, //Username//CreatedBy - userId
+      hashedPassword, // Encrypted Password
+      usr.userId ?? businessId,
+    ]);
+    final userId = db.lastInsertRowId;
+    stmt2.dispose();
 
     final stmt3 = db.prepare('''INSERT INTO ${Tables.permissionTableName} 
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''');
 
     //Permissions
-    stmt3.execute([usr.userId, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+    stmt3.execute(
+        [usr.userId, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
     final permissionId = db.lastInsertRowId;
     stmt.dispose();
 
+    final stmt4 = db.prepare('''INSERT INTO ${Tables.rolePermissionTableName} 
+    (permission, user) VALUES (?,?)''');
 
-    final stmt4 = db.prepare( '''INSERT INTO ${Tables.rolePermissionTableName} 
-    (role, permission, user) VALUES (?,?,?)''');
-
-    stmt4.execute([
-      1,permissionId, userId
-    ]);
+    stmt4.execute([permissionId, userId]);
     stmt4.dispose();
-
 
     final stmt5 = db.prepare('''INSERT INTO ${Tables.accountTableName} 
     (accountName, mobile, address, email, createdBy, accountCategory, accountDefaultCurrency)
@@ -75,12 +67,12 @@ class Repositories {
     //Create New Account
     stmt5.execute([
       usr.ownerName, // Account Name
-      usr.mobile1,   // Mobile
-      usr.address,   // Address
-      usr.email,     //  Email
-      userId,        //  Created By
-      8,             // Account Category
-      1              // currency
+      usr.mobile1, // Mobile
+      usr.address, // Address
+      usr.email, //  Email
+      userId, //  Created By
+      8, // Account Category - admin
+      'USD' // account default currency
     ]);
     stmt5.dispose();
 
@@ -123,10 +115,9 @@ class Repositories {
   Future<Users> getCurrentUser({required username}) async {
     final db = DatabaseHelper.db;
     final usr = db.select('''
-    SELECT user.*, meta.*, role.*
+    SELECT user.*, meta.*
     FROM ${Tables.userTableName} as user INNER JOIN ${Tables.appMetadataTableName} as meta
-    ON user.businessId = meta.bId INNER JOIN ${Tables.userRoleTableName} as role
-    ON user.userRoleId = role.roleId
+    ON user.businessId = meta.bId
     WHERE username = ?
    ''', [username]);
     if (usr.isNotEmpty) {
@@ -213,5 +204,17 @@ class Repositories {
     } else {
       throw message; // Password verification failed
     }
+  }
+
+  Future<List<Accounts>> getAccounts() async {
+    final db = DatabaseHelper.db;
+    final response = db.select('''
+       SELECT acc.*, currency.currency_code, category.* FROM ${Tables.accountTableName} as acc
+       INNER JOIN ${Tables.currencyTableName} as currency ON acc.accountDefaultCurrency = currency.currency_code
+       INNER JOIN ${Tables.accountCategoryTableName} as category ON acc.accountCategory = category.accCategoryId
+    ''');
+    return response.map((row) {
+      return Accounts.fromMap(row);
+    }).toList();
   }
 }

@@ -64,9 +64,7 @@ class _LoginDialogState extends State<LoginDialog> {
         ),
       ),
       content: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
-          // TODO: implement listener
-        },
+        listener: (context, state) {},
         builder: (context, state) {
           return Form(
             key: formKey,

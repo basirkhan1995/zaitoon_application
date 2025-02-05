@@ -23,6 +23,7 @@ class AuthCubit extends Cubit<AuthState> {
           usr: user, path: path, dbName: dbName);
       return res; // Return the result of the operation
     } catch (e) {
+      print(e.toString());
       emit(AuthErrorState(e.toString(), null));
       rethrow; // Optionally rethrow the exception if needed
     }

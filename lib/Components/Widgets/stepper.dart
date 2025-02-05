@@ -57,11 +57,11 @@ class _CustomStepperPageState extends State<CustomStepperPage> {
 
     if (index == _currentStep) {
       borderColor = Theme.of(context).primaryColor;
-      backgroundColor = Theme.of(context).primaryColor.withOpacity(0.2);
+      backgroundColor = Theme.of(context).primaryColor.withValues(alpha: 0.2);
       icon = Icon(Icons.circle, color: Theme.of(context).primaryColor);
     } else if (index < _currentStep) {
       borderColor = Colors.green;
-      backgroundColor = Colors.green.withOpacity(0.2);
+      backgroundColor = Colors.green.withValues(alpha: .2);
       icon = Icon(Icons.check, color: Colors.green);
     }
 

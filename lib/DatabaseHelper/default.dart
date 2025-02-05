@@ -1,11 +1,16 @@
 import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
 
 class DefaultValues {
+  static String defaultCurrencies = '''
+  INSERT INTO ${Tables.currencyTableName} (currency_code, currency_name, symbol, isDefault)
+  VALUES ('USD', 'United States Dollar', '\$',1),
+         ('EUR', 'Euro', '€',0),
+         ('GBP', 'British Pound', '£',0)
+  ''';
 
-  static String defaultRoles = '''
-  INSERT INTO ${Tables.userRoleTableName} (roleName) VALUES
-  ('admin'),
-  ('manager')
+  static String defaultCurrenciesRates = '''
+  INSERT INTO ${Tables.exchangeRatesTableName} (base_currency_code, target_currency_code, rate)
+  VALUES ('USD', 'EUR', 0.85)  -- 1 USD = 0.85 EUR
   ''';
 
   static String defaultAccountCategory = '''

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:zaitoon_invoice/Bloc/AccountsCubit/cubit/accounts_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/BackupBloc/database_backup_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
@@ -50,6 +51,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => PasswordCubit(Repositories())),
         //Backup
         BlocProvider(create: (context) => BackupBloc()),
+        //Accounts
+        BlocProvider(
+            create: (context) => AccountsCubit(Repositories())..loadAccounts()),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {

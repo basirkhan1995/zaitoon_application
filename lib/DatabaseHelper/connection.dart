@@ -72,7 +72,7 @@ class DatabaseHelper {
   static Future<void> initTables() async {
     if (_db != null) {
       // Enable foreign key constraints
-      db.execute('PRAGMA foreign_keys = ON;');
+      _db!.execute('PRAGMA foreign_keys = ON;');
 
       _db!.execute(Tables.metaDataTable);
       _db!.execute(Tables.userTable);
@@ -83,18 +83,22 @@ class DatabaseHelper {
 
       // Roles & Permission
       _db!.execute(Tables.permissionsTable);
-      _db!.execute(Tables.userRoleTable);
       _db!.execute(Tables.rolesPermissionsTable);
 
       //Currency
       _db!.execute(Tables.currencyTable);
+      _db!.execute(Tables.currencyExchangeRateTable);
     }
   }
 
   static Future<void> feedDatabase() async {
     if (_db != null) {
+      //Account Category and User Role
       _db!.execute(DefaultValues.defaultAccountCategory);
-      _db!.execute(DefaultValues.defaultRoles);
+
+      //Currencies
+      _db!.execute(DefaultValues.defaultCurrencies);
+      _db!.execute(DefaultValues.defaultCurrenciesRates);
     }
   }
 

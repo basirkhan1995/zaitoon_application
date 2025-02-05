@@ -40,6 +40,5 @@ class TermsAndCondition extends Equatable {
       };
 
   @override
-  // TODO: implement props
   List<Object?> get props => [tcId, termTitle, termDescription];
 }
