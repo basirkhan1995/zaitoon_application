@@ -48,10 +48,10 @@
   "about": "About",
   "backup": "Backup",
   "general": "General",
-  "invoiceSettings": "Invoice Settings",
-  "databaseSettings": "Database Settings",
-  "accountSettings": "Account Settings",
-  "systemSettings": "System Settings",
+  "invoiceSettings": "Invoice",
+  "databaseSettings": "Database",
+  "accountSettings": "Account",
+  "systemSettings": "System",
   "theme": "Theme",
   "language": "Language",
   "yes": "Yes",
@@ -79,7 +79,9 @@
   "cancel": "CANCEL",
   "backupMessage": "Backup successfully",
   "refresh": "Refresh",
-  "advanced": "Advanced Settings",
+  "advanced": "Advanced",
   "enable": "Enable",
-  "enabled": "Enabled"
+  "enabled": "Enabled",
+  "company": "Company",
+  "currency": "Currency"
 }

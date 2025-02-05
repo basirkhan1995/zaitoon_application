@@ -49,9 +49,9 @@
   "backup": "پشتیبانی",
   "general": "عمومی",
   "invoiceSettings": "تنظیمات بل",
-  "databaseSettings": "تنظیمات دیتابیس",
-  "accountSettings": "تنظیمات حساب",
-  "systemSettings": "تنظیمات سیستم",
+  "databaseSettings": "دیتابیس",
+  "accountSettings": "حساب",
+  "systemSettings": "سیستم",
   "theme": "رنگ ها",
   "language": "زبان",
   "yes": "بلی",
@@ -79,7 +79,9 @@
   "cancel": "انصراف",
   "backupMessage": "پشتیبانی موفقانه انجام شد",
   "refresh": "تازه کردن",
-  "advanced": "تنظیمات پیشرفته",
+  "advanced": "پیشرفته",
   "enable": "فعال کردن",
-  "enabled": "فعال"
+  "enabled": "فعال",
+  "company": "شرکت",
+  "currency": "ارز"
 }

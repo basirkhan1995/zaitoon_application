@@ -24,19 +24,19 @@ class _GeneralSettingsState extends State<GeneralSettings> {
     final locale = AppLocalizations.of(context)!;
     List<MenuComponents> items = [
       MenuComponents(
-          icon: Icons.account_circle_outlined,
-          title: locale.accountSettings,
+          icon: Icons.apartment_rounded,
+          title: locale.company,
           screen: AccountSettings()),
       MenuComponents(
-          icon: Icons.settings_outlined,
+          icon: Icons.add_home,
           title: locale.systemSettings,
           screen: SystemSettingsView()),
       MenuComponents(
-          icon: Icons.lock_clock_outlined,
+          icon: Icons.lock_clock_rounded,
           title: locale.password,
           screen: PasswordSettings()),
       MenuComponents(
-          icon: Icons.lock_open_rounded, title: locale.advanced, screen: AdvancedView()),
+          icon: Icons.settings, title: locale.advanced, screen: AdvancedView()),
     ];
 
     return Row(
@@ -120,7 +120,7 @@ class _GeneralSettingsState extends State<GeneralSettings> {
                                 spacing: 5,
                                 children: [
                                   Icon(items[index].icon,
-                                      size: 22,
+                                      size: 18,
                                       color: isSelected
                                           ? theme.primary
                                           : theme.secondary),

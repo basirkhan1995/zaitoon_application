@@ -135,9 +135,9 @@ class _SettingsViewState extends State<SettingsView>
                             Tab(
                               child: Row(
                                 children: [
-                                  const Icon(Icons.currency_bitcoin),
+                                  const Icon(Icons.currency_rupee_rounded),
                                   const SizedBox(width: 6),
-                                  Text("Currency"),
+                                  Text(localization.currency),
                                 ],
                               ),
                             ),

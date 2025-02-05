@@ -49,9 +49,9 @@
   "backup": "پشتیبانی",
   "general": "عمومی",
   "invoiceSettings": "تنظیمات بل",
-  "databaseSettings": "دیتابیس تنظیمات",
-  "accountSettings": "حساب تنظیمات",
-  "systemSettings": "سیستم تنظیمات",
+  "databaseSettings": "دیتابیس",
+  "accountSettings": "حساب",
+  "systemSettings": "سیستم",
   "theme": "رنگونه",
   "language": "ژبه",
   "yes": "هوو",
@@ -79,7 +79,9 @@
   "cancel": "لغوه کول",
   "backupMessage": "پشتیبانی موفقانه انجام شد",
   "refresh": "تازه کول",
-  "advanced": "تنظیمات پیشرفته",
+  "advanced": "پیشرفته",
   "enable": "فعالول",
-  "enabled": "فعال"
+  "enabled": "فعال",
+  "company": "شرکت",
+  "currency": "ارز"
 }

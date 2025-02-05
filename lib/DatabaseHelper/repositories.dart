@@ -212,7 +212,20 @@ class Repositories {
        SELECT acc.*, currency.currency_code, category.* FROM ${Tables.accountTableName} as acc
        INNER JOIN ${Tables.currencyTableName} as currency ON acc.accountDefaultCurrency = currency.currency_code
        INNER JOIN ${Tables.accountCategoryTableName} as category ON acc.accountCategory = category.accCategoryId
-    ''');
+       ''');
+    return response.map((row) {
+      return Accounts.fromMap(row);
+    }).toList();
+  }
+
+  Future<List<Accounts>> getAccountsByCategory({required List<String> categories}) async {
+    final db = DatabaseHelper.db;
+    final response = db.select('''
+       SELECT acc.*, currency.currency_code, category.* FROM ${Tables.accountTableName} as acc
+       INNER JOIN ${Tables.currencyTableName} as currency ON acc.accountDefaultCurrency = currency.currency_code
+       INNER JOIN ${Tables.accountCategoryTableName} as category ON acc.accountCategory = category.accCategoryId
+       WHERE category.accCategoryName IN (?,?,?,?,?,?,?,?)
+       ''',[categories]);
     return response.map((row) {
       return Accounts.fromMap(row);
     }).toList();

@@ -24,7 +24,7 @@ class Accounts extends Equatable {
   final String? accountCreatedAt;
   final String? accountUpdatedAt;
 
-  Accounts({
+  const Accounts({
     this.accId,
     this.accountNumber,
     this.accountName,
