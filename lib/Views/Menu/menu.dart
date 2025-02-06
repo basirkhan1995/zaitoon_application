@@ -10,6 +10,7 @@ import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/invoice.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/reports.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/transport.dart';
+import 'package:zaitoon_invoice/Views/Menu/products.dart';
 import '../../Bloc/AuthCubit/cubit/auth_cubit.dart';
 import '../../Bloc/MenuCubit/MainMenu/menu_cubit.dart';
 import 'dart:typed_data';
@@ -42,6 +43,10 @@ class _MenuPageState extends State<MenuPage> {
           icon: Icons.account_balance_wallet_outlined,
           title: locale.invoice,
           screen: InvoiceView()),
+      MenuComponents(
+          icon: Icons.shopping_cart,
+          title: locale.products,
+          screen: ProductsView()),
       MenuComponents(
           icon: Icons.event_note,
           title: locale.estimate,
@@ -124,44 +129,57 @@ class _MenuPageState extends State<MenuPage> {
             ),
 
             //Logo
-            isExpanded ? BlocBuilder<AuthCubit, AuthState>(
-              builder: (context, state) {
-                if (state is AuthenticatedState) {
-                  final usr = state.user;
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                        height: 85,
-                        width: 85,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: theme.surfaceContainerHighest),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(5), // Match the container's border radius
-                          child: usr.companyLogo == null && _companyLogo.isEmpty
-                              ? Center(
-                            child: Text(
-                              usr.businessName![0],
-                              style: Theme.of(context).textTheme.displayLarge,
+            isExpanded
+                ? BlocBuilder<AuthCubit, AuthState>(
+                    builder: (context, state) {
+                      if (state is AuthenticatedState) {
+                        final usr = state.user;
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 0),
+                              height: 85,
+                              width: 85,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: theme.surfaceContainerHighest),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                    5), // Match the container's border radius
+                                child: usr.companyLogo == null &&
+                                        _companyLogo.isEmpty
+                                    ? Center(
+                                        child: Text(
+                                          usr.businessName![0],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .displayLarge,
+                                        ),
+                                      )
+                                    : Image.memory(
+                                        _companyLogo.isEmpty
+                                            ? usr.companyLogo!
+                                            : _companyLogo,
+                                        fit: BoxFit
+                                            .cover, // Ensure the image covers the container
+                                        width:
+                                            85, // Match the container's width
+                                        height:
+                                            85, // Match the container's height
+                                      ),
+                              ),
                             ),
-                          )
-                              : Image.memory(
-                            _companyLogo.isEmpty ? usr.companyLogo! : _companyLogo,
-                            fit: BoxFit.cover, // Ensure the image covers the container
-                            width: 85, // Match the container's width
-                            height: 85, // Match the container's height
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }
-                return Container();
-              },
-            ) : SizedBox(),
+                          ],
+                        );
+                      }
+                      return Container();
+                    },
+                  )
+                : SizedBox(),
 
             //User Info
             isExpanded
@@ -169,19 +187,21 @@ class _MenuPageState extends State<MenuPage> {
                     builder: (context, state) {
                       if (state is AuthenticatedState) {
                         return ListTile(
+                          visualDensity: VisualDensity(vertical: -4),
                           hoverColor: theme.primary,
                           splashColor: theme.primary,
-                          onTap: (){
-                            showDialog(context: context, builder: (context){
-                              return SettingsView();
-                            });
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return SettingsView();
+                                });
                           },
                           minVerticalPadding: 0,
                           title: Text(
                             state.user.ownerName ?? "null",
                             style: textTheme.titleMedium,
                           ),
-                          subtitle: Text(state.user.userRoleName ?? "null"),
                         );
                       }
                       return Text(state.toString());

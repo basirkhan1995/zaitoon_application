@@ -13,14 +13,15 @@ class MenuCubit extends Cubit<MenuState> {
     final visibleItems = <int, bool>{};
 
     // Load visibility state for each menu item
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 7; i++) {
       // Adjust the range based on your menu items
       visibleItems[0] = prefs.getBool('menu_item_0') ?? true; // Dashboard
       visibleItems[1] = prefs.getBool('menu_item_1') ?? true; // Invoice
-      visibleItems[2] = prefs.getBool('menu_item_2') ?? false; // Estimate
-      visibleItems[3] = prefs.getBool('menu_item_3') ?? true; // Accounts
-      visibleItems[4] = prefs.getBool('menu_item_4') ?? false; // Transport
-      visibleItems[5] = prefs.getBool('menu_item_5') ?? true; // Report
+      visibleItems[2] = prefs.getBool('menu_item_2') ?? true; // Products
+      visibleItems[3] = prefs.getBool('menu_item_3') ?? false; // Estimate
+      visibleItems[4] = prefs.getBool('menu_item_4') ?? true; // Accounts
+      visibleItems[5] = prefs.getBool('menu_item_5') ?? false; // Transport
+      visibleItems[6] = prefs.getBool('menu_item_6') ?? true; // Report
     }
 
     emit(SelectedState(index: 0, visibleItems: visibleItems));

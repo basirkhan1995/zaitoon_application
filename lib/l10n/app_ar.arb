@@ -83,5 +83,6 @@
   "enable": "فعالول",
   "enabled": "فعال",
   "company": "شرکت",
-  "currency": "ارز"
+  "currency": "ارز",
+  "products":"محصولات"
 }

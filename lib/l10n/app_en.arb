@@ -83,5 +83,6 @@
   "enable": "Enable",
   "enabled": "Enabled",
   "company": "Company",
-  "currency": "Currency"
+  "currency": "Currency",
+  "products":"Products"
 }

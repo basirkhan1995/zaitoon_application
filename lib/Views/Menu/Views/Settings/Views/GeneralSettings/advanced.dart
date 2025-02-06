@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/MainMenu/menu_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class AdvancedView extends StatefulWidget {
   const AdvancedView({super.key});
 
@@ -30,19 +31,25 @@ class _AdvancedViewState extends State<AdvancedView> {
                     return Column(
                       children: [
                         CheckboxListTile(
-                          title: Text(localization.estimate,style: theme.titleMedium),
+                          title: Text(localization.estimate,
+                              style: theme.titleMedium),
                           subtitle: Text("Invoice to give estimate"),
-                          value: visibleItems[2],
+                          value: visibleItems[3],
                           onChanged: (value) {
-                            context.read<MenuCubit>().toggleMenuItemVisibility(2);
+                            context
+                                .read<MenuCubit>()
+                                .toggleMenuItemVisibility(3);
                           },
                         ),
                         CheckboxListTile(
-                          title: Text(localization.transport,style: theme.titleMedium),
+                          title: Text(localization.transport,
+                              style: theme.titleMedium),
                           subtitle: Text("Transportation Company Management"),
-                          value: visibleItems[4],
+                          value: visibleItems[5],
                           onChanged: (value) {
-                            context.read<MenuCubit>().toggleMenuItemVisibility(4);
+                            context
+                                .read<MenuCubit>()
+                                .toggleMenuItemVisibility(5);
                           },
                         ),
                       ],

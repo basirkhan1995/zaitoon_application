@@ -88,6 +88,12 @@ class DatabaseHelper {
       //Currency
       _db!.execute(Tables.currencyTable);
       _db!.execute(Tables.currencyExchangeRateTable);
+
+      //Products
+      _db!.execute(Tables.productCategoryTable);
+      _db!.execute(Tables.productUnitTable);
+      _db!.execute(Tables.productTableName);
+      _db!.execute(Tables.inventoryTable);
     }
   }
 

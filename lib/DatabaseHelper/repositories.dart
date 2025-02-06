@@ -218,16 +218,38 @@ class Repositories {
     }).toList();
   }
 
-  Future<List<Accounts>> getAccountsByCategory({required List<String> categories}) async {
+  Future<List<Accounts>> getAccountsByCategory(
+      {required List<String> categories}) async {
     final db = DatabaseHelper.db;
     final response = db.select('''
        SELECT acc.*, currency.currency_code, category.* FROM ${Tables.accountTableName} as acc
        INNER JOIN ${Tables.currencyTableName} as currency ON acc.accountDefaultCurrency = currency.currency_code
        INNER JOIN ${Tables.accountCategoryTableName} as category ON acc.accountCategory = category.accCategoryId
        WHERE category.accCategoryName IN (?,?,?,?,?,?,?,?)
-       ''',[categories]);
+       ''', [categories]);
     return response.map((row) {
       return Accounts.fromMap(row);
     }).toList();
+  }
+
+  //Products
+  Future<int> insertProduct(
+      {required String productName,
+      required int unit,
+      required int category,
+      required double buyPrice,
+      required double sellPrice}) async {
+    final db = DatabaseHelper.db;
+    final stmt = db.prepare('''
+    INSERT INTO ${Tables.productTableName} (productName, unit, category, buyPrice, sellPrice) 
+    VALUES (?,?,?,?,?) ''');
+
+    stmt.execute([productName, unit, category, buyPrice, sellPrice]);
+    final productId = db.lastInsertRowId;
+
+    final stm2 = db
+        .prepare('''INSERT INTO ${Tables.inventoryTableName} () VALUES () ''');
+
+    return productId;
   }
 }

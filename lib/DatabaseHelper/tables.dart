@@ -1,26 +1,26 @@
 class Tables {
-  static String userTableName = "users";
-  static String currencyTableName = "currency";
-  static String salesTableName = "sales";
-  static String salesItemTableName = 'salesItems';
+  static String userTableName = "usersTbl";
+  static String currencyTableName = "currenciesTbl";
+  static String salesTableName = "salesTbl";
+  static String salesItemTableName = 'salesItemsTbl';
   static String productTableName = 'products';
-  static String customerTableName = 'customers';
-  static String stockTableName = 'stocks';
-  static String paymentMethodTableName = 'paymentMethod';
-  static String termsAndConditionTableName = 'termsAndCondition';
-  static String productUnitTableName = 'productUnit';
-  static String productCategoryTableName = 'productCategory';
-  static String accountTableName = 'accounts';
-  static String itemUnitTableName = 'itemUnit';
-  static String accountCategoryTableName = 'accountCategory';
-  static String permissionTableName = 'permissions';
-  static String rolePermissionTableName = 'rolePermission';
-  static String userRoleTableName = "userRole";
-  static String appMetadataTableName = 'appMetadata';
-  static String transactionsTableName = 'transactions';
-  static String transactionTypeTableName = 'transactionType';
-  static String paymentTableName = 'payments';
-  static String exchangeRatesTableName = 'exchangeRates';
+  static String inventoryTableName = 'inventoriesTbl';
+  static String paymentMethodTableName = 'paymentMethodTbl';
+  static String termsAndConditionTableName = 'termsAndConditionTbl';
+  static String productUnitTableName = 'productUnitTbl';
+  static String productCategoryTableName = 'productCategoryTbl';
+  static String accountTableName = 'accountsTbl';
+  static String itemUnitTableName = 'productUnitTbl';
+  static String accountCategoryTableName = 'accountCategoryTbl';
+  static String permissionTableName = 'permissionsTbl';
+  static String rolePermissionTableName = 'rolePermissionTbl';
+  static String userRoleTableName = "userRoleTbl";
+  static String appMetadataTableName = 'appMetadataTbl';
+  static String transactionsTableName = 'transactionsTbl';
+  static String transactionTypeTableName = 'transactionTypeTbl';
+  static String paymentTableName = 'paymentsTbl';
+  static String exchangeRatesTableName = 'exchangeRatesTbl';
+  static String productsTableName = 'productsTbl';
 
   //Tables
   static String metaDataTable = '''
@@ -111,7 +111,6 @@ class Tables {
   )''';
 
   static String currencyTable = '''
-  
   CREATE TABLE $currencyTableName (
     currency_id INTEGER PRIMARY KEY AUTOINCREMENT,
     currency_code TEXT NOT NULL UNIQUE,
@@ -146,7 +145,7 @@ class Tables {
   invoiceUpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (termsAndCondition) REFERENCES $termsAndConditionTableName(tcId),
   FOREIGN KEY (invoiceCurrency) REFERENCES $currencyTableName(currencyId),
-  FOREIGN KEY (customer) REFERENCES $customerTableName(clientId) ON DELETE CASCADE
+  FOREIGN KEY (customer) REFERENCES $accountTableName(accId) ON DELETE CASCADE
   )''';
 
   static String salesItemsTable = '''
@@ -159,39 +158,13 @@ class Tables {
   paymentMethod INTEGER,
   stock INTEGER,
   
-  FOREIGN KEY (stock) REFERENCES $stockTableName (stockId) ON DELETE CASCADE,
+  FOREIGN KEY (stock) REFERENCES $inventoryTableName (stockId) ON DELETE CASCADE,
   FOREIGN KEY (paymentMethod) REFERENCES $paymentMethodTableName(paymentId) ON DELETE CASCADE,
   FOREIGN KEY (productId) REFERENCES $productTableName(productId) ON DELETE CASCADE,
   FOREIGN KEY (salesId) REFERENCES $salesTableName(salesId) ON DELETE CASCADE
   )''';
 
-  static String productTable = '''
-   CREATE TABLE IF NOT EXISTS $productTableName(
-   productId INTEGER PRIMARY KEY AUTOINCREMENT,
-   productName TEXT,
-   productUnit INTEGER,
-   buyRate REAL DEFAULT 0.00,
-   description TEXT,
-   FOREIGN KEY (productUnit) REFERENCES $productCategoryTableName(unitId) ON DELETE CASCADE 
-   )''';
-
-  static String productCategoryTable = '''
-   CREATE TABLE IF NOT EXISTS $productCategoryTableName (
-   categoryId INTEGER PRIMARY KEY AUTOINCREMENT,
-   categoryName TEXT UNIQUE
-  )''';
-
-  static String customerTable = '''
-  CREATE TABLE IF NOT EXISTS $customerTableName(
-  customerId INTEGER PRIMARY KEY AUTOINCREMENT,
-  customerName TEXT,
-  customerPhone TEXT,
-  customerAddress TEXT,
-  customerEmail TEXT,
-  customerCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-  )''';
-
-  static String itemUnitTable = '''
+  static String productUnitTable = '''
   CREATE TABLE IF NOT EXISTS $itemUnitTableName (
   unitId INTEGER PRIMARY KEY AUTOINCREMENT,
   unitName TEXT UNIQUE
@@ -220,12 +193,6 @@ class Tables {
   isActive INTEGER DEFAULT 1  
   )''';
 
-  static String stockTable = '''
-  CREATE TABLE IF NOT EXISTS $stockTableName(
-  stockId INTEGER PRIMARY KEY AUTOINCREMENT,
-  stockName TEXT UNIQUE
-  )''';
-
   static String termsAndConditionTable = '''
   CREATE TABLE IF NOT EXISTS $termsAndConditionTableName(
   tcId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -243,5 +210,43 @@ class Tables {
   recipientAccountId INTEGER,
   transactionStatus INTEGER,
   transactionDate DATETIME DEFAULT CURRENT_TIMESTAMP
+  )''';
+
+  static String productCategoryTable = '''
+  CREATE TABLE IF NOT EXISTS $productCategoryTableName(
+  pcId INTEGER PRIMARY KEY AUTOINCREMENT,
+  pcName TEXT UNIQUE NOT NULL
+  )''';
+
+  static String productsTable = '''
+  CREATE TABLE IF NOT EXISTS $productTableName(
+    productId INTEGER PRIMARY KEY AUTOINCREMENT,   
+    productSerial INTEGER UNIQUE,                
+    productName TEXT UNIQUE NOT NULL,             
+    unit INTEGER,
+    category INTEGER,
+    buyPrice REAL DEFAULT 0 CHECK(purchasePrice >= 0),
+    sellPrice REAL DEFAULT 0 CHECK(sellPrice >= 0),
+    FOREIGN KEY (category) REFERENCES $productCategoryTableName(pcId)
+    FOREIGN KEY (unit) REFERENCES $productUnitTableName(unitId)
+  )''';
+
+  static String inventoryTable = '''
+  CREATE TABLE IF NOT EXISTS $inventoryTableName(
+  stockId INTEGER PRIMARY KEY AUTOINCREMENT,
+  stockName TEXT UNIQUE,
+  product INTEGER,
+  qty INTEGER,
+  last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (product) REFERENCES $productTableName(productId)
+  )''';
+
+  static String productInventory = '''
+  CREATE TABLE IF NOT EXISTS productInventory(
+  proInvId INTEGER PRIMARY KEY AUTOINCREMENT,
+  product INTEGER,
+  stock INTEGER,
+  qty INTEGER DEFAULT 0 CHECK(qty >= 0)
+  
   )''';
 }
