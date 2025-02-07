@@ -5,6 +5,7 @@ class Tables {
   static String salesItemTableName = 'salesItemsTbl';
   static String productTableName = 'products';
   static String inventoryTableName = 'inventoriesTbl';
+  static String productInventoryTableName = 'productInventoryTbl';
   static String paymentMethodTableName = 'paymentMethodTbl';
   static String termsAndConditionTableName = 'termsAndConditionTbl';
   static String productUnitTableName = 'productUnitTbl';
@@ -164,12 +165,6 @@ class Tables {
   FOREIGN KEY (salesId) REFERENCES $salesTableName(salesId) ON DELETE CASCADE
   )''';
 
-  static String productUnitTable = '''
-  CREATE TABLE IF NOT EXISTS $itemUnitTableName (
-  unitId INTEGER PRIMARY KEY AUTOINCREMENT,
-  unitName TEXT UNIQUE
-  )''';
-
   static String paymentTable = '''
   CREATE TABLE $paymentTableName (
   paymentId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -218,6 +213,12 @@ class Tables {
   pcName TEXT UNIQUE NOT NULL
   )''';
 
+  static String productUnitTable = '''
+  CREATE TABLE IF NOT EXISTS $itemUnitTableName (
+  unitId INTEGER PRIMARY KEY AUTOINCREMENT,
+  unitName TEXT UNIQUE
+  )''';
+
   static String productsTable = '''
   CREATE TABLE IF NOT EXISTS $productTableName(
     productId INTEGER PRIMARY KEY AUTOINCREMENT,   
@@ -225,7 +226,7 @@ class Tables {
     productName TEXT UNIQUE NOT NULL,             
     unit INTEGER,
     category INTEGER,
-    buyPrice REAL DEFAULT 0 CHECK(purchasePrice >= 0),
+    buyPrice REAL DEFAULT 0 CHECK(buyPrice >= 0),
     sellPrice REAL DEFAULT 0 CHECK(sellPrice >= 0),
     FOREIGN KEY (category) REFERENCES $productCategoryTableName(pcId)
     FOREIGN KEY (unit) REFERENCES $productUnitTableName(unitId)
@@ -233,20 +234,20 @@ class Tables {
 
   static String inventoryTable = '''
   CREATE TABLE IF NOT EXISTS $inventoryTableName(
-  stockId INTEGER PRIMARY KEY AUTOINCREMENT,
-  stockName TEXT UNIQUE,
-  product INTEGER,
-  qty INTEGER,
-  last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (product) REFERENCES $productTableName(productId)
+  invId INTEGER PRIMARY KEY AUTOINCREMENT,
+  inventoryName TEXT UNIQUE NOT NULL
   )''';
 
-  static String productInventory = '''
-  CREATE TABLE IF NOT EXISTS productInventory(
+  static String productInventoryTable = '''
+  CREATE TABLE IF NOT EXISTS $productInventoryTableName(
   proInvId INTEGER PRIMARY KEY AUTOINCREMENT,
   product INTEGER,
-  stock INTEGER,
-  qty INTEGER DEFAULT 0 CHECK(qty >= 0)
-  
+  inventory INTEGER,
+  qty INTEGER DEFAULT 0,
+  totalInventory INTEGER DEFAULT 0,
+  inventoryType TEXT CHECK(inventoryType IN ('IN', 'OUT')),
+  last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (inventory) REFERENCES $inventoryTableName(invId),
+  FOREIGN KEY (product) REFERENCES $productTableName(productId)
   )''';
 }

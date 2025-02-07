@@ -2,7 +2,13 @@ import 'package:zaitoon_invoice/DatabaseHelper/components.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
 import 'package:zaitoon_invoice/Json/accounts_model.dart';
+import 'package:zaitoon_invoice/Json/currencies_model.dart';
+import 'package:zaitoon_invoice/Json/inventory_model.dart';
+import 'package:zaitoon_invoice/Json/product_category.dart';
+import 'package:zaitoon_invoice/Json/product_model.dart';
 import 'package:zaitoon_invoice/Json/users.dart';
+
+import '../Json/product_unit.dart';
 
 class Repositories {
   //Register User With New Database
@@ -39,7 +45,7 @@ class Repositories {
       usr.userStatus, //User Status default 1
       usr.username, //Username//CreatedBy - userId
       hashedPassword, // Encrypted Password
-      usr.userId ?? businessId,
+      usr.userId ?? businessId
     ]);
     final userId = db.lastInsertRowId;
     stmt2.dispose();
@@ -182,74 +188,189 @@ class Repositories {
     return db.updatedRows;
   }
 
-  Future<int> changePassword(
-      {required String oldPassword,
-      required String newPassword,
-      required int userId,
-      required String message}) async {
+  Future<int> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required int userId,
+    required String message,
+  }) async {
     final db = DatabaseHelper.db;
-    final response = db.select(
-        '''SELECT * FROM ${Tables.userTableName} WHERE userId = ? ''',
-        [userId]);
-    final encryptedPassword = response.first['password'];
-    if (response.isNotEmpty &&
-        DatabaseComponents.verifyPassword(oldPassword, encryptedPassword)) {
-      final newEncryptedPassword = DatabaseComponents.hashPassword(newPassword);
-      final stmt = db.prepare(
-          '''UPDATE ${Tables.userTableName} SET password = ? WHERE userId = ?
-      ''');
-      stmt.execute([newEncryptedPassword, userId]);
-      db.dispose();
-      return db.updatedRows;
-    } else {
-      throw message; // Password verification failed
+
+    // Fetch user securely
+    final response = await Future(() => db.select(
+        '''SELECT password FROM ${Tables.userTableName} WHERE userId = ?''',
+        [userId]));
+
+    if (response.isEmpty) {
+      throw 'User not found'; // Handle non-existent user
     }
+
+    final encryptedPassword = response.first['password'];
+
+    // Verify old password
+    if (!DatabaseComponents.verifyPassword(oldPassword, encryptedPassword)) {
+      throw message; // Password mismatch
+    }
+
+    // Encrypt new password
+    final newEncryptedPassword = DatabaseComponents.hashPassword(newPassword);
+
+    // Perform update
+    final stmt = db.prepare(
+        '''UPDATE ${Tables.userTableName} SET password = ? WHERE userId = ?''');
+
+    stmt.execute([newEncryptedPassword, userId]);
+    stmt.dispose(); // Dispose prepared statement
+
+    final affectedRows = db.updatedRows; // Store affected rows count
+
+    return affectedRows; // Return count of updated rows
   }
+
 
   Future<List<Accounts>> getAccounts() async {
     final db = DatabaseHelper.db;
-    final response = db.select('''
-       SELECT acc.*, currency.currency_code, category.* FROM ${Tables.accountTableName} as acc
-       INNER JOIN ${Tables.currencyTableName} as currency ON acc.accountDefaultCurrency = currency.currency_code
-       INNER JOIN ${Tables.accountCategoryTableName} as category ON acc.accountCategory = category.accCategoryId
-       ''');
-    return response.map((row) {
-      return Accounts.fromMap(row);
-    }).toList();
+
+    final response = await Future(() => db.select('''
+    SELECT acc.*, currency.currency_code, category.* 
+    FROM ${Tables.accountTableName} AS acc
+    INNER JOIN ${Tables.currencyTableName} AS currency 
+      ON acc.accountDefaultCurrency = currency.currency_code
+    INNER JOIN ${Tables.accountCategoryTableName} AS category 
+      ON acc.accountCategory = category.accCategoryId
+  ''')); // Run synchronously inside Future to prevent blocking
+
+    return response.map((row) => Accounts.fromMap(row)).toList();
   }
 
-  Future<List<Accounts>> getAccountsByCategory(
-      {required List<String> categories}) async {
+
+  Future<List<Accounts>> getAccountsByCategory({required List<String> categories}) async {
     final db = DatabaseHelper.db;
+
+    if (categories.isEmpty) {
+      return []; // Return empty list if no categories are provided
+    }
+
+    // Generate dynamic placeholders (?, ?, ?, ...) based on category count
+    final placeholders = List.filled(categories.length, '?').join(', ');
+
     final response = db.select('''
-       SELECT acc.*, currency.currency_code, category.* FROM ${Tables.accountTableName} as acc
-       INNER JOIN ${Tables.currencyTableName} as currency ON acc.accountDefaultCurrency = currency.currency_code
-       INNER JOIN ${Tables.accountCategoryTableName} as category ON acc.accountCategory = category.accCategoryId
-       WHERE category.accCategoryName IN (?,?,?,?,?,?,?,?)
-       ''', [categories]);
-    return response.map((row) {
-      return Accounts.fromMap(row);
-    }).toList();
+    SELECT acc.*, currency.currency_code, category.* 
+    FROM ${Tables.accountTableName} AS acc
+    INNER JOIN ${Tables.currencyTableName} AS currency 
+      ON acc.accountDefaultCurrency = currency.currency_code
+    INNER JOIN ${Tables.accountCategoryTableName} AS category 
+      ON acc.accountCategory = category.accCategoryId
+    WHERE category.accCategoryName IN ($placeholders)
+  ''', categories); // Directly pass list elements as parameters
+
+    return response.map((row) => Accounts.fromMap(row)).toList();
   }
+
 
   //Products
-  Future<int> insertProduct(
-      {required String productName,
-      required int unit,
-      required int category,
-      required double buyPrice,
-      required double sellPrice}) async {
+  Future<int> createProduct({
+    required String productName,
+    required int unit,
+    required int category,
+    required double buyPrice,
+    required double sellPrice,
+    required int inventory,
+    required int qty,
+  }) async {
     final db = DatabaseHelper.db;
-    final stmt = db.prepare('''
-    INSERT INTO ${Tables.productTableName} (productName, unit, category, buyPrice, sellPrice) 
-    VALUES (?,?,?,?,?) ''');
+      final invType = "IN";
+      final stmt = db.prepare('''
+      INSERT INTO ${Tables.productTableName} (productName, unit, category, buyPrice, sellPrice) 
+      VALUES (?,?,?,?,?)''');
 
-    stmt.execute([productName, unit, category, buyPrice, sellPrice]);
-    final productId = db.lastInsertRowId;
+      stmt.execute([productName, unit, category, buyPrice, sellPrice]);
+      final productId = db.lastInsertRowId;
+      stmt.dispose(); // Dispose after execution
 
-    final stm2 = db
-        .prepare('''INSERT INTO ${Tables.inventoryTableName} () VALUES () ''');
+      // Insert only if inventory and qty are greater than zero (Optional check)
+      if (inventory > 0 || qty > 0) {
+        final stmt2 = db.prepare('''
+        INSERT INTO ${Tables.productInventoryTableName} (product, inventory, qty, inventoryType) 
+        VALUES (?,?,?,?)''');
 
-    return productId;
+        stmt2.execute([productId, inventory, qty, invType]);
+        stmt2.dispose();
+      }
+
+      return productId;
   }
+
+  Future<List<ProductsModel>> getProductsWithTotalInventory() async {
+    final db = DatabaseHelper.db;
+    final response = await Future(()=> db.select('''
+    SELECT 
+      pi.proInvId,
+      p.productId, 
+      p.productName, 
+      p.buyPrice, 
+      p.sellPrice, 
+      pi.qty, 
+      pi.inventoryType, 
+      SUM(CASE 
+              WHEN pi.inventoryType = 'IN' THEN pi.qty 
+              WHEN pi.inventoryType = 'OUT' THEN -pi.qty 
+              ELSE 0 
+          END) OVER (
+              PARTITION BY p.productId 
+              ORDER BY pi.last_updated, pi.proInvId
+          ) AS totalInventory, 
+      u.unitId, 
+      u.unitName, 
+      c.pcId, 
+      c.pcName, 
+      p.productSerial, 
+      i.invId, 
+      i.inventoryName, 
+      pi.last_updated
+    FROM 
+      products AS p
+    LEFT JOIN 
+      productCategoryTbl AS c ON p.category = c.pcId
+    LEFT JOIN 
+      productUnitTbl AS u ON p.unit = u.unitId
+    LEFT JOIN 
+      productInventoryTbl AS pi ON p.productId = pi.product
+    LEFT JOIN 
+      inventoriesTbl AS i ON pi.inventory = i.invId
+    ORDER BY 
+      p.productId, pi.last_updated, pi.proInvId
+
+    '''));
+    return response.map((row) => ProductsModel.fromMap(row)).toList();
+  }
+
+  //Products Category
+  Future<List<ProductsCategoryModel>> getProductCategories()async{
+    final db = DatabaseHelper.db;
+    final response = await Future(()=> db.select('''SELECT * FROM ${Tables.productCategoryTableName}'''));
+    return response.map((row) => ProductsCategoryModel.fromMap(row)).toList();
+  }
+
+  //Product Unit
+  Future<List<ProductsUnitModel>> getProductUnits()async{
+    final db = DatabaseHelper.db;
+    final response = await Future(()=> db.select('''SELECT * FROM ${Tables.productUnitTableName}'''));
+    return response.map((row) => ProductsUnitModel.fromMap(row)).toList();
+  }
+
+  //Currencies
+  Future<List<CurrenciesModel>> getCurrencies()async{
+    final db = DatabaseHelper.db;
+    final response = await Future(()=> db.select('''SELECT * FROM ${Tables.currencyTableName}'''));
+    return response.map((row) => CurrenciesModel.fromMap(row)).toList();
+  }
+
+  //Currencies
+  Future<List<InventoryModel>> getInventories()async{
+    final db = DatabaseHelper.db;
+    final response = await Future(()=> db.select('''SELECT * FROM ${Tables.inventoryTableName}'''));
+    return response.map((row) => InventoryModel.fromMap(row)).toList();
+  }
+
 }

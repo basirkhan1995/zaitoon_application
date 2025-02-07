@@ -34,22 +34,22 @@ class _AdvancedViewState extends State<AdvancedView> {
                           title: Text(localization.estimate,
                               style: theme.titleMedium),
                           subtitle: Text("Invoice to give estimate"),
-                          value: visibleItems[3],
+                          value: visibleItems[2],
                           onChanged: (value) {
                             context
                                 .read<MenuCubit>()
-                                .toggleMenuItemVisibility(3);
+                                .toggleMenuItemVisibility(2);
                           },
                         ),
                         CheckboxListTile(
                           title: Text(localization.transport,
                               style: theme.titleMedium),
                           subtitle: Text("Transportation Company Management"),
-                          value: visibleItems[5],
+                          value: visibleItems[4],
                           onChanged: (value) {
                             context
                                 .read<MenuCubit>()
-                                .toggleMenuItemVisibility(5);
+                                .toggleMenuItemVisibility(4);
                           },
                         ),
                       ],

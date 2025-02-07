@@ -98,18 +98,19 @@ class InputFieldEntitled extends StatelessWidget {
                       inputFormatters: inputFormat,
                       keyboardType: keyboardInputType,
                       controller: controller,
+
                       decoration: InputDecoration(
                         suffixIcon: trailing,
                         suffix: end,
                         disabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),
                           borderSide:
-                              BorderSide(color: Colors.grey.withAlpha(50)),
+                              BorderSide(color: Colors.grey.withAlpha(100)),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),
                           borderSide:
-                              BorderSide(color: Colors.grey.withAlpha(50)),
+                              BorderSide(color: Colors.grey.withAlpha(100)),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),
@@ -126,7 +127,7 @@ class InputFieldEntitled extends StatelessWidget {
                           borderSide: BorderSide(
                               color: Theme.of(context).colorScheme.error),
                         ),
-                        prefixIcon: Icon(icon, size: 18),
+                        prefixIcon: icon != null ? Icon(icon, size: 18) : null,
                         hintText: title,
                         hintStyle: const TextStyle(
                             fontWeight: FontWeight.normal,
@@ -134,6 +135,7 @@ class InputFieldEntitled extends StatelessWidget {
                             color: Colors.grey),
                         isDense: compactMode,
                         contentPadding: EdgeInsets.symmetric(
+                          horizontal: 10,
                             vertical:
                                 5.0), // Adjust this value to control the height
                       ),

@@ -10,22 +10,19 @@ class MenuCubit extends Cubit<MenuState> {
 
   Future<void> _loadState() async {
     final prefs = await SharedPreferences.getInstance();
-    final visibleItems = <int, bool>{};
-
-    // Load visibility state for each menu item
-    for (int i = 0; i < 7; i++) {
-      // Adjust the range based on your menu items
-      visibleItems[0] = prefs.getBool('menu_item_0') ?? true; // Dashboard
-      visibleItems[1] = prefs.getBool('menu_item_1') ?? true; // Invoice
-      visibleItems[2] = prefs.getBool('menu_item_2') ?? true; // Products
-      visibleItems[3] = prefs.getBool('menu_item_3') ?? false; // Estimate
-      visibleItems[4] = prefs.getBool('menu_item_4') ?? true; // Accounts
-      visibleItems[5] = prefs.getBool('menu_item_5') ?? false; // Transport
-      visibleItems[6] = prefs.getBool('menu_item_6') ?? true; // Report
-    }
+    final visibleItems = <int, bool>{
+      0: prefs.getBool('menu_item_0') ?? true,  // Dashboard
+      1: prefs.getBool('menu_item_1') ?? true,  // Invoice
+      2: prefs.getBool('menu_item_2') ?? false, // Estimate (default false)
+      3: prefs.getBool('menu_item_3') ?? true,  // Accounts
+      4: prefs.getBool('menu_item_4') ?? false, // Transport (default false)
+      5: prefs.getBool('menu_item_5') ?? true,  // Products
+      6: prefs.getBool('menu_item_6') ?? true,  // Reports
+    };
 
     emit(SelectedState(index: 0, visibleItems: visibleItems));
   }
+
 
   Future<void> _saveState(Map<int, bool> visibleItems) async {
     final prefs = await SharedPreferences.getInstance();

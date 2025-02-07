@@ -20,7 +20,6 @@ class Users extends Equatable {
   final String? password;
   final int? userStatus;
   final int? userRoleId;
-  final String? userRoleName;
 
   const Users({
     this.userId,
@@ -36,7 +35,6 @@ class Users extends Equatable {
     this.password,
     this.userStatus,
     this.userRoleId,
-    this.userRoleName,
   });
 
   Users copyWith({
@@ -69,7 +67,7 @@ class Users extends Equatable {
           password: password ?? this.password,
           userStatus: userStatus ?? this.userStatus,
           userRoleId: userRoleId ?? userId,
-          userRoleName: userRoleName ?? userRoleName);
+          );
 
   factory Users.fromMap(Map<String, dynamic> json) => Users(
         userId: json["userId"],
@@ -85,7 +83,7 @@ class Users extends Equatable {
         password: json["password"],
         userStatus: json["userStatus"],
         userRoleId: json["roleId"],
-        userRoleName: json["roleName"],
+
       );
 
   Map<String, dynamic> toMap() => {
@@ -101,7 +99,7 @@ class Users extends Equatable {
         "username": username,
         "password": password,
         "userStatus": userStatus,
-        "roleName": userRoleName,
+
         "roleId": userRoleId
       };
 
@@ -117,7 +115,6 @@ class Users extends Equatable {
         address,
         mobile1,
         mobile2,
-        userRoleName,
         userRoleId
       ];
 }

@@ -5,7 +5,7 @@ import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/advanced.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/password_settings.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/GeneralSettings/system_settings.dart';
-import '../../../Components/components.dart';
+import '../../../components.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GeneralSettings extends StatefulWidget {

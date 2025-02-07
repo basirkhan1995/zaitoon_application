@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Components/Widgets/zdialog.dart';
-import 'package:zaitoon_invoice/Views/Menu/Components/components.dart';
+import 'package:zaitoon_invoice/Views/Menu/components.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/settings.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/accounts.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/dashboard.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Accounts/accounts.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Dashboard/dashboard.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/invoice.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/reports.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/transport.dart';
-import 'package:zaitoon_invoice/Views/Menu/products.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Invoice/invoice.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Reports/reports.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Transport/transport.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Products/products.dart';
 import '../../Bloc/AuthCubit/cubit/auth_cubit.dart';
 import '../../Bloc/MenuCubit/MainMenu/menu_cubit.dart';
 import 'dart:typed_data';
@@ -44,10 +44,6 @@ class _MenuPageState extends State<MenuPage> {
           title: locale.invoice,
           screen: InvoiceView()),
       MenuComponents(
-          icon: Icons.shopping_cart,
-          title: locale.products,
-          screen: ProductsView()),
-      MenuComponents(
           icon: Icons.event_note,
           title: locale.estimate,
           screen: EstimateView()),
@@ -60,9 +56,14 @@ class _MenuPageState extends State<MenuPage> {
           title: locale.transport,
           screen: TransportView()),
       MenuComponents(
+          icon: Icons.shopping_cart,
+          title: locale.products,
+          screen: ProductsView()),
+      MenuComponents(
           icon: Icons.info_outline_rounded,
           title: locale.report,
           screen: ReportsView()),
+
     ];
 
     return Row(

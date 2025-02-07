@@ -4,10 +4,15 @@ import 'package:window_manager/window_manager.dart';
 import 'package:zaitoon_invoice/Bloc/AccountsCubit/cubit/accounts_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/BackupBloc/database_backup_bloc.dart';
+import 'package:zaitoon_invoice/Bloc/CurrencyCubit/Currency/currency_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/General/general_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/PasswordCubit/password_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/ProductsCubit/Categories/product_category_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/ProductsCubit/Inventory/inventory_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/ProductsCubit/Units/units_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/ProductsCubit/products_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/ThemeCubit/theme_cubit.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
 import 'package:zaitoon_invoice/Themes/themes.dart';
@@ -54,6 +59,20 @@ class MyApp extends StatelessWidget {
         //Accounts
         BlocProvider(
             create: (context) => AccountsCubit(Repositories())..loadAccounts()),
+        //Products
+        BlocProvider(
+            create: (context) => ProductsCubit(Repositories())..loadProductsEvent()),
+        BlocProvider(
+            create: (context) => ProductCategoryCubit(Repositories())..loadProductCategoryEvent()),
+        BlocProvider(
+            create: (context) => UnitsCubit(Repositories())..loadProductUnitEvent()),
+       //Currencies
+        BlocProvider(
+            create: (context) => CurrencyCubit(Repositories())..loadCurrenciesEvent()),
+        //Currencies
+        BlocProvider(
+            create: (context) => InventoryCubit(Repositories())..loadInventoryEvent()),
+
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {

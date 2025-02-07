@@ -1,11 +1,23 @@
 import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
 
 class DefaultValues {
+
+  static String defaultUnits = '''
+  INSERT INTO ${Tables.productUnitTableName} (unitName) VALUES 
+  ('pcs'),
+  ('ton'),
+  ('kg'),
+  ('km'),
+  ('cm'),
+  ('m')
+  ''';
+
   static String defaultCurrencies = '''
   INSERT INTO ${Tables.currencyTableName} (currency_code, currency_name, symbol, isDefault)
   VALUES ('USD', 'United States Dollar', '\$',1),
          ('EUR', 'Euro', '€',0),
-         ('GBP', 'British Pound', '£',0)
+         ('GBP', 'British Pound', '£',0),
+         ('AFN', 'Afghani', 'AFN',0)
   ''';
 
   static String defaultCurrenciesRates = '''
@@ -24,5 +36,12 @@ class DefaultValues {
   (6,'Company'),
   (7,'System'),
   (8,'Admin')
+  ''';
+
+  static String defaultProductCategory = '''
+  INSERT INTO ${Tables.productCategoryTableName} (pcName) VALUES 
+  ('Electronics'),
+  ('Food'),
+  ('Beverage')
   ''';
 }
