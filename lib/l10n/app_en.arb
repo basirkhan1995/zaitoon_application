@@ -84,5 +84,18 @@
   "enabled": "Enabled",
   "company": "Company",
   "currency": "Currency",
-  "products":"Products"
+  "products": "Products",
+  "qty": "QTY",
+  "itemName": "Item name",
+  "description": "Description",
+  "tax": "Tax",
+  "total": "Total",
+  "rate": "Rate",
+  "discount": "Discount",
+  "invoiceNumber": "Invoice number",
+  "customerNotFound": "Customer not found",
+  "customer": "Customer",
+  "dueDate": "Due date",
+  "invoiceDate": "Invoice date",
+  "newEstimate": "New Estimate"
 }

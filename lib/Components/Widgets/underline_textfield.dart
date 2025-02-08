@@ -12,7 +12,7 @@ class UnderlineTextfield extends StatelessWidget {
   final VoidCallback? onTap;
   final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onChanged;
-
+  final double? width;
   const UnderlineTextfield({
     super.key,
     this.enabledColor = Colors.cyan,
@@ -21,6 +21,7 @@ class UnderlineTextfield extends StatelessWidget {
     this.focusNode,
     this.isEnabled = true,
     this.validator,
+    this.width,
     required this.title,
     this.readOnly = false,
     this.hintText,
@@ -30,50 +31,53 @@ class UnderlineTextfield extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-            isRequired
-                ? Text(
-                    " *",
-                    style: TextStyle(color: Colors.red.shade900),
-                  )
-                : const SizedBox(),
-          ],
-        ),
-        TextFormField(
-          focusNode: focusNode,
-          enabled: isEnabled,
-          controller: controller,
-          onTap: onTap,
-          onChanged: onChanged,
-          validator: validator,
-          readOnly:
-              readOnly, // Make the field read-only to prevent manual input.
-          decoration: InputDecoration(
-            isDense: true,
-            contentPadding: const EdgeInsets.symmetric(vertical: 8),
-            hintText: hintText,
-            hintStyle: TextStyle(color: enabledColor),
-            disabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(width: 1, color: Colors.grey),
-            ),
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(width: 1, color: Colors.grey),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(width: 1.5, color: enabledColor),
+    return SizedBox(
+      width: width ?? 300,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Text(
+                title,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+              isRequired
+                  ? Text(
+                      " *",
+                      style: TextStyle(color: Colors.red.shade900),
+                    )
+                  : const SizedBox(),
+            ],
+          ),
+          TextFormField(
+            focusNode: focusNode,
+            enabled: isEnabled,
+            controller: controller,
+            onTap: onTap,
+            onChanged: onChanged,
+            validator: validator,
+            readOnly:
+                readOnly, // Make the field read-only to prevent manual input.
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 8),
+              hintText: hintText,
+              hintStyle: TextStyle(color: enabledColor),
+              disabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(width: 1, color: Colors.grey),
+              ),
+              enabledBorder: const UnderlineInputBorder(
+                borderSide: BorderSide(width: 1, color: Colors.grey),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(width: 1.5, color: enabledColor),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

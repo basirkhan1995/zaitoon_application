@@ -84,5 +84,18 @@
   "enabled": "فعال",
   "company": "شرکت",
   "currency": "ارز",
-  "products":"محصولات"
+  "products": "محصولات",
+  "qty": "تعداد",
+  "itemName": "جنس نوم",
+  "description": "شرح",
+  "tax": "مالیات",
+  "total": "مجموعه",
+  "rate": "قیمت",
+  "discount": "تخفیف",
+  "invoiceNumber": "نمبر بل",
+  "customerNotFound": "پیروندکی پیدا نسو",
+  "customer": "پیرودونکی",
+  "dueDate": "تسلیمی نیته",
+  "invoiceDate": "بل نیته",
+  "newEstimate": "قیمت دهی"
 }

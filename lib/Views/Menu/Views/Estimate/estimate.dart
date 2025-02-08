@@ -1,12 +1,122 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:zaitoon_invoice/Components/Widgets/background.dart';
+import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zaitoon_invoice/Components/Widgets/underline_textfield.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/customer_searchable_field.dart';
 
-class EstimateView extends StatelessWidget {
+class EstimateView extends StatefulWidget {
   const EstimateView({super.key});
 
   @override
+  State<EstimateView> createState() => _EstimateViewState();
+}
+
+class _EstimateViewState extends State<EstimateView> {
+  final customer = TextEditingController();
+  final invoiceNumber = TextEditingController();
+  final dueDate = TextEditingController();
+  final invoiceDate = TextEditingController();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      invoiceNumber.text = "INV00001";
+    });
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Text("Estimate"),
+
+    final color = Theme.of(context).colorScheme;
+    final theme = Theme.of(context).textTheme;
+    final locale = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      body: Column(
+        children: [
+          buildAppBar(context),
+          buildEstimate(context),
+        ],
+      ),
+    );
+  }
+
+  Widget buildAppBar(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
+    final theme = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(locale.newEstimate, style: theme.titleLarge),
+          ZOutlineButton(
+              height: 45,
+              width: 120,
+              icon: FontAwesomeIcons.solidFilePdf,
+              label: Text("PDF"),
+              onPressed: () {})
+        ],
+      ),
+    );
+  }
+
+  Widget buildEstimate(BuildContext context) {
+    return AppBackground(
+      padding: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
+      child: Column(
+        children: [
+          _buildInvoiceHeader(context)
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInvoiceHeader(BuildContext context){
+    final locale = AppLocalizations.of(context)!;
+    final theme = Theme.of(context).textTheme;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          spacing: 20,
+          children: [
+
+            UnderlineTextfield(
+              title: locale.invoiceNumber,
+              isRequired: true,
+            ),
+
+            AccountSearchableInputField(
+              title: locale.customer,
+              controller: customer,
+              isRequire: true,
+            ),
+
+          ],
+        ),
+
+        Column(
+          spacing: 20,
+          children: [
+
+            UnderlineTextfield(
+              title: locale.invoiceNumber,
+              isRequired: true,
+            ),
+
+            AccountSearchableInputField(
+              isRequire: true,
+              title: locale.customer,
+              controller: customer,
+            ),
+
+          ],
+        ),
+
+      ],
     );
   }
 }
@@ -17,59 +127,64 @@ class EstimateView extends StatelessWidget {
 // import 'package:intl/intl.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 // import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
-// import 'package:zaitoon_invoice/Json/estimate.dart';
-// import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate_pdf.dart';
-
-// class NewEstimateView extends StatefulWidget {
-//   const NewEstimateView({super.key});
-
+// import '../../../../Components/Widgets/underline_textfield.dart';
+// import '../../../../Json/estimate_model.dart';
+// import 'customer_searchable_field.dart';
+// import 'estimate_pdf.dart';
+//
+// class EstimateView extends StatefulWidget {
+//   const EstimateView({super.key});
+//
 //   @override
-//   State<NewEstimateView> createState() => _NewEstimateViewState();
+//   State<EstimateView> createState() => _EstimateViewState();
 // }
-
-// class _NewEstimateViewState extends State<NewEstimateView> {
+//
+// class _EstimateViewState extends State<EstimateView> {
 //   final invoiceNumber = TextEditingController();
 //   final issueDate = TextEditingController();
 //   final dueDate = TextEditingController();
 //   final clientCtrl = TextEditingController();
-
+//   final invoiceInfo = InvoiceInfo();
 //   int? vendorId;
 //   int? invoiceId;
 //   int? termId;
 //   int currencyId = 1;
-
+//
 //   final formKey = GlobalKey<FormState>();
 //   final formKeyInvoiceItem = GlobalKey<FormState>();
-//   List<EstimateItemsModel> estimateItems = [];
-
+//   List<Invoice> invoiceItems = [];
+//
 //   @override
 //   void initState() {
 //     _loadNextInvoiceId();
 //     _setDefaultDate();
-//     estimateItems.add(EstimateItemsModel(
-//         controller: TextEditingController())); // Add one empty row initially
+//
+//     invoiceItems.add(Invoice(controller: TextEditingController())); // Add one empty row initially
+//
 //     WidgetsBinding.instance.addPostFrameCallback((e) {
 //       context.read<InvoiceItemBloc>().add(LoadItemsEvent());
 //       context.read<TermsConditionCubit>().getTermsEvent();
 //     });
 //     super.initState();
 //   }
-
-//   final invoice = InvoiceComponents();
-//   final invoiceInfo = EstimateModel();
-
+//
+//
+//
 //   @override
 //   Widget build(BuildContext context) {
+//
+//     final localization = AppLocalizations.of(context)!;
+//
 //     List<String> headerTitles = [
 //       "#",
-//       AppLocalizations.of(context)!.itemName,
-//       AppLocalizations.of(context)!.qty,
-//       AppLocalizations.of(context)!.rate,
-//       AppLocalizations.of(context)!.tax,
-//       AppLocalizations.of(context)!.discount,
-//       AppLocalizations.of(context)!.total,
+//       localization.itemName,
+//       localization.qty,
+//       localization.rate,
+//       localization.tax,
+//       localization.discount,
+//       localization.total,
 //     ];
-
+//
 //     return Scaffold(
 //       backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
 //       body: BlocBuilder<AuthCubit, AuthState>(
@@ -112,7 +227,7 @@ class EstimateView extends StatelessWidget {
 //       ),
 //     );
 //   }
-
+//
 //   Widget _invoiceHeader() {
 //     return Form(
 //       key: formKey,
@@ -152,9 +267,9 @@ class EstimateView extends StatelessWidget {
 //                               });
 //                             },
 //                             isRequire: true,
-//                             hintText: AppLocalizations.of(context)!.clientName,
+//                             hintText: AppLocalizations.of(context)!.customer,
 //                             controller: clientCtrl,
-//                             title: AppLocalizations.of(context)!.client)),
+//                             title: AppLocalizations.of(context)!.customer)),
 //                   ],
 //                 ),
 //                 Column(
@@ -169,12 +284,12 @@ class EstimateView extends StatelessWidget {
 //                             });
 //                           },
 //                           onTap: () =>
-//                               _selectDate(context, issueDate, "issueDate"),
+//                               _selectDate(context, issueDate, "invoice date"),
 //                           isRequired: true,
-//                           hintText: AppLocalizations.of(context)!.selectDate,
+//                           hintText: AppLocalizations.of(context)!.invoiceDate,
 //                           enabledColor: Theme.of(context).colorScheme.onSurface,
 //                           controller: issueDate,
-//                           title: AppLocalizations.of(context)!.issueDate),
+//                           title: AppLocalizations.of(context)!.invoiceDate),
 //                     ),
 //                     SizedBox(
 //                       width: MediaQuery.sizeOf(context).width * .12,
@@ -189,7 +304,7 @@ class EstimateView extends StatelessWidget {
 //                           isRequired: true,
 //                           enabledColor: Theme.of(context).colorScheme.onSurface,
 //                           controller: dueDate,
-//                           hintText: AppLocalizations.of(context)!.selectDate,
+//                           hintText: AppLocalizations.of(context)!.dueDate,
 //                           title: AppLocalizations.of(context)!.dueDate),
 //                     ),
 //                   ],
@@ -201,12 +316,12 @@ class EstimateView extends StatelessWidget {
 //       ),
 //     );
 //   }
-
+//
 //   Widget _invoiceItemsTable() {
 //     return BlocConsumer<InvoiceItemBloc, InvoiceItemState>(
 //       listener: (context, state) {
 //         if (state is InvoiceItemsLoadedState) {
-//           estimateItems = state.items;
+//           invoiceItems = state.items;
 //         }
 //       },
 //       builder: (context, state) {
@@ -245,7 +360,7 @@ class EstimateView extends StatelessWidget {
 //                             style: TextStyle(
 //                                 fontWeight: FontWeight.bold,
 //                                 color:
-//                                     Theme.of(context).colorScheme.onPrimary)),
+//                                 Theme.of(context).colorScheme.onPrimary)),
 //                       ),
 //                       Text(AppLocalizations.of(context)!.itemDescription,
 //                           style: TextStyle(
@@ -280,12 +395,12 @@ class EstimateView extends StatelessWidget {
 //                   ...state.items.asMap().entries.map((entry) {
 //                     final index = entry.key;
 //                     final item = entry.value;
-
+//
 //                     int rowNumber = index + 1;
 //                     final rowTotal = ((item.quantity * item.amount) -
-//                             ((item.quantity * item.amount) *
-//                                 (item.discount / 100)) +
-//                             ((item.quantity * item.amount) * (item.tax / 100)))
+//                         ((item.quantity * item.amount) *
+//                             (item.discount / 100)) +
+//                         ((item.quantity * item.amount) * (item.tax / 100)))
 //                         .toStringAsFixed(2);
 //                     item.total = double.parse(rowTotal);
 //                     item.rowNumber = rowNumber;
@@ -300,14 +415,14 @@ class EstimateView extends StatelessWidget {
 //                           controller: item.controller,
 //                           onChanged: (value) {
 //                             context.read<InvoiceItemBloc>().add(
-//                                   UpdateItemEvent(
-//                                     index,
-//                                     item.copyWith(
-//                                       itemId: value,
-//                                       itemName: item.controller!.text,
-//                                     ),
-//                                   ),
-//                                 );
+//                               UpdateItemEvent(
+//                                 index,
+//                                 item.copyWith(
+//                                   itemId: value,
+//                                   itemName: item.controller!.text,
+//                                 ),
+//                               ),
+//                             );
 //                           },
 //                           hintText: "",
 //                           title: "",
@@ -317,12 +432,12 @@ class EstimateView extends StatelessWidget {
 //                           title: "",
 //                           onChanged: (value) {
 //                             context.read<InvoiceItemBloc>().add(
-//                                   UpdateItemEvent(
-//                                     index,
-//                                     item.copyWith(
-//                                         quantity: int.tryParse(value) ?? 1),
-//                                   ),
-//                                 );
+//                               UpdateItemEvent(
+//                                 index,
+//                                 item.copyWith(
+//                                     quantity: int.tryParse(value) ?? 1),
+//                               ),
+//                             );
 //                           },
 //                         ),
 //                         UnderlineTextfield(
@@ -330,12 +445,12 @@ class EstimateView extends StatelessWidget {
 //                           title: "",
 //                           onChanged: (value) {
 //                             context.read<InvoiceItemBloc>().add(
-//                                   UpdateItemEvent(
-//                                     index,
-//                                     item.copyWith(
-//                                         amount: double.tryParse(value) ?? 0.00),
-//                                   ),
-//                                 );
+//                               UpdateItemEvent(
+//                                 index,
+//                                 item.copyWith(
+//                                     amount: double.tryParse(value) ?? 0.00),
+//                               ),
+//                             );
 //                           },
 //                         ),
 //                         UnderlineTextfield(
@@ -343,13 +458,13 @@ class EstimateView extends StatelessWidget {
 //                           title: "",
 //                           onChanged: (value) {
 //                             context.read<InvoiceItemBloc>().add(
-//                                   UpdateItemEvent(
-//                                     index,
-//                                     item.copyWith(
-//                                         discount:
-//                                             double.tryParse(value) ?? 0.0),
-//                                   ),
-//                                 );
+//                               UpdateItemEvent(
+//                                 index,
+//                                 item.copyWith(
+//                                     discount:
+//                                     double.tryParse(value) ?? 0.0),
+//                               ),
+//                             );
 //                           },
 //                         ),
 //                         UnderlineTextfield(
@@ -357,12 +472,12 @@ class EstimateView extends StatelessWidget {
 //                           title: "",
 //                           onChanged: (value) {
 //                             context.read<InvoiceItemBloc>().add(
-//                                   UpdateItemEvent(
-//                                     index,
-//                                     item.copyWith(
-//                                         tax: double.tryParse(value) ?? 0.0),
-//                                   ),
-//                                 );
+//                               UpdateItemEvent(
+//                                 index,
+//                                 item.copyWith(
+//                                     tax: double.tryParse(value) ?? 0.0),
+//                               ),
+//                             );
 //                           },
 //                         ),
 //                         UnderlineTextfield(
@@ -396,9 +511,10 @@ class EstimateView extends StatelessWidget {
 //       },
 //     );
 //   }
-
+//
 //   Widget _actionButton(List<String> headerTitles) {
-//     String language;
+//     final invoice = InvoiceComponents(AppLocalizations.of(context)!);
+//
 //     return Padding(
 //       padding: const EdgeInsets.symmetric(vertical: 3),
 //       child: Row(
@@ -426,23 +542,11 @@ class EstimateView extends StatelessWidget {
 //                         onPressed: () {
 //                           if (formKey.currentState!.validate()) {
 //                             invoice.generateInvoice(
-//                                 invoiceInfo: invoiceInfo,
-//                                 invoiceItems: estimateItems,
-//                                 headerTitles: headerTitles,
-//                                 appLanguage: locale.languageCode,
-//                                 customerTitle:
-//                                     AppLocalizations.of(context)!.client,
-//                                 supplierTitle:
-//                                     AppLocalizations.of(context)!.supplier,
-//                                 discountTitle:
-//                                     AppLocalizations.of(context)!.discount,
-//                                 totalTitle: AppLocalizations.of(context)!.total,
-//                                 subtotalTitle:
-//                                     AppLocalizations.of(context)!.subtotal,
-//                                 vatTitle: AppLocalizations.of(context)!.vat,
-//                                 termsAndConditionTitle:
-//                                     AppLocalizations.of(context)!
-//                                         .termsConditionTitle);
+//                               invoiceInfo: invoiceInfo,
+//                               invoiceItems: invoiceItems,
+//                               headerTitles: headerTitles,
+//                               appLanguage: locale.languageCode,
+//                             );
 //                           }
 //                         },
 //                         icon: FontAwesomeIcons.solidFilePdf,
@@ -460,20 +564,16 @@ class EstimateView extends StatelessWidget {
 //                       if (formKey.currentState!.validate() &&
 //                           formKeyInvoiceItem.currentState!.validate()) {
 //                         await context
-//                             .read<InvoiceCubit>()
-//                             .addInvoice(
-//                                 termConditionId: termId!,
-//                                 status: 1,
-//                                 vendorId: vendorId!,
-//                                 currencyId: currencyId,
-//                                 issueDate: issueDate.text,
-//                                 dueDate: dueDate.text,
-//                                 items: estimateItems)
-//                             .then((e) {
+//                             .read<InvoiceCubit>().addInvoice(
+//                             termConditionId: termId!,
+//                             status: 1,
+//                             vendorId: vendorId!,
+//                             currencyId: currencyId,
+//                             issueDate: issueDate.text,
+//                             dueDate: dueDate.text,
+//                             items: invoiceItems).then((e) {
 //                           setState(() {
-//                             context
-//                                 .read<MenuBloc>()
-//                                 .add(const OnChangedEvent(4));
+//                             context.read<MenuBloc>().add(const OnChangedEvent(4));
 //                           });
 //                         });
 //                       }
@@ -489,8 +589,9 @@ class EstimateView extends StatelessWidget {
 //       ),
 //     );
 //   }
-
+//
 //   Widget _invoiceFooter() {
+//
 //     return Padding(
 //       padding: const EdgeInsets.all(8.0),
 //       child: Row(
@@ -504,9 +605,7 @@ class EstimateView extends StatelessWidget {
 //               GestureDetector(
 //                   onTap: () {
 //                     setState(() {
-//                       context
-//                           .read<InvoiceItemBloc>()
-//                           .add(AddItemEvent(estimateItems));
+//                       context.read<InvoiceItemBloc>().add(AddItemEvent(invoiceItems));
 //                     });
 //                   },
 //                   child: Chip(
@@ -524,10 +623,10 @@ class EstimateView extends StatelessWidget {
 //                         context: context,
 //                         builder: (context) {
 //                           return TermsConditionView(
-//                             onChanged: (value) {
+//                             onChanged: (value){
 //                               invoiceInfo.termsAndCondition = value;
 //                             },
-//                             onChangedId: (value) {
+//                             onChangedId: (value){
 //                               termId = value;
 //                             },
 //                           );
@@ -555,11 +654,10 @@ class EstimateView extends StatelessWidget {
 //       ),
 //     );
 //   }
-
+//
 //   //Not Used For Now
 //   Widget buildTotal2(
-//       {required List<EstimateItemsModel> invoiceItems,
-//       required InvoiceInfo invoice}) {
+//       {required List<Invoice> invoiceItems, required InvoiceInfo invoice}) {
 //     double calculateSubtotal() {
 //       double subtotal = 0.0;
 //       for (var item in invoiceItems) {
@@ -567,7 +665,7 @@ class EstimateView extends StatelessWidget {
 //       }
 //       return subtotal;
 //     }
-
+//
 //     double calculateTotalVat() {
 //       double totalVat = 0.0;
 //       for (var item in invoiceItems) {
@@ -575,7 +673,7 @@ class EstimateView extends StatelessWidget {
 //       }
 //       return totalVat;
 //     }
-
+//
 //     double calculateDiscount() {
 //       double totalDiscount = 0.0;
 //       for (var item in invoiceItems) {
@@ -583,14 +681,14 @@ class EstimateView extends StatelessWidget {
 //       }
 //       return totalDiscount;
 //     }
-
+//
 //     double calculateTotal() {
 //       double subtotal = calculateSubtotal();
 //       double totalVat = calculateTotalVat();
 //       double totalDiscount = calculateDiscount();
 //       return subtotal + totalVat - totalDiscount;
 //     }
-
+//
 //     final subtotal = calculateSubtotal();
 //     final totalTax = calculateTotalVat();
 //     final discount = calculateDiscount();
@@ -663,29 +761,29 @@ class EstimateView extends StatelessWidget {
 //                       ]),
 //                 ])));
 //   }
-
+//
 //   void _loadNextInvoiceId() async {
 //     String nextInvoiceId = await Repository().getNextInvoiceId();
 //     invoiceNumber.text = nextInvoiceId;
 //     invoiceInfo.invoiceNumber = nextInvoiceId;
 //   }
-
+//
 //   void _setDefaultDate() {
 //     final now = DateTime.now();
 //     final defaultIssueDate = DateFormat('MMM dd, yyyy').format(now);
 //     final defaultDueDate =
-//         DateFormat('MMM dd, yyyy').format(now.add(const Duration(days: 7)));
-
+//     DateFormat('MMM dd, yyyy').format(now.add(const Duration(days: 7)));
+//
 //     // Set default values in text controllers
 //     issueDate.text = defaultIssueDate;
 //     dueDate.text = defaultDueDate;
-
+//
 //     // Update the invoiceInfo object with default dates
 //     invoiceInfo.invoiceDate = DateFormat('MMM dd, yyyy').format(now);
 //     invoiceInfo.dueDate =
 //         DateFormat('MMM dd, yyyy').format(now.add(const Duration(days: 7)));
 //   }
-
+//
 //   Future<void> _selectDate(BuildContext context,
 //       TextEditingController controller, String field) async {
 //     final DateTime? pickedDate = await showDatePicker(
@@ -698,7 +796,7 @@ class EstimateView extends StatelessWidget {
 //       String formattedDate = DateFormat('MMM dd, yyyy').format(pickedDate);
 //       setState(() {
 //         controller.text = formattedDate;
-
+//
 //         // Update the respective field in the model
 //         if (field == "issueDate") {
 //           invoiceInfo.invoiceDate = formattedDate;
@@ -708,10 +806,9 @@ class EstimateView extends StatelessWidget {
 //       });
 //     }
 //   }
-
+//
 //   Widget buildTotal(
-//       {required List<EstimateItemsModel> invoiceItems,
-//       required InvoiceInfo info}) {
+//       {required List<Invoice> invoiceItems, required InvoiceInfo info}) {
 //     return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
 //       double calculateSubtotal() {
 //         double subtotal = 0.0;
@@ -720,7 +817,7 @@ class EstimateView extends StatelessWidget {
 //         }
 //         return subtotal;
 //       }
-
+//
 //       double calculateTotalVat() {
 //         double totalVat = 0.0;
 //         for (var item in invoiceItems) {
@@ -728,7 +825,7 @@ class EstimateView extends StatelessWidget {
 //         }
 //         return totalVat;
 //       }
-
+//
 //       double calculateDiscount() {
 //         double totalDiscount = 0.0;
 //         for (var item in invoiceItems) {
@@ -737,19 +834,19 @@ class EstimateView extends StatelessWidget {
 //         }
 //         return totalDiscount;
 //       }
-
+//
 //       double calculateTotal() {
 //         double subtotal = calculateSubtotal();
 //         double totalVat = calculateTotalVat();
 //         double totalDiscount = calculateDiscount();
 //         return subtotal + totalVat - totalDiscount;
 //       }
-
+//
 //       final subtotal = calculateSubtotal();
 //       final totalVat = calculateTotalVat();
 //       final totalDiscount = calculateDiscount();
 //       final total = calculateTotal();
-
+//
 //       String? currency;
 //       if (state is AuthenticatedState) {
 //         currency = state.users.currencyCode!;
@@ -794,7 +891,7 @@ class EstimateView extends StatelessWidget {
 //                 Container(
 //                   margin: const EdgeInsets.symmetric(vertical: 8),
 //                   padding:
-//                       const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+//                   const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
 //                   decoration: BoxDecoration(
 //                       borderRadius: BorderRadius.circular(2),
 //                       color: Theme.of(context).colorScheme.primary),

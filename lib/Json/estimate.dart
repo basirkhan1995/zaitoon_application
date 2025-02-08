@@ -104,7 +104,7 @@ class EstimateItemsModel {
   }
 }
 
-class Invoice {
+class EstimateItems {
   int? rowNumber;
   int? invDetailId;
   int? itemId;
@@ -117,7 +117,7 @@ class Invoice {
   double total;
   TextEditingController? controller;
   FocusNode? focusNode;
-  Invoice({
+  EstimateItems({
     this.rowNumber,
     this.invDetailId,
     this.itemId,

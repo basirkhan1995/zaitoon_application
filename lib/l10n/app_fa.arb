@@ -84,5 +84,18 @@
   "enabled": "فعال",
   "company": "شرکت",
   "currency": "ارز",
-  "products":"محصولات"
+  "products": "محصولات",
+  "qty": "تعداد",
+  "itemName": "اسم جنس",
+  "description": "تفصیلات",
+  "tax": "مالیات",
+  "total": "مجموعه",
+  "rate": "قیمت",
+  "discount": "تخفیف",
+  "invoiceNumber": "نمبر بل",
+  "customerNotFound": "مشتری یافت نشد",
+  "customer": "مشتری",
+  "dueDate": "تاریخ تسلیمی",
+  "invoiceDate": "تاریخ بل",
+  "newEstimate": "قیمت دهی"
 }
