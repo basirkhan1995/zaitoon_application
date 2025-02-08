@@ -22,7 +22,7 @@ class _EstimateViewState extends State<EstimateView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_){
-      invoiceNumber.text = "INV00001";
+      invoiceNumber.text = "INV000001";
     });
     super.initState();
   }
