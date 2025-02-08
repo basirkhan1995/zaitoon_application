@@ -72,7 +72,7 @@ class DatabaseHelper {
   static Future<void> initTables() async {
     if (_db != null) {
       // Enable foreign key constraints
-     // _db!.execute('PRAGMA foreign_keys = ON;');
+      // _db!.execute('PRAGMA foreign_keys = ON;');
 
       _db!.execute(Tables.metaDataTable);
       _db!.execute(Tables.userTable);
@@ -95,7 +95,6 @@ class DatabaseHelper {
       _db!.execute(Tables.productsTable);
       _db!.execute(Tables.inventoryTable);
       _db!.execute(Tables.productInventoryTable);
-
     }
   }
 
@@ -108,7 +107,8 @@ class DatabaseHelper {
       _db!.execute(DefaultValues.defaultCurrencies);
       _db!.execute(DefaultValues.defaultCurrenciesRates);
       _db!.execute(DefaultValues.defaultUnits);
-
+      _db!.execute(DefaultValues.defaultInventory);
+      _db!.execute(DefaultValues.defaultTrnType);
     }
   }
 

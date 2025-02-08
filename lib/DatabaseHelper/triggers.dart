@@ -22,4 +22,34 @@ class Triggers {
     WHERE accId = NEW.accId;
   END;
   ''';
+
+  static String accountDepositTrigger = '''
+  CREATE TRIGGER update_balance_after_deposit
+  AFTER INSERT ON transactions
+  FOR EACH ROW
+  BEGIN
+  -- Check if the transaction is a deposit
+  IF NEW.transaction_type_id = 1 THEN
+    -- Update the sender (and receiver) account's balance
+    UPDATE accounts
+    SET balance = balance + NEW.amount
+    WHERE account_id = NEW.receiver_account_id;
+     END IF;
+   END;
+ ''';
+
+  static String accoutWithdrawTrigger = '''
+  CREATE TRIGGER update_balance_after_withdrawal
+AFTER INSERT ON transactions
+FOR EACH ROW
+BEGIN
+  -- Check if the transaction is a withdrawal
+  IF NEW.transaction_type_id = 2 THEN
+    -- Update the sender account's balance (the one making the withdrawal)
+    UPDATE accounts
+    SET balance = balance - NEW.amount
+    WHERE account_id = NEW.sender_account_id;
+  END IF;
+END;
+  ''';
 }

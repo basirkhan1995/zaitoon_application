@@ -101,6 +101,7 @@ class Tables {
   mobile TEXT,
   address TEXT,
   email TEXT,
+  balance REAL DEFAULT 0,
   accountCategory INTEGER,
   createdBy INTEGER,
   accountDefaultCurrency TEXT,
@@ -197,14 +198,24 @@ class Tables {
 
   static String transactionsTable = '''
   CREATE TABLE IF NOT EXISTS $transactionsTableName (
-  transactionId INTEGER PRIMARY KEY AUTOINCREMENT,
-  transactionType INTEGER NOT NULL, -- e.g., "sale", "refund"
-  transactionNumber TEXT NOT NULL,
+  trnId INTEGER PRIMARY KEY AUTOINCREMENT,
+  trnType INTEGER NOT NULL,
+  trnNumber TEXT NOT NULL,
   amount REAL DEFAULT 0.0 NOT NULL,
   senderAccountId INTEGER,
   recipientAccountId INTEGER,
-  transactionStatus INTEGER,
-  transactionDate DATETIME DEFAULT CURRENT_TIMESTAMP
+  trnStatus INTEGER,
+  trnDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+  trnUpdatedAt TEXT,
+  FOREIGN KEY (senderAccountId) REFERENCES $accountTableName (accId),
+  FOREIGN KEY (recipientAccountId) REFERENCES $accountTableName (accId),
+  FOREIGN KEY (trnType) REFERENCES $transactionTypeTableName(trnTypeId)
+  )''';
+
+  static String transactionTypeTable = '''
+  CREATE TABLE IF NOT EXISTS $transactionTypeTableName (
+  trnTypeId INTEGER PRIMARY KEY AUTOINCREMENT,
+  trnTypeName INTEGER UNIQUE NOT NULL //Sale, Paid, Received
   )''';
 
   static String productCategoryTable = '''
