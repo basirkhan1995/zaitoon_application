@@ -27,7 +27,7 @@ final class BackupSuccessState extends DatabaseState{
 }
 
 final class LoadedRecentDatabasesState extends DatabaseState {
-  final List<Databases> allDatabases;
+  final List<AllDatabases> allDatabases;
   final DatabaseInfo? selectedDatabase;
   final List<DatabaseBackupInfo>? allBackupDatabases;
 

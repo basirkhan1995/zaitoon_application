@@ -353,19 +353,16 @@ class Repositories {
 
   //Search products by ID & Name
   Future<List<ProductsModel>> searchProducts(String keyword) async {
-    final db = DatabaseHelper.db!;
-
+    final db = DatabaseHelper.db;
     // Check if the keyword is numeric
     final isNumeric = int.tryParse(keyword) != null;
-
     // Construct the query dynamically
     final items = await Future(() => db.select('''
     SELECT products.*, unit.*
     FROM ${Tables.productTableName} as i
-    INNER JOIN ${Tables.productUnitTableName} as unit ON products.unit = u.unitId
-    WHERE ${isNumeric ? "productId = ?" : "productName LIKE ?"}
+    INNER JOIN ${Tables.productUnitTableName} as unit ON products.unit = unit.unitId
+    WHERE ${isNumeric ? "productId = ?" : "productName LIKE ? "}
   ''', isNumeric ? [keyword] : ["%$keyword%"]));
-
     return items.map((e) => ProductsModel.fromMap(e)).toList();
   }
 

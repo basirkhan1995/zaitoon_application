@@ -10,7 +10,7 @@ final class EstimateInitial extends EstimateState {
 }
 
 final class InvoiceItemTableLoadedState extends EstimateState{
-  final List<EstimateItems> estimateItems;
+  final List<EstimateItemsModel> estimateItems;
   const InvoiceItemTableLoadedState(this.estimateItems);
   @override
   List<Object> get props => [estimateItems];

@@ -5,7 +5,7 @@ import 'package:zaitoon_invoice/DatabaseHelper/components.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
 import 'package:zaitoon_invoice/Json/backup_model.dart';
 import 'package:zaitoon_invoice/Json/databases.dart';
-import 'package:zaitoon_invoice/Json/info.dart';
+import 'package:zaitoon_invoice/Json/database_info.dart';
 
 part 'database_state.dart';
 

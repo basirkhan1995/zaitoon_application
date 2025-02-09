@@ -10,7 +10,7 @@ import '../../../../../Bloc/BackupBloc/database_backup_bloc.dart';
 import '../../../../../Components/Other/functions.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../../../../Json/info.dart';
+import '../../../../../Json/database_info.dart';
 
 class DatabaseSettings extends StatefulWidget {
   const DatabaseSettings({super.key});

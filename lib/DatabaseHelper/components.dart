@@ -45,10 +45,10 @@ class DatabaseComponents {
   }
 
   //Load Recent Databases
-  static Future<List<Databases>> loadRecentDatabase() async {
+  static Future<List<AllDatabases>> loadRecentDatabase() async {
     final prefs = await SharedPreferences.getInstance();
     List<String> dbPaths = prefs.getStringList('recent_db_paths') ?? [];
-    List<Databases> dbInfoList = [];
+    List<AllDatabases> dbInfoList = [];
 
     for (String path in dbPaths) {
       try {
@@ -58,7 +58,7 @@ class DatabaseComponents {
           int size = await file.length(); // Get file size in bytes
           String backupPath = p.dirname(path);
           String backup = join(backupPath, "$name Backup");
-          dbInfoList.add(Databases(
+          dbInfoList.add(AllDatabases(
             name: name,
             path: path,
             size: size,

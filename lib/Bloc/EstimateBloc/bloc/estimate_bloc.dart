@@ -13,7 +13,8 @@ class EstimateBloc extends Bloc<EstimateEvent, EstimateState> {
       _items.clear();
       try {
         if (_items.isEmpty) {
-          _items.add(EstimateItemsModel(
+          _items.add(
+              EstimateItemsModel(
             controller: TextEditingController(),
             quantity: 1,
           ));

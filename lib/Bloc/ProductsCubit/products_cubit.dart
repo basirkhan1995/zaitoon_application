@@ -16,7 +16,15 @@ class ProductsCubit extends Cubit<ProductsState> {
     }catch(e){
       emit(ProductsErrorState(e.toString()));
     }
+  }
 
+  Future<void> productSearchingEvent({required String keyword})async{
+    try{
+     final res = await _repositories.searchProducts(keyword);
+     emit(ProductSearchingState(res));
+    }catch(e){
+      emit(ProductsErrorState(e.toString()));
+    }
   }
 
   Future<void> addProductEvent({

@@ -11,7 +11,7 @@ import 'package:zaitoon_invoice/Components/Widgets/language_dropdown.dart';
 import 'package:zaitoon_invoice/Components/Widgets/onhover_widget.dart';
 import 'package:zaitoon_invoice/Components/Widgets/theme_dropdown.dart';
 import 'package:zaitoon_invoice/Components/Widgets/zdialog.dart';
-import 'package:zaitoon_invoice/Json/info.dart';
+import 'package:zaitoon_invoice/Json/database_info.dart';
 import 'package:zaitoon_invoice/Views/Authentication/login.dart';
 import 'package:zaitoon_invoice/Views/Authentication/register.dart';
 import 'package:zaitoon_invoice/Views/home.dart';

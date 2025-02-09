@@ -8,7 +8,7 @@ import 'package:zaitoon_invoice/Json/users.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginDialog extends StatefulWidget {
-  final Databases dbInfo;
+  final AllDatabases dbInfo;
   const LoginDialog({super.key, required this.dbInfo});
 
   @override

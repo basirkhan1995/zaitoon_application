@@ -1,10 +1,10 @@
-class Databases {
+class AllDatabases {
   final String name;
   final String path;
   final int size;
   final String backupDirectory;
 
-  Databases(
+  AllDatabases(
       {required this.name,
       required this.path,
       required this.size,
@@ -17,8 +17,8 @@ class Databases {
         'backupDirectory': backupDirectory,
       };
 
-  factory Databases.fromJson(Map<String, dynamic> json) {
-    return Databases(
+  factory AllDatabases.fromJson(Map<String, dynamic> json) {
+    return AllDatabases(
         name: json['name'],
         path: json['path'],
         size: json['size'],
