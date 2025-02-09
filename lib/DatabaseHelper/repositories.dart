@@ -227,7 +227,6 @@ class Repositories {
     return affectedRows; // Return count of updated rows
   }
 
-
   Future<List<Accounts>> getAccounts() async {
     final db = DatabaseHelper.db;
 
@@ -243,8 +242,8 @@ class Repositories {
     return response.map((row) => Accounts.fromMap(row)).toList();
   }
 
-
-  Future<List<Accounts>> getAccountsByCategory({required List<String> categories}) async {
+  Future<List<Accounts>> getAccountsByCategory(
+      {required List<String> categories}) async {
     final db = DatabaseHelper.db;
 
     if (categories.isEmpty) {
@@ -267,7 +266,6 @@ class Repositories {
     return response.map((row) => Accounts.fromMap(row)).toList();
   }
 
-
   //Products
   Future<int> createProduct({
     required String productName,
@@ -279,31 +277,31 @@ class Repositories {
     required int qty,
   }) async {
     final db = DatabaseHelper.db;
-      final invType = "IN";
-      final stmt = db.prepare('''
+    final invType = "IN";
+    final stmt = db.prepare('''
       INSERT INTO ${Tables.productTableName} (productName, unit, category, buyPrice, sellPrice) 
       VALUES (?,?,?,?,?)''');
 
-      stmt.execute([productName, unit, category, buyPrice, sellPrice]);
-      final productId = db.lastInsertRowId;
-      stmt.dispose(); // Dispose after execution
+    stmt.execute([productName, unit, category, buyPrice, sellPrice]);
+    final productId = db.lastInsertRowId;
+    stmt.dispose(); // Dispose after execution
 
-      // Insert only if inventory and qty are greater than zero (Optional check)
-      if (inventory > 0 || qty > 0) {
-        final stmt2 = db.prepare('''
+    // Insert only if inventory and qty are greater than zero (Optional check)
+    if (inventory > 0 || qty > 0) {
+      final stmt2 = db.prepare('''
         INSERT INTO ${Tables.productInventoryTableName} (product, inventory, qty, inventoryType) 
         VALUES (?,?,?,?)''');
 
-        stmt2.execute([productId, inventory, qty, invType]);
-        stmt2.dispose();
-      }
+      stmt2.execute([productId, inventory, qty, invType]);
+      stmt2.dispose();
+    }
 
-      return productId;
+    return productId;
   }
 
   Future<List<ProductsModel>> getProductsWithTotalInventory() async {
     final db = DatabaseHelper.db;
-    final response = await Future(()=> db.select('''
+    final response = await Future(() => db.select('''
     SELECT 
       pi.proInvId,
       p.productId, 
@@ -346,31 +344,52 @@ class Repositories {
   }
 
   //Products Category
-  Future<List<ProductsCategoryModel>> getProductCategories()async{
+  Future<List<ProductsCategoryModel>> getProductCategories() async {
     final db = DatabaseHelper.db;
-    final response = await Future(()=> db.select('''SELECT * FROM ${Tables.productCategoryTableName}'''));
+    final response = await Future(() =>
+        db.select('''SELECT * FROM ${Tables.productCategoryTableName}'''));
     return response.map((row) => ProductsCategoryModel.fromMap(row)).toList();
   }
 
+  //Search products by ID & Name
+  Future<List<ProductsModel>> searchProducts(String keyword) async {
+    final db = DatabaseHelper.db!;
+
+    // Check if the keyword is numeric
+    final isNumeric = int.tryParse(keyword) != null;
+
+    // Construct the query dynamically
+    final items = await Future(() => db.select('''
+    SELECT products.*, unit.*
+    FROM ${Tables.productTableName} as i
+    INNER JOIN ${Tables.productUnitTableName} as unit ON products.unit = u.unitId
+    WHERE ${isNumeric ? "productId = ?" : "productName LIKE ?"}
+  ''', isNumeric ? [keyword] : ["%$keyword%"]));
+
+    return items.map((e) => ProductsModel.fromMap(e)).toList();
+  }
+
   //Product Unit
-  Future<List<ProductsUnitModel>> getProductUnits()async{
+  Future<List<ProductsUnitModel>> getProductUnits() async {
     final db = DatabaseHelper.db;
-    final response = await Future(()=> db.select('''SELECT * FROM ${Tables.productUnitTableName}'''));
+    final response = await Future(
+        () => db.select('''SELECT * FROM ${Tables.productUnitTableName}'''));
     return response.map((row) => ProductsUnitModel.fromMap(row)).toList();
   }
 
   //Currencies
-  Future<List<CurrenciesModel>> getCurrencies()async{
+  Future<List<CurrenciesModel>> getCurrencies() async {
     final db = DatabaseHelper.db;
-    final response = await Future(()=> db.select('''SELECT * FROM ${Tables.currencyTableName}'''));
+    final response = await Future(
+        () => db.select('''SELECT * FROM ${Tables.currencyTableName}'''));
     return response.map((row) => CurrenciesModel.fromMap(row)).toList();
   }
 
   //Currencies
-  Future<List<InventoryModel>> getInventories()async{
+  Future<List<InventoryModel>> getInventories() async {
     final db = DatabaseHelper.db;
-    final response = await Future(()=> db.select('''SELECT * FROM ${Tables.inventoryTableName}'''));
+    final response = await Future(
+        () => db.select('''SELECT * FROM ${Tables.inventoryTableName}'''));
     return response.map((row) => InventoryModel.fromMap(row)).toList();
   }
-
 }

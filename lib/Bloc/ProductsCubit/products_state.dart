@@ -9,16 +9,30 @@ final class ProductsInitial extends ProductsState {
   List<Object> get props => [];
 }
 
-final class ProductsErrorState extends ProductsState{
+final class ProductsErrorState extends ProductsState {
   final String error;
-  const ProductsErrorState (this.error);
+  const ProductsErrorState(this.error);
   @override
   List<Object> get props => [error];
 }
 
-final class LoadedProductsState extends ProductsState{
+final class LoadedProductsState extends ProductsState {
   final List<ProductsModel> products;
   const LoadedProductsState(this.products);
   @override
   List<Object> get props => [products];
+}
+
+final class ProductSearchingState extends ProductsState {
+  final List<ProductsModel> suggestions;
+  const ProductSearchingState(this.suggestions);
+  @override
+  List<Object> get props => [suggestions];
+}
+
+final class ProductSearchingError extends ProductsState {
+  final String error;
+  const ProductSearchingError(this.error);
+  @override
+  List<Object> get props => [error];
 }

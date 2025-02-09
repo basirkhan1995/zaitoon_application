@@ -6,6 +6,7 @@ import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/BackupBloc/database_backup_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/CurrencyCubit/Currency/currency_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/EstimateBloc/bloc/estimate_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/General/general_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/PasswordCubit/password_cubit.dart';
@@ -61,18 +62,23 @@ class MyApp extends StatelessWidget {
             create: (context) => AccountsCubit(Repositories())..loadAccounts()),
         //Products
         BlocProvider(
-            create: (context) => ProductsCubit(Repositories())..loadProductsEvent()),
+            create: (context) =>
+                ProductsCubit(Repositories())..loadProductsEvent()),
         BlocProvider(
-            create: (context) => ProductCategoryCubit(Repositories())..loadProductCategoryEvent()),
+            create: (context) => ProductCategoryCubit(Repositories())
+              ..loadProductCategoryEvent()),
         BlocProvider(
-            create: (context) => UnitsCubit(Repositories())..loadProductUnitEvent()),
-       //Currencies
-        BlocProvider(
-            create: (context) => CurrencyCubit(Repositories())..loadCurrenciesEvent()),
+            create: (context) =>
+                UnitsCubit(Repositories())..loadProductUnitEvent()),
         //Currencies
         BlocProvider(
-            create: (context) => InventoryCubit(Repositories())..loadInventoryEvent()),
-
+            create: (context) =>
+                CurrencyCubit(Repositories())..loadCurrenciesEvent()),
+        //Currencies
+        BlocProvider(
+            create: (context) =>
+                InventoryCubit(Repositories())..loadInventoryEvent()),
+        BlocProvider(create: (context) => EstimateBloc()),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {
