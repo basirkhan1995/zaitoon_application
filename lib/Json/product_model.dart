@@ -11,6 +11,7 @@ class ProductsModel {
   final String? productName;
   final double? buyPrice;
   final double? sellPrice;
+  final double? averageBuyPrice;
   final int? qty;
   final String? inventoryType;
   final int? totalInventory;
@@ -29,6 +30,7 @@ class ProductsModel {
     this.productName,
     this.buyPrice,
     this.sellPrice,
+    this.averageBuyPrice,
     this.qty,
     this.inventoryType,
     this.totalInventory,
@@ -48,6 +50,7 @@ class ProductsModel {
     String? productName,
     double? buyPrice,
     double? sellPrice,
+    double? averageBuyPrice,
     int? qty,
     String? inventoryType,
     int? totalInventory,
@@ -66,6 +69,7 @@ class ProductsModel {
         productName: productName ?? this.productName,
         buyPrice: buyPrice ?? this.buyPrice,
         sellPrice: sellPrice ?? this.sellPrice,
+        averageBuyPrice: averageBuyPrice ?? this.averageBuyPrice,
         qty: qty ?? this.qty,
         inventoryType: inventoryType ?? this.inventoryType,
         totalInventory: totalInventory ?? this.totalInventory,
@@ -85,6 +89,7 @@ class ProductsModel {
         productName: json["productName"],
         buyPrice: json["buyPrice"]?.toDouble(),
         sellPrice: json["sellPrice"]?.toDouble(),
+        averageBuyPrice: json["averageBuyPrice"]?.toDouble(),
         qty: json["qty"],
         inventoryType: json["inventoryType"],
         totalInventory: json["totalInventory"],
@@ -104,6 +109,7 @@ class ProductsModel {
         "productName": productName,
         "buyPrice": buyPrice,
         "sellPrice": sellPrice,
+        "averageBuyPrice" : averageBuyPrice,
         "qty": qty,
         "inventoryType": inventoryType,
         "totalInventory": totalInventory,

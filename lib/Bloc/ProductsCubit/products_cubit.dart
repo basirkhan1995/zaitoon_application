@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
 import 'package:zaitoon_invoice/Json/product_model.dart';
+import 'package:zaitoon_invoice/Json/products_report_model.dart';
 
 part 'products_state.dart';
 
@@ -13,6 +14,16 @@ class ProductsCubit extends Cubit<ProductsState> {
     try{
      final response = await _repositories.getProductsWithTotalInventory();
      emit(LoadedProductsState(response));
+
+    }catch(e){
+      emit(ProductsErrorState(e.toString()));
+    }
+  }
+
+  Future<void> productsReport({required int productId, required int inventoryId})async{
+    try{
+      final res = await _repositories.productsReport(inventoryId: 1, productId: 1);
+      emit(ReportProductsState(res));
     }catch(e){
       emit(ProductsErrorState(e.toString()));
     }

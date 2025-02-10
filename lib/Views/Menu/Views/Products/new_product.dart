@@ -181,11 +181,11 @@ class _NewProductState extends State<NewProduct> {
               onPressed: () {
                 context.read<ProductsCubit>().addProductEvent(
                     productName: productName.text,
-                    unit: unitId!,
+                    unit: unitId,
                     category: categoryId,
                     buyPrice: double.parse(buyPrice.text),
                     sellPrice: double.parse(sellPrice.text),
-                    inventory: inventoryId!,
+                    inventory: inventoryId,
                     qty: int.parse(initialQty.text));
               }),
           ZOutlineButton(

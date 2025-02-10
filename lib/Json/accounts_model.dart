@@ -23,7 +23,7 @@ class Accounts extends Equatable {
   final int? createdBy;
   final String? accountCreatedAt;
   final String? accountUpdatedAt;
-  final double? balance;
+
   const Accounts({
     this.accId,
     this.accountNumber,
@@ -37,7 +37,6 @@ class Accounts extends Equatable {
     this.createdBy,
     this.accountCreatedAt,
     this.accountUpdatedAt,
-    this.balance,
   });
 
   Accounts copyWith({
@@ -53,7 +52,6 @@ class Accounts extends Equatable {
     int? createdBy,
     String? accountCreatedAt,
     String? accountUpdatedAt,
-    double? balance,
   }) =>
       Accounts(
         accId: accId ?? this.accId,
@@ -68,7 +66,6 @@ class Accounts extends Equatable {
         createdBy: createdBy ?? this.createdBy,
         accountCreatedAt: accountCreatedAt ?? this.accountCreatedAt,
         accountUpdatedAt: accountUpdatedAt ?? this.accountUpdatedAt,
-        balance: balance ?? this.balance,
       );
 
   factory Accounts.fromMap(Map<String, dynamic> json) => Accounts(
@@ -84,7 +81,6 @@ class Accounts extends Equatable {
         createdBy: json["createdBy"],
         accountCreatedAt: json["accountCreatedAt"],
         accountUpdatedAt: json["accountUpdatedAt"],
-        balance: json["balance"]
       );
 
   Map<String, dynamic> toMap() => {
@@ -100,7 +96,6 @@ class Accounts extends Equatable {
         "createdBy": createdBy,
         "accountCreatedAt": accountCreatedAt,
         "accountUpdatedAt": accountUpdatedAt,
-        "balance" : balance,
       };
 
   @override
@@ -117,6 +112,5 @@ class Accounts extends Equatable {
         createdBy,
         accountCreatedAt,
         accountUpdatedAt,
-        balance,
       ];
 }

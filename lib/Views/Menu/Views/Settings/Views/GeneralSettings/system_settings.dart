@@ -15,18 +15,16 @@ class SystemSettingsView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 8,
       children: [
-
-       AppLanguage(
-        margin: EdgeInsets.symmetric(vertical: 0),
-        width: 280,
-        title: localizations.language,
-       ),
-       AppTheme(
-         title: localizations.theme,
-         margin: EdgeInsets.symmetric(vertical: 0),
-         width: 280,
-       ),
-
+        AppLanguage(
+          margin: EdgeInsets.symmetric(vertical: 0),
+          width: 280,
+          title: localizations.language,
+        ),
+        AppTheme(
+          title: localizations.theme,
+          margin: EdgeInsets.symmetric(vertical: 0),
+          width: 280,
+        ),
       ],
     );
   }

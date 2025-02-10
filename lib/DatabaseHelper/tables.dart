@@ -108,8 +108,8 @@ class Tables {
   accCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   accUpdatedAt TEXT,
   
-  FOREIGN KEY (accountCategory) REFERENCES $accountCategoryTableName (accCategoryId),
-  FOREIGN KEY (accountDefaultCurrency) REFERENCES $currencyTableName (currency_code)
+  FOREIGN KEY (accountCategory) REFERENCES $accountCategoryTableName (accCategoryId) ON DELETE CASCADE,
+  FOREIGN KEY (accountDefaultCurrency) REFERENCES $currencyTableName (currency_code) ON DELETE CASCADE
   )''';
 
   static String currencyTable = '''
@@ -128,8 +128,8 @@ class Tables {
     target_currency_code TEXT,
     rate REAL NOT NULL,                  
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (base_currency_code) REFERENCES ${Tables.currencyTableName}(currency_code),
-    FOREIGN KEY (target_currency_code) REFERENCES ${Tables.currencyTableName}(currency_code)
+    FOREIGN KEY (base_currency_code) REFERENCES ${Tables.currencyTableName}(currency_code) ON DELETE CASCADE,
+    FOREIGN KEY (target_currency_code) REFERENCES ${Tables.currencyTableName}(currency_code) ON DELETE CASCADE
   )''';
 
   static String salesTable = '''
@@ -145,8 +145,8 @@ class Tables {
   
   invoiceCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   invoiceUpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (termsAndCondition) REFERENCES $termsAndConditionTableName(tcId),
-  FOREIGN KEY (invoiceCurrency) REFERENCES $currencyTableName(currencyId),
+  FOREIGN KEY (termsAndCondition) REFERENCES $termsAndConditionTableName(tcId) ON DELETE CASCADE,
+  FOREIGN KEY (invoiceCurrency) REFERENCES $currencyTableName(currencyId) ON DELETE CASCADE,
   FOREIGN KEY (customer) REFERENCES $accountTableName(accId) ON DELETE CASCADE
   )''';
 
@@ -175,9 +175,9 @@ class Tables {
   payeeId INTEGER NOT NULL,
   referenceNumber TEXT UNIQUE,
   
-  FOREIGN KEY (transactionId) REFERENCES $transactionsTableName (transactionId),
-  FOREIGN KEY (payerId) REFERENCES $accountTableName(accountId),
-  FOREIGN KEY (payeeId) REFERENCES $accountTableName(accountId)
+  FOREIGN KEY (transactionId) REFERENCES $transactionsTableName (transactionId) ON DELETE CASCADE,
+  FOREIGN KEY (payerId) REFERENCES $accountTableName(accountId) ON DELETE CASCADE,
+  FOREIGN KEY (payeeId) REFERENCES $accountTableName(accountId) ON DELETE CASCADE
   )''';
 
   //Not in Use
@@ -207,9 +207,9 @@ class Tables {
   trnStatus INTEGER,
   trnDate DATETIME DEFAULT CURRENT_TIMESTAMP,
   trnUpdatedAt TEXT,
-  FOREIGN KEY (senderAccountId) REFERENCES $accountTableName (accId),
-  FOREIGN KEY (recipientAccountId) REFERENCES $accountTableName (accId),
-  FOREIGN KEY (trnType) REFERENCES $transactionTypeTableName(trnTypeId)
+  FOREIGN KEY (senderAccountId) REFERENCES $accountTableName (accId) ON DELETE CASCADE,
+  FOREIGN KEY (recipientAccountId) REFERENCES $accountTableName (accId) ON DELETE CASCADE,
+  FOREIGN KEY (trnType) REFERENCES $transactionTypeTableName(trnTypeId) ON DELETE CASCADE
   )''';
 
   static String transactionTypeTable = '''
@@ -237,10 +237,8 @@ class Tables {
     productName TEXT UNIQUE NOT NULL,             
     unit INTEGER,
     category INTEGER,
-    buyPrice REAL DEFAULT 0 CHECK(buyPrice >= 0),
-    sellPrice REAL DEFAULT 0 CHECK(sellPrice >= 0),
-    FOREIGN KEY (category) REFERENCES $productCategoryTableName(pcId)
-    FOREIGN KEY (unit) REFERENCES $productUnitTableName(unitId)
+    FOREIGN KEY (category) REFERENCES $productCategoryTableName(pcId) ON DELETE CASCADE,
+    FOREIGN KEY (unit) REFERENCES $productUnitTableName(unitId) ON DELETE CASCADE
   )''';
 
   static String inventoryTable = '''
@@ -254,11 +252,12 @@ class Tables {
   proInvId INTEGER PRIMARY KEY AUTOINCREMENT,
   product INTEGER,
   inventory INTEGER,
-  qty INTEGER DEFAULT 0,
-  totalInventory INTEGER DEFAULT 0,
-  inventoryType TEXT CHECK(inventoryType IN ('IN', 'OUT')),
+  buyPrice REAL CHECK(buyPrice >= 0),
+  sellPrice REAL CHECK(sellPrice >= 0), 
+  qty INTEGER DEFAULT 0 CHECK(qty >= 0 OR inventoryType = 'OUT'),
+  inventoryType TEXT DEFAULT 'IN' CHECK(inventoryType IN ('IN', 'OUT')),
   last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (inventory) REFERENCES $inventoryTableName(invId),
-  FOREIGN KEY (product) REFERENCES $productTableName(productId)
+  FOREIGN KEY (inventory) REFERENCES $inventoryTableName(invId) ON DELETE CASCADE,
+  FOREIGN KEY (product) REFERENCES $productTableName(productId) ON DELETE CASCADE
   )''';
 }

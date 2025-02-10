@@ -6,6 +6,7 @@ import 'package:zaitoon_invoice/Json/currencies_model.dart';
 import 'package:zaitoon_invoice/Json/inventory_model.dart';
 import 'package:zaitoon_invoice/Json/product_category.dart';
 import 'package:zaitoon_invoice/Json/product_model.dart';
+import 'package:zaitoon_invoice/Json/products_report_model.dart';
 import 'package:zaitoon_invoice/Json/users.dart';
 
 import '../Json/product_unit.dart';
@@ -279,65 +280,165 @@ class Repositories {
     final db = DatabaseHelper.db;
     final invType = "IN";
     final stmt = db.prepare('''
-      INSERT INTO ${Tables.productTableName} (productName, unit, category, buyPrice, sellPrice) 
-      VALUES (?,?,?,?,?)''');
+      INSERT INTO ${Tables.productTableName} (productName, unit, category) 
+      VALUES (?,?,?)''');
 
-    stmt.execute([productName, unit, category, buyPrice, sellPrice]);
+    stmt.execute([productName, unit, category]);
     final productId = db.lastInsertRowId;
     stmt.dispose(); // Dispose after execution
 
     // Insert only if inventory and qty are greater than zero (Optional check)
     if (inventory > 0 || qty > 0) {
       final stmt2 = db.prepare('''
-        INSERT INTO ${Tables.productInventoryTableName} (product, inventory, qty, inventoryType) 
-        VALUES (?,?,?,?)''');
+        INSERT INTO ${Tables.productInventoryTableName} (product, inventory, qty, inventoryType, buyPrice, sellPrice) 
+        VALUES (?,?,?,?,?,?)''');
 
-      stmt2.execute([productId, inventory, qty, invType]);
+      stmt2.execute([productId, inventory, qty, invType,buyPrice, sellPrice]);
       stmt2.dispose();
     }
 
     return productId;
   }
 
+  Future<List<InventoryBalance>> productsReport({int? productId, int? inventoryId}) async {
+    // Access the database
+    final db = DatabaseHelper.db;
+
+    // Define the SQL query
+    const query = '''
+WITH InventoryBalance AS (
+    SELECT 
+        p.productId, 
+        p.productName, 
+        pi.proInvId, 
+        pi.inventoryType, 
+        pi.qty, 
+        pi.buyPrice, 
+        pi.sellPrice, 
+        pi.last_updated,
+        i.invId, 
+        i.inventoryName,
+
+        -- Calculate running balance of inventory after each transaction
+        SUM(CASE 
+            WHEN pi.inventoryType = 'IN' THEN pi.qty
+            WHEN pi.inventoryType = 'OUT' THEN -pi.qty
+            ELSE 0 
+        END) OVER (
+            PARTITION BY p.productId 
+            ORDER BY pi.last_updated, pi.proInvId
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS totalInventory  -- Running balance after each transaction
+
+    FROM 
+        products AS p
+    LEFT JOIN 
+        productCategoryTbl AS c ON p.category = c.pcId
+    LEFT JOIN 
+        productUnitTbl AS u ON p.unit = u.unitId
+    LEFT JOIN 
+        productInventoryTbl AS pi ON p.productId = pi.product
+    LEFT JOIN 
+        inventoriesTbl AS i ON pi.inventory = i.invId
+    WHERE 
+        -- Filter by product (if provided)
+        (? IS NULL OR p.productId = ?)
+        AND
+        -- Filter by inventory (if provided)
+        (? IS NULL OR i.invId = ?)
+)
+-- Select the result with the calculated inventory balance for each transaction
+SELECT 
+    productId,
+    productName,
+    proInvId, 
+    inventoryType, 
+    qty, 
+    buyPrice, 
+    sellPrice, 
+    last_updated, 
+    invId, 
+    inventoryName,
+    totalInventory
+FROM 
+    InventoryBalance
+ORDER BY 
+    last_updated ASC, proInvId;
+  ''';
+
+    // Execute the query with parameters
+    final result = db.select(query, [productId, productId, inventoryId, inventoryId]);
+
+    // Map the result to your model
+    return result.map((e) => InventoryBalance.fromMap(e)).toList();
+  }
+
   Future<List<ProductsModel>> getProductsWithTotalInventory() async {
     final db = DatabaseHelper.db;
     final response = await Future(() => db.select('''
     SELECT 
-      pi.proInvId,
-      p.productId, 
-      p.productName, 
-      p.buyPrice, 
-      p.sellPrice, 
-      pi.qty, 
-      pi.inventoryType, 
-      SUM(CASE 
-              WHEN pi.inventoryType = 'IN' THEN pi.qty 
-              WHEN pi.inventoryType = 'OUT' THEN -pi.qty 
-              ELSE 0 
-          END) OVER (
-              PARTITION BY p.productId 
-              ORDER BY pi.last_updated, pi.proInvId
-          ) AS totalInventory, 
-      u.unitId, 
-      u.unitName, 
-      c.pcId, 
-      c.pcName, 
-      p.productSerial, 
-      i.invId, 
-      i.inventoryName, 
-      pi.last_updated
-    FROM 
-      products AS p
-    LEFT JOIN 
-      productCategoryTbl AS c ON p.category = c.pcId
-    LEFT JOIN 
-      productUnitTbl AS u ON p.unit = u.unitId
-    LEFT JOIN 
-      productInventoryTbl AS pi ON p.productId = pi.product
-    LEFT JOIN 
-      inventoriesTbl AS i ON pi.inventory = i.invId
-    ORDER BY 
-      p.productId, pi.last_updated, pi.proInvId
+    p.productId, 
+    p.productName, 
+
+    -- Last Buy Price from the most recent 'IN' transaction in productInventoryTbl
+    (SELECT pi.buyPrice 
+     FROM productInventoryTbl AS pi
+     WHERE pi.product = p.productId AND pi.inventoryType = 'IN'
+     ORDER BY pi.last_updated DESC 
+    ) AS lastBuyPrice, 
+
+    -- Last Sell Price from the most recent 'IN' transaction in productInventoryTbl
+    (SELECT pi.sellPrice
+     FROM productInventoryTbl AS pi
+     WHERE pi.product = p.productId AND pi.inventoryType = 'IN'
+     ORDER BY pi.last_updated DESC 
+    ) AS lastSellPrice,
+
+    u.unitId, 
+    u.unitName, 
+    c.pcId, 
+    c.pcName, 
+    p.productSerial, 
+    i.invId, 
+    i.inventoryName, 
+
+    -- Total Available Inventory Calculation
+    COALESCE(SUM(CASE 
+        WHEN pi.inventoryType = 'IN' THEN pi.qty 
+        WHEN pi.inventoryType = 'OUT' THEN -pi.qty 
+        ELSE 0 
+    END), 0) AS totalInventory, 
+
+    -- Average Buy Price from Last 10 'IN' Transactions in productInventoryTbl
+    (SELECT AVG(sub_pi.buyPrice) 
+     FROM (
+         SELECT pi.buyPrice
+         FROM productInventoryTbl AS pi
+         WHERE pi.product = p.productId AND pi.inventoryType = 'IN'
+         ORDER BY pi.last_updated DESC 
+         LIMIT 10
+     ) AS sub_pi
+    ) AS averageBuyPrice,
+
+    -- Last Updated Inventory Transaction
+    MAX(pi.last_updated) AS lastUpdated
+
+FROM 
+    products AS p
+LEFT JOIN 
+    productCategoryTbl AS c ON p.category = c.pcId
+LEFT JOIN 
+    productUnitTbl AS u ON p.unit = u.unitId
+LEFT JOIN 
+    productInventoryTbl AS pi ON p.productId = pi.product
+LEFT JOIN 
+    inventoriesTbl AS i ON pi.inventory = i.invId
+WHERE 
+    p.productId = 1  -- Replace '?' with the specific product ID
+GROUP BY 
+    p.productId, p.productName, 
+    u.unitId, u.unitName, c.pcId, c.pcName, 
+    p.productSerial, i.invId, i.inventoryName;
 
     '''));
     return response.map((row) => ProductsModel.fromMap(row)).toList();

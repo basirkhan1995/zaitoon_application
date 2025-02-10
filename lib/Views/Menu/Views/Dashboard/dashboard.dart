@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/MainMenu/menu_cubit.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/customer_searchable_field.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Products/new_product.dart';
 
 import '../../../../Components/Widgets/onhover_widget.dart';
@@ -22,7 +21,6 @@ class _DashboardViewState extends State<DashboardView> {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-
             Row(
               spacing: 10,
               children: [
@@ -38,13 +36,14 @@ class _DashboardViewState extends State<DashboardView> {
                   color: Colors.cyan.withValues(alpha: .3),
                   hoverColor: Colors.cyan,
                 ),
-
                 HoverWidget(
                   height: 80,
                   onTap: () {
-                    showDialog(context: context, builder: (context){
-                      return NewProduct();
-                    });
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return NewProduct();
+                        });
                   },
                   label: "Deposit",
                   fontSize: 18,
@@ -53,13 +52,14 @@ class _DashboardViewState extends State<DashboardView> {
                   color: Colors.cyan.withValues(alpha: .3),
                   hoverColor: Colors.cyan,
                 ),
-
                 HoverWidget(
                   height: 80,
                   onTap: () {
-                    showDialog(context: context, builder: (context){
-                      return NewProduct();
-                    });
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return NewProduct();
+                        });
                   },
                   label: "Withdraw",
                   fontSize: 18,
@@ -68,7 +68,6 @@ class _DashboardViewState extends State<DashboardView> {
                   color: Colors.cyan.withValues(alpha: .3),
                   hoverColor: Colors.cyan,
                 ),
-
               ],
             ),
           ],

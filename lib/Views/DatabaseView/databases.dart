@@ -10,7 +10,6 @@ import 'package:zaitoon_invoice/Components/Other/functions.dart';
 import 'package:zaitoon_invoice/Components/Widgets/language_dropdown.dart';
 import 'package:zaitoon_invoice/Components/Widgets/onhover_widget.dart';
 import 'package:zaitoon_invoice/Components/Widgets/theme_dropdown.dart';
-import 'package:zaitoon_invoice/Components/Widgets/zdialog.dart';
 import 'package:zaitoon_invoice/Json/database_info.dart';
 import 'package:zaitoon_invoice/Views/Authentication/login.dart';
 import 'package:zaitoon_invoice/Views/Authentication/register.dart';
@@ -181,24 +180,10 @@ class _DatabaseManagerState extends State<DatabaseManager> {
                                         .toString()),
                                     IconButton(
                                         onPressed: () {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return ZAlertDialog(
-                                                  title: locale.alertTitle,
-                                                  content: locale.removeMessage,
-                                                  icon: Icons.delete,
-                                                  onYes: () {
-                                                    context
-                                                        .read<DatabaseCubit>()
-                                                        .removeDatabaseEvent(
-                                                            state
-                                                                .allDatabases[
-                                                                    index]
-                                                                .path);
-                                                  },
-                                                );
-                                              });
+                                          context
+                                              .read<DatabaseCubit>()
+                                              .removeDatabaseEvent(state
+                                                  .allDatabases[index].path);
                                         },
                                         icon: Icon(Icons.clear, size: 18)),
                                   ],

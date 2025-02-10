@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Components/Widgets/zdialog.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Reports/Product%20Report/products_report.dart';
 import 'package:zaitoon_invoice/Views/Menu/components.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/settings.dart';
@@ -62,7 +63,7 @@ class _MenuPageState extends State<MenuPage> {
       MenuComponents(
           icon: Icons.info_outline_rounded,
           title: locale.report,
-          screen: ReportsView()),
+          screen: ProductsReport()),
 
     ];
 

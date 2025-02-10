@@ -120,7 +120,7 @@ class DatabaseHelper {
     if (_db != null) {
       //_db!.execute(Triggers.invoiceNumberTrigger);
       _db!.execute(Triggers.accountNumberTrigger);
-      _db!.execute(Triggers.inventoryTotalTrigger);
+     // _db!.execute(Triggers.inventoryTotalTrigger);
     }
   }
 
