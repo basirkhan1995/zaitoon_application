@@ -8,6 +8,7 @@ class NumberInputField extends StatefulWidget {
   final TextEditingController controller;
   final TextInputAction? inputAction;
   final ValueChanged<String>? onChanged;
+  final Function(int)? onSelectedId;
   final ValueChanged<String>? onSubmit;
   final FormFieldValidator<String>? validator;
   final TextInputType? keyboardInputType;
@@ -21,6 +22,7 @@ class NumberInputField extends StatefulWidget {
     super.key,
     required this.title,
     this.below,
+    this.onSelectedId,
     required this.controller,
     this.inputFormat,
     this.autoFocus = true,
@@ -70,7 +72,7 @@ class NumberInputFieldState extends State<NumberInputField> {
             controller: widget.controller,
             keyboardType: TextInputType.number,
             inputFormatters:
-            widget.inputFormat ?? [FilteringTextInputFormatter.digitsOnly],
+                widget.inputFormat ?? [FilteringTextInputFormatter.digitsOnly],
             validator: widget.validator,
             onChanged: widget.onSubmit,
             focusNode: widget.focusNode,
@@ -78,7 +80,7 @@ class NumberInputFieldState extends State<NumberInputField> {
             decoration: InputDecoration(
               isDense: widget.compactMode,
               contentPadding:
-              const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
               disabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(5),
                 borderSide: BorderSide(color: Colors.grey.withAlpha(100)),
@@ -110,13 +112,15 @@ class NumberInputFieldState extends State<NumberInputField> {
                   InventoryDropdown(
                     width: 130,
                     radius: 3,
+                    onSelectedId: widget.onSelectedId,
                     onSelected: (value) {
                       selectedUnit = value;
                     },
                   ),
                   Container(
                     padding: EdgeInsets.zero,
-                    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
                     decoration: BoxDecoration(
                       color: theme.primary,
                       borderRadius: BorderRadius.circular(3),

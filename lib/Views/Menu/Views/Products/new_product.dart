@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zaitoon_invoice/Bloc/ProductsCubit/products_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/currencies_drop.dart';
 import 'package:zaitoon_invoice/Components/Widgets/number_inputfield.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
@@ -22,6 +24,9 @@ class _NewProductState extends State<NewProduct> {
   String selectedUnit = "";
   String selectedBuy = "";
   String selectedSell = "";
+  int unitId = 1;
+  int inventoryId = 1;
+  int categoryId = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +104,9 @@ class _NewProductState extends State<NewProduct> {
                 onSelected: (unit) {
                   selectedUnit = unit;
                 },
+                onSelectedId: (value) {
+                  unitId = value;
+                },
               ),
             ),
             title: "Product name",
@@ -114,9 +122,12 @@ class _NewProductState extends State<NewProduct> {
           NumberInputField(
             title: "Quantity",
             controller: initialQty,
+            onSelectedId: (value) {
+              inventoryId = value;
+            },
           ),
           SizedBox(height: 5),
-          InputFieldEntitled(title: "Serial Number"),
+          InputFieldEntitled(title: "Serial Number", controller: serialNumber),
           Row(
             spacing: 10,
             children: [
@@ -128,8 +139,8 @@ class _NewProductState extends State<NewProduct> {
                   padding: const EdgeInsets.symmetric(horizontal: 6.0),
                   child: CurrenciesDropdown(
                     width: 100,
-                    onSelected: (unit) {
-                      selectedBuy = unit;
+                    onSelected: (value) {
+                      selectedBuy = value;
                     },
                   ),
                 ),
@@ -142,8 +153,8 @@ class _NewProductState extends State<NewProduct> {
                     padding: const EdgeInsets.symmetric(horizontal: 6.0),
                     child: CurrenciesDropdown(
                       width: 100,
-                      onSelected: (unit) {
-                        selectedSell = unit;
+                      onSelected: (value) {
+                        selectedSell = value;
                       },
                     ),
                   ),
@@ -164,7 +175,19 @@ class _NewProductState extends State<NewProduct> {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          ZOutlineButton(height: 50, label: Text("CREATE"), onPressed: () {}),
+          ZOutlineButton(
+              height: 50,
+              label: Text("CREATE"),
+              onPressed: () {
+                context.read<ProductsCubit>().addProductEvent(
+                    productName: productName.text,
+                    unit: unitId!,
+                    category: categoryId,
+                    buyPrice: double.parse(buyPrice.text),
+                    sellPrice: double.parse(sellPrice.text),
+                    inventory: inventoryId!,
+                    qty: int.parse(initialQty.text));
+              }),
           ZOutlineButton(
               backgroundHover: Theme.of(context).colorScheme.error,
               height: 50,

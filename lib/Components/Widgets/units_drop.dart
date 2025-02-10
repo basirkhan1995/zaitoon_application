@@ -9,11 +9,12 @@ class ProductUnitDropdown extends StatefulWidget {
   final String title;
   final double radius;
   final Function(String) onSelected;
-
+  final Function(int)? onSelectedId;
   const ProductUnitDropdown({
     super.key,
     this.padding,
     this.margin,
+    this.onSelectedId,
     this.radius = 4,
     this.width,
     this.title = "",
@@ -30,6 +31,7 @@ class _ProductUnitDropdownState extends State<ProductUnitDropdown> {
   final GlobalKey _buttonKey = GlobalKey();
   final FocusNode _focusNode = FocusNode();
   String? selectedUnit;
+  int? selectedId;
 
   @override
   void initState() {
@@ -80,7 +82,8 @@ class _ProductUnitDropdownState extends State<ProductUnitDropdown> {
       return OverlayEntry(builder: (_) => SizedBox());
     }
 
-    RenderBox renderBox = _buttonKey.currentContext!.findRenderObject() as RenderBox;
+    RenderBox renderBox =
+        _buttonKey.currentContext!.findRenderObject() as RenderBox;
     Offset offset = renderBox.localToGlobal(Offset.zero);
     double buttonWidth = renderBox.size.width;
 
@@ -106,7 +109,10 @@ class _ProductUnitDropdownState extends State<ProductUnitDropdown> {
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(widget.radius),
                   boxShadow: [
-                    BoxShadow(color: Colors.black12, blurRadius: 3, offset: Offset(0, 2)),
+                    BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 3,
+                        offset: Offset(0, 2)),
                   ],
                 ),
                 child: Column(
@@ -114,16 +120,24 @@ class _ProductUnitDropdownState extends State<ProductUnitDropdown> {
                     return GestureDetector(
                       onTap: () {
                         setState(() => selectedUnit = unit.unitName);
+                        setState(() => selectedId = unit.unitId);
                         widget.onSelected(selectedUnit!);
+                        widget.onSelectedId != null
+                            ? widget.onSelectedId!(selectedId!)
+                            : null;
                         _overlayEntry.remove();
                         setState(() => _isOpen = false);
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           color: selectedUnit == unit.unitName
-                              ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.5)
+                              ? Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer
+                                  .withOpacity(0.5)
                               : Theme.of(context).colorScheme.surface,
                         ),
                         child: Row(
@@ -146,7 +160,6 @@ class _ProductUnitDropdownState extends State<ProductUnitDropdown> {
                                   : Colors.transparent,
                               size: 18,
                             ),
-
                           ],
                         ),
                       ),
@@ -167,7 +180,9 @@ class _ProductUnitDropdownState extends State<ProductUnitDropdown> {
 
     return BlocBuilder<UnitsCubit, UnitsState>(
       builder: (context, state) {
-        if (state is LoadedProductsUnitsState && state.units.isNotEmpty && selectedUnit == null) {
+        if (state is LoadedProductsUnitsState &&
+            state.units.isNotEmpty &&
+            selectedUnit == null) {
           selectedUnit = state.units.first.unitName;
           widget.onSelected(selectedUnit!);
         }
@@ -199,7 +214,9 @@ class _ProductUnitDropdownState extends State<ProductUnitDropdown> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
+                              Text(widget.title,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
                             ],
                           ),
                         ],
@@ -219,9 +236,10 @@ class _ProductUnitDropdownState extends State<ProductUnitDropdown> {
                           style: TextStyle(color: color.surface, fontSize: 15),
                         ),
                         Icon(
-                          _isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                          color: Theme.of(context).colorScheme.surface
-                        ),
+                            _isOpen
+                                ? Icons.keyboard_arrow_up_rounded
+                                : Icons.keyboard_arrow_down_rounded,
+                            color: Theme.of(context).colorScheme.surface),
                       ],
                     ),
                   ),

@@ -2,7 +2,10 @@ import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
 
 class DefaultValues {
   static String defaultInventory = '''
-  INSERT INTO ${Tables.inventoryTableName} (inventoryName) VALUES ('Store')
+  INSERT INTO ${Tables.inventoryTableName} (inventoryName) VALUES 
+  ('Store'),
+  ('Godown'),
+  ('Ware house')
   ''';
 
   static String defaultUnits = '''
@@ -20,7 +23,7 @@ class DefaultValues {
          ('EUR', 'Euro', '€',0),
          ('GBP', 'British Pound', '£',0),
          ('AFN', 'Afghani', 'AFN',0),
-         ('PKR', 'Pakistani', 'PKR',0),
+         ('PKR', 'Pakistani', 'PKR',0)
          
   ''';
 

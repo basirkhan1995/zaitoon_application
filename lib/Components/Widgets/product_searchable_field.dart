@@ -114,7 +114,7 @@ class _ProductSearchableFieldState extends State<ProductSearchableField> {
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(6.0),
-                        child: Text(state.suggestions[index].productName),
+                        child: Text(state.suggestions[index].productName!),
                       ),
                     );
                   },

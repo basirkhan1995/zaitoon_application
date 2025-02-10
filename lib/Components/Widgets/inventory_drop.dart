@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/ProductsCubit/Inventory/inventory_cubit.dart';
-import 'package:zaitoon_invoice/Bloc/ProductsCubit/Units/units_cubit.dart';
 
 class InventoryDropdown extends StatefulWidget {
   final double? width;
@@ -10,7 +9,7 @@ class InventoryDropdown extends StatefulWidget {
   final String title;
   final double radius;
   final Function(String) onSelected;
-
+  final Function(int)? onSelectedId;
   const InventoryDropdown({
     super.key,
     this.padding,
@@ -18,6 +17,7 @@ class InventoryDropdown extends StatefulWidget {
     this.radius = 4,
     this.width,
     this.title = "",
+    this.onSelectedId,
     required this.onSelected,
   });
 
@@ -31,6 +31,7 @@ class _InventoryDropdownState extends State<InventoryDropdown> {
   final GlobalKey _buttonKey = GlobalKey();
   final FocusNode _focusNode = FocusNode();
   String? selectedUnit;
+  int? selectedId;
 
   @override
   void initState() {
@@ -45,8 +46,10 @@ class _InventoryDropdownState extends State<InventoryDropdown> {
     if (state is LoadedInventoryState && state.inventories.isNotEmpty) {
       setState(() {
         selectedUnit = state.inventories.first.inventoryName;
+        selectedId = state.inventories.first.inventoryId;
       });
       widget.onSelected(selectedUnit!);
+      widget.onSelectedId!(selectedId!);
     }
   }
 
@@ -81,7 +84,8 @@ class _InventoryDropdownState extends State<InventoryDropdown> {
       return OverlayEntry(builder: (_) => SizedBox());
     }
 
-    RenderBox renderBox = _buttonKey.currentContext!.findRenderObject() as RenderBox;
+    RenderBox renderBox =
+        _buttonKey.currentContext!.findRenderObject() as RenderBox;
     Offset offset = renderBox.localToGlobal(Offset.zero);
     double buttonWidth = renderBox.size.width;
 
@@ -107,7 +111,10 @@ class _InventoryDropdownState extends State<InventoryDropdown> {
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(widget.radius),
                   boxShadow: [
-                    BoxShadow(color: Colors.black12, blurRadius: 3, offset: Offset(0, 2)),
+                    BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 3,
+                        offset: Offset(0, 2)),
                   ],
                 ),
                 child: Column(
@@ -115,16 +122,25 @@ class _InventoryDropdownState extends State<InventoryDropdown> {
                     return GestureDetector(
                       onTap: () {
                         setState(() => selectedUnit = unit.inventoryName);
+                        setState(() => selectedId = unit.inventoryId);
+
                         widget.onSelected(selectedUnit!);
+                        widget.onSelectedId != null
+                            ? widget.onSelectedId!(selectedId!)
+                            : null;
                         _overlayEntry.remove();
                         setState(() => _isOpen = false);
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           color: selectedUnit == unit.inventoryName
-                              ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: .5)
+                              ? Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer
+                                  .withValues(alpha: .5)
                               : Theme.of(context).colorScheme.surface,
                         ),
                         child: Row(
@@ -147,7 +163,6 @@ class _InventoryDropdownState extends State<InventoryDropdown> {
                                   : Colors.transparent,
                               size: 18,
                             ),
-
                           ],
                         ),
                       ),
@@ -168,7 +183,9 @@ class _InventoryDropdownState extends State<InventoryDropdown> {
 
     return BlocBuilder<InventoryCubit, InventoryState>(
       builder: (context, state) {
-        if (state is LoadedInventoryState && state.inventories.isNotEmpty && selectedUnit == null) {
+        if (state is LoadedInventoryState &&
+            state.inventories.isNotEmpty &&
+            selectedUnit == null) {
           selectedUnit = state.inventories.first.inventoryName;
           widget.onSelected(selectedUnit!);
         }
@@ -200,7 +217,9 @@ class _InventoryDropdownState extends State<InventoryDropdown> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
+                              Text(widget.title,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
                             ],
                           ),
                         ],
@@ -220,9 +239,10 @@ class _InventoryDropdownState extends State<InventoryDropdown> {
                           style: TextStyle(color: color.surface, fontSize: 15),
                         ),
                         Icon(
-                            _isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                            color: Theme.of(context).colorScheme.surface
-                        ),
+                            _isOpen
+                                ? Icons.keyboard_arrow_up_rounded
+                                : Icons.keyboard_arrow_down_rounded,
+                            color: Theme.of(context).colorScheme.surface),
                       ],
                     ),
                   ),

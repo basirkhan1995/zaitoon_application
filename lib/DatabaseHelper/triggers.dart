@@ -52,4 +52,28 @@ BEGIN
   END IF;
 END;
   ''';
+
+  static String inventoryTotalTrigger = '''
+
+CREATE TRIGGER update_total_inventory
+AFTER INSERT ON ${Tables.productInventoryTableName}
+FOR EACH ROW
+BEGIN
+    -- Update the totalInventory for the specific product by calculating the total qty
+    UPDATE ${Tables.productInventoryTableName}
+    SET totalInventory = (
+        SELECT SUM(
+                   CASE
+                       WHEN inventoryType = 'IN' THEN qty
+                       WHEN inventoryType = 'OUT' THEN -qty
+                       ELSE 0
+                   END
+               )
+        FROM productInventoryTbl
+        WHERE product = NEW.product
+    )
+    WHERE proInvId = NEW.proInvId;
+END;
+
+ ''';
 }

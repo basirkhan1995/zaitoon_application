@@ -13,38 +13,44 @@ class ProductsView extends StatefulWidget {
 class _ProductsViewState extends State<ProductsView> {
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((e){
+    WidgetsBinding.instance.addPostFrameCallback((e) {
       context.read<ProductsCubit>().loadProductsEvent();
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-          onPressed: (){
-          showDialog(context: context, builder: (context){
-            return NewProduct();
-          });
-      }),
+          child: Icon(Icons.add),
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return NewProduct();
+                });
+          }),
       body: BlocBuilder<ProductsCubit, ProductsState>(
         builder: (context, state) {
-          if(state is ProductsErrorState){
+          if (state is ProductsErrorState) {
             return Text(state.error);
-          }if(state is LoadedProductsState){
-            if(state.products.isEmpty){
+          }
+          if (state is LoadedProductsState) {
+            if (state.products.isEmpty) {
               return Text("No products");
             }
             return ListView.builder(
                 itemCount: state.products.length,
-                itemBuilder: (context,index){
-              return ListTile(
-                title: Text(state.products[index].productName),
-                subtitle: Text(state.products[index].qty.toString()),
-                trailing: Text(state.products[index].totalInventory.toString()),
-              );
-            });
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(state.products[index].productName ?? "null"),
+                    subtitle:
+                        Text(state.products[index].totalInventory.toString()),
+                    trailing:
+                        Text(state.products[index].totalInventory.toString()),
+                  );
+                });
           }
           return Container();
         },
