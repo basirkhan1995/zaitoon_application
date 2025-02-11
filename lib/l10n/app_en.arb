@@ -97,5 +97,6 @@
   "customer": "Customer",
   "dueDate": "Due date",
   "invoiceDate": "Invoice date",
-  "newEstimate": "New Estimate"
+  "newEstimate": "New Estimate",
+  "duplicateProductMessage": "Product already exists"
 }

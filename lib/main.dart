@@ -78,7 +78,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (context) =>
                 InventoryCubit(Repositories())..loadInventoryEvent()),
-        BlocProvider(create: (context) => EstimateBloc()..add(LoadItemsEvent())),
+        BlocProvider(
+            create: (context) => EstimateBloc()..add(LoadItemsEvent())),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {

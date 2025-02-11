@@ -21,7 +21,6 @@ class Tables {
   static String transactionTypeTableName = 'transactionTypeTbl';
   static String paymentTableName = 'paymentsTbl';
   static String exchangeRatesTableName = 'exchangeRatesTbl';
-  static String productsTableName = 'productsTbl';
 
   //Tables
   static String metaDataTable = '''

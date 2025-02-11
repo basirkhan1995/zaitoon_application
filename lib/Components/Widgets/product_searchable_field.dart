@@ -92,20 +92,20 @@ class _ProductSearchableFieldState extends State<ProductSearchableField> {
                   child: Text(state.error.toString()),
                 );
               }
-              if (state is ProductSearchingState) {
-                _currentSuggestions = state.suggestions
+              if (state is LoadedProductsState) {
+                _currentSuggestions = state.products
                     .map((e) => e.productName.toString())
                     .toList();
                 return ListView.builder(
                   shrinkWrap: true,
-                  itemCount: state.suggestions.length,
+                  itemCount: state.products.length,
                   itemBuilder: (context, index) {
                     return InkWell(
                       onTap: () {
                         setState(() {
                           _selectedItemName =
-                              state.suggestions[index].productName;
-                          _selectedItemId = state.suggestions[index].productId;
+                              state.products[index].productName;
+                          _selectedItemId = state.products[index].productId;
                         });
                         widget.controller?.text = _selectedItemName ??
                             ""; // Assign itemId to controller
@@ -114,7 +114,7 @@ class _ProductSearchableFieldState extends State<ProductSearchableField> {
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(6.0),
-                        child: Text(state.suggestions[index].productName!),
+                        child: Text(state.products[index].productName!),
                       ),
                     );
                   },

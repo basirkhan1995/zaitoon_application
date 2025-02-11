@@ -281,8 +281,6 @@ class Repositories {
     final invType = "IN";
 
     try {
-      // Start a transaction
-      db.execute('BEGIN TRANSACTION');
 
       // Insert product into product table
       final stmt = db.prepare('''
@@ -300,21 +298,19 @@ class Repositories {
         stmt2
             .execute([productId, inventory, qty, invType, buyPrice, sellPrice]);
         stmt2.dispose();
+      }else{
+        null;
       }
-
-      // Commit the transaction
-      db.execute('COMMIT TRANSACTION');
 
       return productId;
     } catch (e) {
-      // Rollback transaction in case of error
-      db.execute('ROLLBACK TRANSACTION');
       throw Exception('Error inserting product and inventory: $e');
     }
   }
 
   Future<int> deleteProduct({required int id}) async {
     final db = DatabaseHelper.db;
+    db.execute('PRAGMA foreign_keys = ON;'); // Enable foreign key constraints
     final stmt = db.prepare(
         ''' DELETE FROM ${Tables.productTableName} WHERE productId = ?''');
     stmt.execute([id]);
@@ -408,7 +404,7 @@ ORDER BY
      FROM productInventoryTbl AS pi
      WHERE pi.product = p.productId AND pi.inventoryType = 'IN'
      ORDER BY pi.last_updated DESC 
-    ) AS lastBuyPrice, 
+    )AS lastBuyPrice, 
 
     -- Last Sell Price from the most recent 'IN' transaction in productInventoryTbl
     (SELECT pi.sellPrice
@@ -445,23 +441,22 @@ ORDER BY
 
     -- Last Updated Inventory Transaction
     MAX(pi.last_updated) AS lastUpdated
-
-FROM 
+   FROM 
     productsTbl AS p
-LEFT JOIN 
+   LEFT JOIN 
     productCategoryTbl AS c ON p.category = c.pcId
-LEFT JOIN 
+   LEFT JOIN 
     productUnitTbl AS u ON p.unit = u.unitId
-LEFT JOIN 
+   LEFT JOIN 
     productInventoryTbl AS pi ON p.productId = pi.product
-LEFT JOIN 
+   LEFT JOIN 
     inventoriesTbl AS i ON pi.inventory = i.invId
- 
-GROUP BY 
+
+    GROUP BY 
     p.productId, p.productName, 
     u.unitId, u.unitName, c.pcId, c.pcName, 
     p.productSerial, i.invId, i.inventoryName;
-
+    
     '''));
     return response.map((row) => ProductsModel.fromMap(row)).toList();
   }
@@ -503,6 +498,20 @@ GROUP BY
     final response = await Future(
         () => db.select('''SELECT * FROM ${Tables.currencyTableName}'''));
     return response.map((row) => CurrenciesModel.fromMap(row)).toList();
+  }
+
+  static Future<bool> checkIfProductExists(String productName) async {
+    try {
+      final db = DatabaseHelper.db;
+      final result = db.select(
+        'SELECT COUNT(*) AS count FROM ${Tables.productTableName} WHERE productName = ?',
+        [productName],
+      );
+      final count = result.first['count'] as int;
+      return count > 0; // Return true if the product already exists
+    } catch (e) {
+      return false;
+    }
   }
 
   //Currencies

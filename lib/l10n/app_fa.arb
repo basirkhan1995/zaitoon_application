@@ -97,5 +97,6 @@
   "customer": "مشتری",
   "dueDate": "تاریخ تسلیمی",
   "invoiceDate": "تاریخ بل",
-  "newEstimate": "قیمت دهی"
+  "newEstimate": "قیمت دهی",
+  "duplicateProductMessage": "محصول قبلا ثبت شده است"
 }

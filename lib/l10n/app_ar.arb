@@ -97,5 +97,6 @@
   "customer": "پیرودونکی",
   "dueDate": "تسلیمی نیته",
   "invoiceDate": "بل نیته",
-  "newEstimate": "قیمت دهی"
+  "newEstimate": "قیمت دهی",
+  "duplicateProductMessage": "دا محصول مخکی ثبت شوی"
 }
