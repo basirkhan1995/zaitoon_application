@@ -3,7 +3,7 @@ class Tables {
   static String currencyTableName = "currenciesTbl";
   static String salesTableName = "salesTbl";
   static String salesItemTableName = 'salesItemsTbl';
-  static String productTableName = 'products';
+  static String productTableName = 'productsTbl';
   static String inventoryTableName = 'inventoriesTbl';
   static String productInventoryTableName = 'productInventoryTbl';
   static String paymentMethodTableName = 'paymentMethodTbl';
