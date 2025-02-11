@@ -279,32 +279,54 @@ class Repositories {
   }) async {
     final db = DatabaseHelper.db;
     final invType = "IN";
-    final stmt = db.prepare('''
+
+    try {
+      // Start a transaction
+      db.execute('BEGIN TRANSACTION');
+
+      // Insert product into product table
+      final stmt = db.prepare('''
       INSERT INTO ${Tables.productTableName} (productName, unit, category) 
       VALUES (?,?,?)''');
+      stmt.execute([productName, unit, category]);
+      final productId = db.lastInsertRowId; // Get productId after insert
+      stmt.dispose();
 
-    stmt.execute([productName, unit, category]);
-    final productId = db.lastInsertRowId;
-    stmt.dispose(); // Dispose after execution
-
-    // Insert only if inventory and qty are greater than zero (Optional check)
-    if (inventory > 0 || qty > 0) {
-      final stmt2 = db.prepare('''
+      // Insert product inventory only if inventory and qty are greater than zero
+      if (inventory > 0 && qty > 0) {
+        final stmt2 = db.prepare('''
         INSERT INTO ${Tables.productInventoryTableName} (product, inventory, qty, inventoryType, buyPrice, sellPrice) 
         VALUES (?,?,?,?,?,?)''');
+        stmt2
+            .execute([productId, inventory, qty, invType, buyPrice, sellPrice]);
+        stmt2.dispose();
+      }
 
-      stmt2.execute([productId, inventory, qty, invType,buyPrice, sellPrice]);
-      stmt2.dispose();
+      // Commit the transaction
+      db.execute('COMMIT TRANSACTION');
+
+      return productId;
+    } catch (e) {
+      // Rollback transaction in case of error
+      db.execute('ROLLBACK TRANSACTION');
+      throw Exception('Error inserting product and inventory: $e');
     }
-
-    return productId;
   }
 
-  Future<List<InventoryBalance>> productsReport({int? productId, int? inventoryId}) async {
+  Future<int> deleteProduct({required int id}) async {
+    final db = DatabaseHelper.db;
+    final stmt = db.prepare(
+        ''' DELETE FROM ${Tables.productTableName} WHERE productId = ?''');
+    stmt.execute([id]);
+    final lastRowId = db.lastInsertRowId;
+    stmt.dispose();
+    return lastRowId;
+  }
+
+  Future<List<InventoryBalance>> productsReport(
+      {int? productId, int? inventoryId}) async {
     // Access the database
     final db = DatabaseHelper.db;
-
-    // Define the SQL query
     const query = '''
 WITH InventoryBalance AS (
     SELECT 
@@ -367,7 +389,8 @@ ORDER BY
   ''';
 
     // Execute the query with parameters
-    final result = db.select(query, [productId, productId, inventoryId, inventoryId]);
+    final result =
+        db.select(query, [productId, productId, inventoryId, inventoryId]);
 
     // Map the result to your model
     return result.map((e) => InventoryBalance.fromMap(e)).toList();
@@ -424,7 +447,7 @@ ORDER BY
     MAX(pi.last_updated) AS lastUpdated
 
 FROM 
-    products AS p
+    productsTbl AS p
 LEFT JOIN 
     productCategoryTbl AS c ON p.category = c.pcId
 LEFT JOIN 
@@ -433,8 +456,7 @@ LEFT JOIN
     productInventoryTbl AS pi ON p.productId = pi.product
 LEFT JOIN 
     inventoriesTbl AS i ON pi.inventory = i.invId
-WHERE 
-    p.productId = 1  -- Replace '?' with the specific product ID
+ 
 GROUP BY 
     p.productId, p.productName, 
     u.unitId, u.unitName, c.pcId, c.pcName, 

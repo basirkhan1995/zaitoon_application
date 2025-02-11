@@ -47,8 +47,12 @@ class _ProductsViewState extends State<ProductsView> {
                     title: Text(state.products[index].productName ?? "null"),
                     subtitle:
                         Text(state.products[index].totalInventory.toString()),
-                    trailing:
-                        Text(state.products[index].totalInventory.toString()),
+                    trailing: IconButton(
+                        onPressed: () {
+                          context.read<ProductsCubit>().deleteProduct(
+                              id: state.products[index].productId!);
+                        },
+                        icon: Icon(Icons.delete)),
                   );
                 });
           }
