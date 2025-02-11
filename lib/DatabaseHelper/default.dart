@@ -55,6 +55,13 @@ class DefaultValues {
   static String defaultTrnType = '''
   INSERT INTO ${Tables.transactionTypeTableName} (trnTypeName) VALUES
   ('Debit'),
-  ('Credit')
+  ('Credit'),
+  ('Deposit'),
+  ('Withdraw'),
+  ('Buy'),
+  ('Sell'),
+  ('refund'),
+  ('exchange'),
+  ('transfer')
   ''';
 }
