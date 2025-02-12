@@ -33,12 +33,12 @@ class _EstimateViewState extends State<EstimateView> {
   final issueDate = TextEditingController();
 
   final estimatePdf = InvoiceComponents();
-  final estimateDetails = EstimateModel();
+  final estimateDetails = EstimateInfoModel();
 
   @override
   void initState() {
     invoiceItems.add(EstimateItemsModel(controller: TextEditingController()));
-    _setDefaultDate();
+    initialDate();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EstimateBloc>().add(LoadItemsEvent());
     });
@@ -56,7 +56,6 @@ class _EstimateViewState extends State<EstimateView> {
       ),
     );
   }
-
 
   Widget buildAppBar(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
@@ -97,7 +96,7 @@ class _EstimateViewState extends State<EstimateView> {
                                 invoiceItems: invoiceItems,
                                 headerTitles: headerTitles,
                                 appLanguage: locale.languageCode,
-                                customerTitle: "Customer",
+                                customerTitle: "Client Name",
                                 supplierTitle: "Supplier",
                                 discountTitle:
                                     AppLocalizations.of(context)!.discount,
@@ -124,33 +123,43 @@ class _EstimateViewState extends State<EstimateView> {
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: Column(
         children: [
-          _buildInvoiceHeader(context),
-           buildEstimateItems(),
-           invoiceFooter(),
+          buildInvoiceHeader(context),
+          buildEstimateItems(),
+          invoiceFooter(),
         ],
       ),
     );
   }
 
-  Widget _buildInvoiceHeader(BuildContext context) {
+  Widget buildInvoiceHeader(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          spacing: 20,
-          children: [
-            UnderlineTextfield(
-              title: locale.invoiceNumber,
-              isRequired: true,
-              controller: invoiceNumber,
-            ),
-            AccountSearchableInputField(
-              title: locale.customer,
-              controller: customer,
-              isRequire: true,
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          child: Column(
+            spacing: 20,
+            children: [
+              UnderlineTextfield(
+                title: locale.invoiceNumber,
+                isRequired: true,
+                controller: invoiceNumber,
+              ),
+              AccountSearchableInputField(
+                title: locale.customer,
+                controller: customer,
+                isRequire: true,
+                end: IconButton(
+                  padding: EdgeInsets.zero,
+                  iconSize: 15,
+                  constraints: BoxConstraints(),
+                  icon: Icon(Icons.add_circle_outline_rounded),
+                  onPressed: () {},
+                ),
+              ),
+            ],
+          ),
         ),
         Column(
           spacing: 20,
@@ -159,13 +168,13 @@ class _EstimateViewState extends State<EstimateView> {
               title: locale.invoiceDate,
               isRequired: true,
               controller: issueDate,
-              onTap: () => _selectDate(context, issueDate, "issueDate"),
+              onTap: () => datePicker(context, issueDate, "issueDate"),
             ),
             UnderlineTextfield(
               title: locale.dueDate,
               isRequired: true,
               controller: dueDate,
-              onTap: () => _selectDate(context, dueDate, "dueDate"),
+              onTap: () => datePicker(context, dueDate, "dueDate"),
             ),
           ],
         ),
@@ -173,7 +182,7 @@ class _EstimateViewState extends State<EstimateView> {
     );
   }
 
-  void _setDefaultDate() {
+  void initialDate() {
     invoiceNumber.text = "INV000001";
     final now = DateTime.now();
     final defaultIssueDate = DateFormat('MMM dd, yyyy').format(now);
@@ -189,7 +198,8 @@ class _EstimateViewState extends State<EstimateView> {
     estimateDetails.dueDate =
         DateFormat('MMM dd, yyyy').format(now.add(const Duration(days: 7)));
   }
-  Future<void> _selectDate(BuildContext context,
+
+  Future<void> datePicker(BuildContext context,
       TextEditingController controller, String field) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -214,7 +224,7 @@ class _EstimateViewState extends State<EstimateView> {
 
   Widget buildTotal(
       {required List<EstimateItemsModel> invoiceItems,
-      required EstimateModel info}) {
+      required EstimateInfoModel info}) {
     return BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
       double calculateSubtotal() {
         double subtotal = 0.0;
@@ -391,6 +401,7 @@ class _EstimateViewState extends State<EstimateView> {
                               color: Theme.of(context).colorScheme.onPrimary)),
                     ],
                   ),
+
                   ...state.items.asMap().entries.map((entry) {
                     final index = entry.key;
                     final item = entry.value;
@@ -411,6 +422,12 @@ class _EstimateViewState extends State<EstimateView> {
                           child: Center(child: Text(rowNumber.toString())),
                         ),
                         ProductSearchableField(
+                          end: IconButton(
+                              padding: EdgeInsets.zero,
+                              iconSize: 15,
+                              constraints: BoxConstraints(),
+                              onPressed: () {},
+                              icon: Icon(Icons.add_circle_outline_rounded)),
                           controller: item.controller,
                           onChanged: (value) {
                             context.read<EstimateBloc>().add(
@@ -486,9 +503,10 @@ class _EstimateViewState extends State<EstimateView> {
                         ),
                         Center(
                           child: IconButton(
+                            constraints: BoxConstraints(),
+                            iconSize: 18,
                             icon: Icon(
                               Icons.delete,
-                              size: 25,
                               color: Colors.red.shade900,
                             ),
                             onPressed: () {
@@ -510,6 +528,7 @@ class _EstimateViewState extends State<EstimateView> {
       },
     );
   }
+
   Widget invoiceFooter() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -523,9 +542,9 @@ class _EstimateViewState extends State<EstimateView> {
             children: [
               GestureDetector(
                   onTap: () {
-                    setState(() {
-                      context.read<EstimateBloc>().add(AddItemEvent(invoiceItems));
-                    });
+                    context
+                        .read<EstimateBloc>()
+                        .add(AddItemEvent(invoiceItems));
                   },
                   child: Chip(
                       side: BorderSide.none,
@@ -540,7 +559,8 @@ class _EstimateViewState extends State<EstimateView> {
           Expanded(child: BlocBuilder<EstimateBloc, EstimateState>(
             builder: (context, state) {
               if (state is InvoiceItemsLoadedState) {
-                return buildTotal(invoiceItems: state.items, info: estimateDetails);
+                return buildTotal(
+                    invoiceItems: state.items, info: estimateDetails);
               }
               return Container();
             },

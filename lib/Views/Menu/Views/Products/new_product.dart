@@ -5,7 +5,7 @@ import 'package:zaitoon_invoice/Components/Widgets/currencies_drop.dart';
 import 'package:zaitoon_invoice/Components/Widgets/number_inputfield.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
-import 'package:zaitoon_invoice/Components/Widgets/products_searchable.dart';
+import 'package:zaitoon_invoice/Components/Widgets/products_input.dart';
 import '../../../../Components/Widgets/units_drop.dart';
 
 class NewProduct extends StatefulWidget {
@@ -130,7 +130,8 @@ class _NewProductState extends State<NewProduct> {
               },
             ),
             SizedBox(height: 5),
-            InputFieldEntitled(title: "Serial Number", controller: serialNumber),
+            InputFieldEntitled(
+                title: "Serial Number", controller: serialNumber),
             Row(
               spacing: 10,
               children: [
@@ -183,16 +184,16 @@ class _NewProductState extends State<NewProduct> {
               height: 50,
               label: Text("CREATE"),
               onPressed: () {
-               if(formKey.currentState!.validate()){
-                 context.read<ProductsCubit>().addProductEvent(
-                     productName: productName.text,
-                     unit: unitId,
-                     category: categoryId,
-                     buyPrice: double.parse(buyPrice.text),
-                     sellPrice: double.parse(sellPrice.text),
-                     inventory: inventoryId,
-                     qty: int.parse(initialQty.text));
-               }
+                if (formKey.currentState!.validate()) {
+                  context.read<ProductsCubit>().addProductEvent(
+                      productName: productName.text,
+                      unit: unitId,
+                      category: categoryId,
+                      buyPrice: double.parse(buyPrice.text),
+                      sellPrice: double.parse(sellPrice.text),
+                      inventory: inventoryId,
+                      qty: int.parse(initialQty.text));
+                }
               }),
           ZOutlineButton(
               backgroundHover: Theme.of(context).colorScheme.error,

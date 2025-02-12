@@ -214,7 +214,7 @@ class Tables {
   static String transactionTypeTable = '''
   CREATE TABLE IF NOT EXISTS $transactionTypeTableName (
   trnTypeId INTEGER PRIMARY KEY AUTOINCREMENT,
-  trnTypeName INTEGER UNIQUE NOT NULL //Sale, Paid, Received
+  trnTypeName INTEGER UNIQUE NOT NULL
   )''';
 
   static String productCategoryTable = '''

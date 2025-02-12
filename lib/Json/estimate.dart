@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
-class EstimateModel {
+class EstimateInfoModel {
   String clientName;
   String clientPhone;
   String clientAddress;
@@ -19,7 +19,7 @@ class EstimateModel {
   String supplierEmail;
   Uint8List? logo;
 
-  EstimateModel(
+  EstimateInfoModel(
       {this.clientName = "",
       this.clientEmail = "",
       this.clientPhone = "",

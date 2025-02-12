@@ -9,6 +9,7 @@ class ProductSearchableField extends StatefulWidget {
   final String title;
   final FocusNode? focusNode;
   final Widget? trailing;
+  final Widget? end;
   final bool isRequire;
   final FormFieldValidator? validator;
   final ValueChanged<int>? onChanged;
@@ -18,6 +19,7 @@ class ProductSearchableField extends StatefulWidget {
     this.controller,
     this.hintText,
     this.focusNode,
+    this.end,
     this.trailing,
     this.isRequire = false,
     this.onChanged,
@@ -103,8 +105,7 @@ class _ProductSearchableFieldState extends State<ProductSearchableField> {
                     return InkWell(
                       onTap: () {
                         setState(() {
-                          _selectedItemName =
-                              state.products[index].productName;
+                          _selectedItemName = state.products[index].productName;
                           _selectedItemId = state.products[index].productId;
                         });
                         widget.controller?.text = _selectedItemName ??
@@ -191,10 +192,8 @@ class _ProductSearchableFieldState extends State<ProductSearchableField> {
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(vertical: 8),
               suffixIcon: widget.trailing,
-              suffixIconConstraints: const BoxConstraints(
-                minWidth: 5,
-                minHeight: 5,
-              ),
+              suffix: widget.end,
+              suffixIconConstraints: const BoxConstraints(),
               hintText: widget.hintText,
               focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(

@@ -9,6 +9,7 @@ class AccountSearchableInputField extends StatefulWidget {
   final String? hintText;
   final String title;
   final Widget? trailing;
+  final Widget? end;
   final bool isRequire;
   final FormFieldValidator? validator;
   final ValueChanged<String>? onChanged;
@@ -18,6 +19,7 @@ class AccountSearchableInputField extends StatefulWidget {
     required this.controller,
     this.hintText,
     this.trailing,
+    this.end,
     this.isRequire = false,
     this.onChanged,
     this.validator,
@@ -26,10 +28,12 @@ class AccountSearchableInputField extends StatefulWidget {
   });
 
   @override
-  State<AccountSearchableInputField> createState() => _AccountSearchableInputFieldState();
+  State<AccountSearchableInputField> createState() =>
+      _AccountSearchableInputFieldState();
 }
 
-class _AccountSearchableInputFieldState extends State<AccountSearchableInputField> {
+class _AccountSearchableInputFieldState
+    extends State<AccountSearchableInputField> {
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
   final GlobalKey _fieldKey = GlobalKey();
@@ -58,6 +62,7 @@ class _AccountSearchableInputFieldState extends State<AccountSearchableInputFiel
     _overlayEntry?.remove();
     _overlayEntry = null;
   }
+
   void _onFocusChange() {
     if (!_focusNode.hasFocus) {
       // Delay removal of the overlay to allow for item selection
@@ -72,8 +77,10 @@ class _AccountSearchableInputFieldState extends State<AccountSearchableInputFiel
   void _showOverlay(BuildContext context) {
     _removeOverlay(); // Ensure only one overlay is displayed at a time
 
-    final renderBox = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
-    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
+    final renderBox =
+        _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox?;
     if (renderBox == null || overlay == null) return;
 
     final position = renderBox.localToGlobal(Offset.zero, ancestor: overlay);
@@ -87,14 +94,16 @@ class _AccountSearchableInputFieldState extends State<AccountSearchableInputFiel
           elevation: 1,
           child: BlocBuilder<AccountsCubit, AccountsState>(
             builder: (context, state) {
-              if(state is AccountsErrorState){
+              if (state is AccountsErrorState) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(state.error.toString()),
                 );
               }
               if (state is LoadedAccountsState) {
-                _currentSuggestions = state.allAccounts.map((e) => e.accountName.toString()).toList();
+                _currentSuggestions = state.allAccounts
+                    .map((e) => e.accountName.toString())
+                    .toList();
                 return ListView.builder(
                   shrinkWrap: true,
                   itemCount: state.allAccounts.length,
@@ -102,16 +111,20 @@ class _AccountSearchableInputFieldState extends State<AccountSearchableInputFiel
                     return InkWell(
                       onTap: () {
                         setState(() {
-                          _selectedClientName = state.allAccounts[index].accountName;
+                          _selectedClientName =
+                              state.allAccounts[index].accountName;
                           _selectedClientId = state.allAccounts[index].accId;
                         });
-                        widget.controller?.text = state.allAccounts[index].accountName??""; // Assign vendorName to controller
-                        widget.onChanged?.call(state.allAccounts[index].accId.toString());
+                        widget.controller?.text =
+                            state.allAccounts[index].accountName ??
+                                ""; // Assign vendorName to controller
+                        widget.onChanged
+                            ?.call(state.allAccounts[index].accId.toString());
                         _removeOverlay();
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
-                        child: Text(state.allAccounts[index].accountName??""),
+                        child: Text(state.allAccounts[index].accountName ?? ""),
                       ),
                     );
                   },
@@ -128,7 +141,8 @@ class _AccountSearchableInputFieldState extends State<AccountSearchableInputFiel
 
   String? _customValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return AppLocalizations.of(context)!.required(AppLocalizations.of(context)!.customer);
+      return AppLocalizations.of(context)!
+          .required(AppLocalizations.of(context)!.customer);
     }
     if (!_currentSuggestions.contains(value)) {
       return AppLocalizations.of(context)!.customerNotFound;
@@ -148,9 +162,15 @@ class _AccountSearchableInputFieldState extends State<AccountSearchableInputFiel
           Row(
             children: [
               Text(
-                widget.title,style: const TextStyle(fontWeight: FontWeight.w500),
+                widget.title,
+                style: const TextStyle(fontWeight: FontWeight.w500),
               ),
-              widget.isRequire? Text(" *",style: TextStyle(color: Colors.red.shade900),): const SizedBox(),
+              widget.isRequire
+                  ? Text(
+                      " *",
+                      style: TextStyle(color: Colors.red.shade900),
+                    )
+                  : const SizedBox(),
             ],
           ),
           CompositedTransformTarget(
@@ -161,10 +181,10 @@ class _AccountSearchableInputFieldState extends State<AccountSearchableInputFiel
               controller: widget.controller,
               onChanged: (value) {
                 if (value.isNotEmpty) {
-                 // context.read<AccountsCubit>().searchClients(widget.controller!.text);
+                  // context.read<AccountsCubit>().searchClients(widget.controller!.text);
                   _showOverlay(context);
                 } else {
-                 // context.read<ItemsSearchBloc>().add(ClearSuggestionsEvent());
+                  // context.read<ItemsSearchBloc>().add(ClearSuggestionsEvent());
                   _removeOverlay();
                 }
 
@@ -173,25 +193,29 @@ class _AccountSearchableInputFieldState extends State<AccountSearchableInputFiel
                   setState(() {
                     _selectedClientName = null;
                     _selectedClientId = null;
-
                   });
                 }
               },
-              validator: widget.validator ?? _customValidator, // Use custom validator
+              validator:
+                  widget.validator ?? _customValidator, // Use custom validator
               decoration: InputDecoration(
                 isDense: true,
                 contentPadding: const EdgeInsets.symmetric(vertical: 8),
                 suffixIcon: widget.trailing,
+                suffix: widget.end,
+                suffixIconConstraints: BoxConstraints(),
                 hintText: widget.hintText,
                 focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(width: 1.5, color: Theme.of(context).colorScheme.primary)),
+                    borderSide: BorderSide(
+                        width: 1.5,
+                        color: Theme.of(context).colorScheme.primary)),
                 enabledBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(width: 1.5, color: Colors.grey)),
-
               ),
             ),
           ),
-          if (_selectedClientName != null && _currentSuggestions.isNotEmpty) // Display the selected item name
+          if (_selectedClientName != null &&
+              _currentSuggestions.isNotEmpty) // Display the selected item name
             Padding(
               padding: const EdgeInsets.only(top: 5.0),
               child: Text(

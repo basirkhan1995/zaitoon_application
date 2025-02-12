@@ -1,25 +1,11 @@
-part of 'estimate_cubit.dart';
+import 'package:equatable/equatable.dart';
+import 'package:zaitoon_invoice/Json/estimate.dart';
 
-sealed class EstimateState extends Equatable {
-  const EstimateState();
-}
+class EstimateState extends Equatable {
+  final List<EstimateItemsModel> items;
 
-final class EstimateInitial extends EstimateState {
+  const EstimateState({required this.items});
+
   @override
-  List<Object> get props => [];
+  List<Object> get props => [items];
 }
-
-final class InvoiceItemTableLoadedState extends EstimateState{
-  final List<EstimateItemsModel> estimateItems;
-  const InvoiceItemTableLoadedState(this.estimateItems);
-  @override
-  List<Object> get props => [estimateItems];
-}
-
-final class FailureInvoiceState extends EstimateState{
-  final String error;
-  const FailureInvoiceState(this.error);
-  @override
-  List<Object> get props => [error];
-}
-

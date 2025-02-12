@@ -12,7 +12,7 @@ class InvoiceComponents {
   Future<void> generateInvoice({
     required List<EstimateItemsModel> invoiceItems,
     required List<String> headerTitles,
-    required EstimateModel invoiceInfo,
+    required EstimateInfoModel invoiceInfo,
     required String appLanguage,
     required String supplierTitle,
     required String customerTitle,
@@ -101,7 +101,7 @@ class InvoiceComponents {
   }
 
   static Widget buildAgreementNote(
-      {required EstimateModel info,
+      {required EstimateInfoModel info,
       required String termsAndConditionTitle,
       required TextStyle textStyle,
       required TextStyle titleTextStyle}) {
@@ -117,7 +117,7 @@ class InvoiceComponents {
             ]));
   }
 
-  static Widget buildTopHeader({required EstimateModel invoiceInfo}) {
+  static Widget buildTopHeader({required EstimateInfoModel invoiceInfo}) {
     final image = invoiceInfo.logo != null && invoiceInfo.logo!.isNotEmpty
         ? MemoryImage(invoiceInfo.logo!)
         : null;
@@ -204,7 +204,7 @@ class InvoiceComponents {
   }
 
   static Widget buildTitleHeader(
-      {required EstimateModel invoiceInfo,
+      {required EstimateInfoModel invoiceInfo,
       required TextStyle textStyle,
       required TextDirection textDirection,
       required String supplierTitleText,
@@ -393,7 +393,7 @@ class InvoiceComponents {
   }
 
   static Widget buildFooter(
-          {required EstimateModel info,
+          {required EstimateInfoModel info,
           required Font font,
           required TextDirection direction}) =>
       Padding(
@@ -413,7 +413,7 @@ class InvoiceComponents {
 
   static Widget buildTotal(
       {required List<EstimateItemsModel> invoiceItems,
-      required EstimateModel invoice,
+      required EstimateInfoModel invoice,
       required TextStyle textStyle,
       required String appLanguage,
       required String subtotalTitle,

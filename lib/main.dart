@@ -7,6 +7,7 @@ import 'package:zaitoon_invoice/Bloc/BackupBloc/database_backup_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/CurrencyCubit/Currency/currency_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/EstimateBloc/bloc/estimate_bloc.dart';
+import 'package:zaitoon_invoice/Bloc/EstimateCubit/estimate_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/General/general_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/PasswordCubit/password_cubit.dart';
@@ -16,6 +17,7 @@ import 'package:zaitoon_invoice/Bloc/ProductsCubit/Units/units_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/ProductsCubit/products_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/ThemeCubit/theme_cubit.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
+import 'package:zaitoon_invoice/Json/estimate.dart';
 import 'package:zaitoon_invoice/Themes/themes.dart';
 import 'package:zaitoon_invoice/Views/DatabaseView/databases.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -39,6 +41,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (context) => EstimateCubit()),
         //Language
         BlocProvider(create: (context) => LanguageCubit()),
         //Theme

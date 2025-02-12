@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Components/Widgets/zdialog.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/new_estimate.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Reports/Product%20Report/products_report.dart';
 import 'package:zaitoon_invoice/Views/Menu/components.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -47,7 +48,7 @@ class _MenuPageState extends State<MenuPage> {
       MenuComponents(
           icon: Icons.event_note,
           title: locale.estimate,
-          screen: EstimateView()),
+          screen: EstimateItemsList()),
       MenuComponents(
           icon: Icons.account_circle_outlined,
           title: locale.accounts,
@@ -64,7 +65,6 @@ class _MenuPageState extends State<MenuPage> {
           icon: Icons.info_outline_rounded,
           title: locale.report,
           screen: ProductsReport()),
-
     ];
 
     return Row(
