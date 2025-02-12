@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Components/Widgets/zdialog.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/new_estimate.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/New/estimate_view.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Reports/Product%20Report/products_report.dart';
 import 'package:zaitoon_invoice/Views/Menu/components.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/settings.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Accounts/accounts.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Dashboard/dashboard.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Invoice/invoice.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/Reports/reports.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Transport/transport.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Products/products.dart';
 import '../../Bloc/AuthCubit/cubit/auth_cubit.dart';
@@ -48,7 +47,7 @@ class _MenuPageState extends State<MenuPage> {
       MenuComponents(
           icon: Icons.event_note,
           title: locale.estimate,
-          screen: EstimateItemsList()),
+          screen: ZEstimate()),
       MenuComponents(
           icon: Icons.account_circle_outlined,
           title: locale.accounts,
