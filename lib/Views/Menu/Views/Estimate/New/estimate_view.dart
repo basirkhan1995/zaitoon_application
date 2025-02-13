@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../../../../Bloc/EstimateCubit/estimate_cubit.dart';
 import '../../../../../Json/z_estimate.dart';
 import 'estimate_items.dart';
+
 class ZEstimate extends StatelessWidget {
   const ZEstimate({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final vatController = TextEditingController();
+
     return Column(
       children: [
         // Header Row
@@ -34,17 +36,17 @@ class ZEstimate extends StatelessWidget {
             ),
             children: [
               TableRow(
-                decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary),
+                decoration:
+                    BoxDecoration(color: Theme.of(context).colorScheme.primary),
                 children: [
-                  _buildHeaderText('#',TextAlign.center, context),
-                  _buildHeaderText('Item Name',TextAlign.left,context),
-                  _buildHeaderText('Qty',TextAlign.left,context),
-                  _buildHeaderText('Amount',TextAlign.left,context),
-                  _buildHeaderText('Tax',TextAlign.left,context),
-                  _buildHeaderText('Discount',TextAlign.left,context),
-                  _buildHeaderText('Total',TextAlign.left,context),
-                  _buildHeaderText('Action',TextAlign.left,context),
+                  _buildHeaderText('#', TextAlign.center, context),
+                  _buildHeaderText('Item Name', TextAlign.left, context),
+                  _buildHeaderText('Qty', TextAlign.left, context),
+                  _buildHeaderText('Amount', TextAlign.left, context),
+                  _buildHeaderText('Tax', TextAlign.left, context),
+                  _buildHeaderText('Discount', TextAlign.left, context),
+                  _buildHeaderText('Total', TextAlign.left, context),
+                  _buildHeaderText('Action', TextAlign.left, context),
                 ],
               ),
             ],
@@ -73,28 +75,66 @@ class ZEstimate extends StatelessWidget {
           ),
         ),
 
+        // VAT input field
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Text('VAT Percentage:'),
+              SizedBox(width: 10),
+              // VAT input field
+              Expanded(
+                child: TextField(
+                  controller: vatController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: 'Enter VAT %',
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      double vat = double.tryParse(value) ?? 0;
+                      context.read<EstimateCubit>().updateVat(vat);
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
 
-        // Subtotal, VAT, and Total Section
+        // Subtotal, VAT, and Total Section at the bottom (right side)
         BlocBuilder<EstimateCubit, List<ZEstimateModel>>(
           builder: (context, rows) {
             final subtotal = context.read<EstimateCubit>().calculateSubtotal();
             final vat = context.read<EstimateCubit>().calculateVAT();
             final total = context.read<EstimateCubit>().calculateTotal();
 
-            return Card(
-              margin: const EdgeInsets.all(8.0),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    _buildSummaryRow('Subtotal', subtotal),
-                    _buildSummaryRow('VAT (15%)', vat),
-                    const Divider(),
-                    _buildSummaryRow('Total', total, isTotal: true),
-                  ],
-                ),
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end, // Align to the right
+                children: [
+                  SizedBox(
+                    width: 250, // Fixed width for the summary section
+                    child: Card(
+                      margin: const EdgeInsets.all(0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            _buildSummaryRow('Subtotal', subtotal),
+                            _buildSummaryRow('VAT ($vat%)', vat),
+                            const Divider(),
+                            _buildSummaryRow('Total', total, isTotal: true),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           },
@@ -110,7 +150,9 @@ class ZEstimate extends StatelessWidget {
                 onPressed: () {
                   context.read<EstimateCubit>().addRow();
                 },
-                icon: const Chip(avatar: Icon(Icons.add_circle_outline_rounded), label: Text("Add Item")),
+                icon: const Chip(
+                    avatar: Icon(Icons.add_circle_outline_rounded),
+                    label: Text("Add Item")),
               ),
             ],
           ),
@@ -146,7 +188,7 @@ class ZEstimate extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderText(String text,TextAlign? align, context) {
+  Widget _buildHeaderText(String text, TextAlign? align, context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
       child: Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zaitoon_invoice/Components/Widgets/product_searchable_field.dart';
 import '../../../../../Json/z_estimate.dart';
 
 class EstimateRow extends StatelessWidget {
@@ -51,9 +52,7 @@ class EstimateRow extends StatelessWidget {
                   ),
                 ),
               ),
-              _buildTextField('Item Name', row.itemName, (value) {
-                onChanged(row.copyWith(itemName: value));
-              }),
+
               _buildTextField('Qty', row.quantity.toString(), (value) {
                 final quantity = int.tryParse(value) ?? 0;
                 onChanged(row.copyWith(quantity: quantity));
@@ -71,7 +70,10 @@ class EstimateRow extends StatelessWidget {
                 onChanged(row.copyWith(discount: discount));
               }),
 
-              _buildTextField('Total', (row.amount * row.quantity + row.tax - row.discount).toStringAsFixed(2), (value) {
+              _buildTextField(
+                  'Total',
+                  (row.amount * row.quantity + row.tax - row.discount)
+                      .toStringAsFixed(2), (value) {
                 final discount = double.tryParse(value) ?? 0.0;
                 onChanged(row.copyWith(discount: discount));
               }),
@@ -87,7 +89,8 @@ class EstimateRow extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(String label, String value, Function(String) onChanged) {
+  Widget _buildTextField(
+      String label, String value, Function(String) onChanged) {
     return Padding(
       padding: const EdgeInsets.all(4.0),
       child: TextFormField(
