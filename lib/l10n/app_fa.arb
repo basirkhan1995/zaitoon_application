@@ -98,5 +98,12 @@
   "dueDate": "تاریخ تسلیمی",
   "invoiceDate": "تاریخ بل",
   "newEstimate": "قیمت دهی",
-  "duplicateProductMessage": "محصول قبلا ثبت شده است"
+  "duplicateProductMessage": "محصول قبلا ثبت شده است",
+  "vat": "مالیات",
+  "client": "مشتری",
+  "subtotal": "مجموعه فرعی",
+  "supplier": "عرضه کننده",
+  "termsAndCondition": "قوانین و شرایط",
+  "action": "عملیات",
+  "addItem": "اضافه کردن"
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:zaitoon_invoice/Bloc/AccountsCubit/cubit/accounts_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/AccountsCubit/accounts_cubit.dart';
 
 class AccountSearchableInputField extends StatefulWidget {
   final double? width;
@@ -181,10 +181,10 @@ class _AccountSearchableInputFieldState
               controller: widget.controller,
               onChanged: (value) {
                 if (value.isNotEmpty) {
-                  // context.read<AccountsCubit>().searchClients(widget.controller!.text);
+                  context.read<AccountsCubit>().searchAccountEvent(keyword: value);
                   _showOverlay(context);
                 } else {
-                  // context.read<ItemsSearchBloc>().add(ClearSuggestionsEvent());
+                  context.read<AccountsCubit>().resetAccountEvent();
                   _removeOverlay();
                 }
 
@@ -214,18 +214,19 @@ class _AccountSearchableInputFieldState
               ),
             ),
           ),
-          if (_selectedClientName != null &&
-              _currentSuggestions.isNotEmpty) // Display the selected item name
-            Padding(
-              padding: const EdgeInsets.only(top: 5.0),
-              child: Text(
-                "$_selectedClientName",
-                style: TextStyle(
-                  color: Colors.grey[700],
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
+          // //Select item under text field
+          // if (_selectedClientName != null &&
+          //     _currentSuggestions.isNotEmpty) // Display the selected item name
+          //   Padding(
+          //     padding: const EdgeInsets.only(top: 5.0),
+          //     child: Text(
+          //       "$_selectedClientName",
+          //       style: TextStyle(
+          //         color: Colors.grey[700],
+          //         fontWeight: FontWeight.w500,
+          //       ),
+          //     ),
+          //   ),
         ],
       ),
     );

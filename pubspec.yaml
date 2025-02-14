@@ -34,6 +34,7 @@ dependencies:
   crypto: ^3.0.6
   file_picker: ^8.1.7
   font_awesome_flutter: ^10.8.0
+  bidi: ^2.0.12
 
 dev_dependencies:
   flutter_test:

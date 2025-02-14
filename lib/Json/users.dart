@@ -51,7 +51,6 @@ class Users extends Equatable {
     String? password,
     int? userStatus,
     int? userRoleId,
-    String? userRoleName,
   }) =>
       Users(
           userId: userId ?? this.userId,
@@ -60,17 +59,17 @@ class Users extends Equatable {
           ownerName: ownerName ?? this.ownerName,
           email: email ?? this.email,
           address: address ?? this.address,
-          mobile1: mobile1 ?? mobile1,
+          mobile1: mobile1 ?? this.mobile1,
           mobile2: mobile2 ?? this.mobile2,
           companyLogo: companyLogo ?? this.companyLogo,
           username: username ?? this.username,
           password: password ?? this.password,
           userStatus: userStatus ?? this.userStatus,
-          userRoleId: userRoleId ?? userId,
+          userRoleId: userRoleId ?? this.userId,
           );
 
   factory Users.fromMap(Map<String, dynamic> json) => Users(
-        userId: json["userId"],
+        userId: json["usrId"],
         businessName: json["businessName"],
         businessId: json["bId"],
         ownerName: json["ownerName"],
@@ -87,7 +86,7 @@ class Users extends Equatable {
       );
 
   Map<String, dynamic> toMap() => {
-        "userId": userId,
+        "usrId": userId,
         "businessName": businessName,
         "bId": businessId,
         "fullName": ownerName,
@@ -99,7 +98,6 @@ class Users extends Equatable {
         "username": username,
         "password": password,
         "userStatus": userStatus,
-
         "roleId": userRoleId
       };
 

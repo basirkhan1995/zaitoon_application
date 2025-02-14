@@ -3,10 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Bloc/ProductsCubit/products_cubit.dart';
 
-class ProductSearchableField extends StatefulWidget {
+class ProductTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String? hintText;
-  final String title;
   final FocusNode? focusNode;
   final Widget? trailing;
   final Widget? end;
@@ -14,7 +13,7 @@ class ProductSearchableField extends StatefulWidget {
   final FormFieldValidator? validator;
   final ValueChanged<int>? onChanged;
 
-  const ProductSearchableField({
+  const ProductTextField({
     super.key,
     this.controller,
     this.hintText,
@@ -24,15 +23,13 @@ class ProductSearchableField extends StatefulWidget {
     this.isRequire = false,
     this.onChanged,
     this.validator,
-    required this.title,
   });
 
   @override
-  State<ProductSearchableField> createState() => _ProductSearchableFieldState();
+  State<ProductTextField> createState() => _ProductTextFieldState();
 }
 
-class _ProductSearchableFieldState extends State<ProductSearchableField> {
-  final LayerLink _layerLink = LayerLink();
+class _ProductTextFieldState extends State<ProductTextField> {
   OverlayEntry? _overlayEntry;
   final GlobalKey _fieldKey = GlobalKey();
   List<String> _currentSuggestions = []; // Store the current suggestions
@@ -72,9 +69,9 @@ class _ProductSearchableFieldState extends State<ProductSearchableField> {
     _removeOverlay();
 
     final renderBox =
-        _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox?;
+    Overlay.of(context).context.findRenderObject() as RenderBox?;
     if (renderBox == null || overlay == null) return;
 
     final position = renderBox.localToGlobal(Offset.zero, ancestor: overlay);
@@ -99,6 +96,7 @@ class _ProductSearchableFieldState extends State<ProductSearchableField> {
                     .map((e) => e.productName.toString())
                     .toList();
                 return ListView.builder(
+                  padding: EdgeInsets.zero,
                   shrinkWrap: true,
                   itemCount: state.products.length,
                   itemBuilder: (context, index) {
@@ -114,11 +112,16 @@ class _ProductSearchableFieldState extends State<ProductSearchableField> {
                         _removeOverlay();
                       },
                       child: Padding(
-                        padding: const EdgeInsets.all(6.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(state.products[index].productName!),
                       ),
                     );
                   },
+                );
+              }if(state is ProductsErrorState){
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(state.error),
                 );
               }
               return Container();
@@ -136,86 +139,51 @@ class _ProductSearchableFieldState extends State<ProductSearchableField> {
           .required(AppLocalizations.of(context)!.products);
     }
     if (!_currentSuggestions.contains(value)) {
-      return "Item not found";
+      return "The Item not found";
     }
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      spacing: 0,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            Text(
-              widget.title,
-              style: const TextStyle(fontWeight: FontWeight.w400),
-            ),
-            widget.isRequire
-                ? Text(
-                    " *",
-                    style: TextStyle(color: Colors.red.shade900),
-                  )
-                : const SizedBox(),
-          ],
-        ),
-        CompositedTransformTarget(
-          link: _layerLink,
-          child: TextFormField(
-            focusNode: _focusNode,
-            key: _fieldKey,
-            controller: widget.controller,
-            onChanged: (value) {
-              if (value.isNotEmpty) {
-                context.read<ProductsCubit>().productSearchingEvent(keyword: value);
-                _showOverlay(context);
-              } else {
-                // context.read<ProductsCubit>().clearSuggestionsEvent();
-                _removeOverlay();
-              }
+    return TextFormField(
+      focusNode: _focusNode,
+      key: _fieldKey,
+      controller: widget.controller,
+      onChanged: (value) {
+        if (value.isNotEmpty) {
+          context.read<ProductsCubit>().productSearchingEvent(keyword: value);
+          _showOverlay(context);
+        } else {
+          context.read<ProductsCubit>().resetProductsEvent();
+          _removeOverlay();
+        }
 
-              // If the value is not in the suggestions, clear the selection
-              if (!_currentSuggestions.contains(value)) {
-                setState(() {
-                  _selectedItemName = null;
-                  _selectedItemId = null;
-                  // context.read<ProductsCubit>().clearSuggestionsEvent();
-                });
-              }
-            },
-            validator:
-                widget.validator ?? _customValidator, // Use custom validator
-            decoration: InputDecoration(
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(vertical: 8),
-              suffixIcon: widget.trailing,
-              suffix: widget.end,
-              suffixIconConstraints: const BoxConstraints(),
-              hintText: widget.hintText,
-              focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      width: 1.5,
-                      color: Theme.of(context).colorScheme.primary)),
-              enabledBorder: const UnderlineInputBorder(
-                  borderSide: BorderSide(width: 1, color: Colors.grey)),
-            ),
-          ),
-        ),
-        // if (_selectedItemName != null && _currentSuggestions.isNotEmpty) // Display the selected item name
-        //   Padding(
-        //     padding: const EdgeInsets.only(top: 5.0),
-        //     child: Text(
-        //       "$_selectedItemName",
-        //       style: TextStyle(
-        //         color: Colors.grey[700],
-        //         fontWeight: FontWeight.w500,
-        //       ),
-        //     ),
-        //   ),
-      ],
+        // If the value is not in the suggestions, clear the selection
+        if (!_currentSuggestions.contains(value)) {
+          setState(() {
+            _selectedItemName = null;
+            _selectedItemId = null;
+            context.read<ProductsCubit>().resetProductsEvent();
+          });
+        }
+      },
+      validator:
+      widget.validator ?? _customValidator, // Use custom validator
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding: const EdgeInsets.symmetric(vertical: 5),
+        suffixIcon: widget.trailing,
+        suffix: widget.end,
+        suffixIconConstraints: const BoxConstraints(),
+        hintText: widget.hintText,
+        focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+                width: 1.5,
+                color: Theme.of(context).colorScheme.primary)),
+        enabledBorder: const UnderlineInputBorder(
+            borderSide: BorderSide(width: 1, color: Colors.grey)),
+      ),
     );
   }
 }

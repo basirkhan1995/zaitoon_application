@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zaitoon_invoice/Bloc/AccountsCubit/cubit/accounts_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/AccountsCubit/accounts_cubit.dart';
 import 'package:zaitoon_invoice/Components/Other/extensions.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:zaitoon_invoice/Json/accounts_model.dart';
@@ -16,7 +16,7 @@ class _AccountsViewState extends State<AccountsView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AccountsCubit>().loadAccounts();
+      context.read<AccountsCubit>().loadAccountsEvent();
     });
     super.initState();
   }
@@ -140,7 +140,7 @@ class _AccountsViewState extends State<AccountsView> {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(3),
                               color: backgroundColor.withValues(alpha: .2)),
-                          child: Text(account.accCategoryName!,
+                          child: Text(account.accCategoryName ?? "",
                               style: textTheme.bodySmall)),
                       Container(
                           margin: EdgeInsets.symmetric(horizontal: 5),

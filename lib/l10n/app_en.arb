@@ -98,5 +98,12 @@
   "dueDate": "Due date",
   "invoiceDate": "Invoice date",
   "newEstimate": "New Estimate",
-  "duplicateProductMessage": "Product already exists"
+  "duplicateProductMessage": "Product already exists",
+  "vat": "Vat",
+  "client": "Client",
+  "subtotal": "Subtotal",
+  "supplier": "Supplier",
+  "termsAndCondition": "Terms & Condition",
+  "action": "Actions",
+  "addItem": "Add Item"
 }

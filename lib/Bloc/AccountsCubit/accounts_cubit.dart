@@ -9,7 +9,7 @@ class AccountsCubit extends Cubit<AccountsState> {
   final Repositories _repositories;
   AccountsCubit(this._repositories) : super(AccountsInitial());
 
-  Future<void> loadAccounts() async {
+  Future<void> loadAccountsEvent() async {
     try {
       final accounts = await _repositories.getAccounts();
       emit(LoadedAccountsState(accounts));
@@ -17,4 +17,21 @@ class AccountsCubit extends Cubit<AccountsState> {
       emit(AccountsErrorState(e.toString()));
     }
   }
+
+  Future<void> searchAccountEvent({required String keyword})async{
+    try{
+      final filteredAccount = await _repositories.searchAccounts(keyword: keyword);
+      emit(LoadedAccountsState(filteredAccount));
+      if(filteredAccount.isEmpty){
+        emit(AccountsErrorState("No account found"));
+      }if(keyword.isEmpty){
+      resetAccountEvent();
+     }
+
+    }catch(e){
+      emit(AccountsErrorState(e.toString()));
+    }
+  }
+
+  void resetAccountEvent()=> emit(AccountsInitial());
 }

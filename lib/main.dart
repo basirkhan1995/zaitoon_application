@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:zaitoon_invoice/Bloc/AccountsCubit/cubit/accounts_cubit.dart';
-import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/AccountsCubit/accounts_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/AuthCubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/BackupBloc/database_backup_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/CurrencyCubit/Currency/currency_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => BackupBloc()),
         //Accounts
         BlocProvider(
-            create: (context) => AccountsCubit(Repositories())..loadAccounts()),
+            create: (context) => AccountsCubit(Repositories())..loadAccountsEvent()),
         //Products
         BlocProvider(
             create: (context) =>

@@ -14,7 +14,7 @@ import 'package:zaitoon_invoice/Json/database_info.dart';
 import 'package:zaitoon_invoice/Views/Authentication/login.dart';
 import 'package:zaitoon_invoice/Views/Authentication/register.dart';
 import 'package:zaitoon_invoice/Views/home.dart';
-import '../../Bloc/AuthCubit/cubit/auth_cubit.dart';
+import '../../Bloc/AuthCubit/auth_cubit.dart';
 
 class DatabaseManager extends StatefulWidget {
   const DatabaseManager({super.key});

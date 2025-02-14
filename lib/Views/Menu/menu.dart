@@ -12,7 +12,7 @@ import 'package:zaitoon_invoice/Views/Menu/Views/Dashboard/dashboard.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Invoice/invoice.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Transport/transport.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Products/products.dart';
-import '../../Bloc/AuthCubit/cubit/auth_cubit.dart';
+import '../../Bloc/AuthCubit/auth_cubit.dart';
 import '../../Bloc/MenuCubit/MainMenu/menu_cubit.dart';
 import 'dart:typed_data';
 
@@ -45,9 +45,7 @@ class _MenuPageState extends State<MenuPage> {
           title: locale.invoice,
           screen: InvoiceView()),
       MenuComponents(
-          icon: Icons.event_note,
-          title: locale.estimate,
-          screen: ZEstimate()),
+          icon: Icons.event_note, title: locale.estimate, screen: EstimateView()),
       MenuComponents(
           icon: Icons.account_circle_outlined,
           title: locale.accounts,

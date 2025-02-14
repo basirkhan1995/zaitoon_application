@@ -32,12 +32,19 @@ class ProductsCubit extends Cubit<ProductsState> {
 
   Future<void> productSearchingEvent({required String keyword}) async {
     try {
-      final res = await _repositories.searchProducts(keyword);
-      emit(ProductSearchingState(res));
+      final response =  await _repositories.searchProducts(keyword);
+       emit(LoadedProductsState(response));
+      if(response.isEmpty){
+        emit(ProductsErrorState("No item found"));
+      }if(keyword.isEmpty){
+        resetProductsEvent();
+      }
     } catch (e) {
       emit(ProductsErrorState(e.toString()));
     }
   }
+
+  void resetProductsEvent() => emit(ProductsInitial());
 
   Future<void> deleteProduct({required int id}) async {
     try {

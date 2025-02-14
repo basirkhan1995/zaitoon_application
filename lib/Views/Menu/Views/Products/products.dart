@@ -19,9 +19,13 @@ class _ProductsViewState extends State<ProductsView> {
     super.initState();
   }
 
+  final keyword = TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
@@ -40,21 +44,33 @@ class _ProductsViewState extends State<ProductsView> {
             if (state.products.isEmpty) {
               return Text("No products");
             }
-            return ListView.builder(
-                itemCount: state.products.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(state.products[index].productName ?? "null"),
-                    subtitle:
-                        Text(state.products[index].totalInventory.toString()),
-                    trailing: IconButton(
-                        onPressed: () {
-                          context.read<ProductsCubit>().deleteProduct(
-                              id: state.products[index].productId!);
-                        },
-                        icon: Icon(Icons.delete)),
-                  );
-                });
+            return Column(
+              children: [
+                TextField(
+                  controller: keyword,
+                  onChanged: (value){
+                    context.read<ProductsCubit>().productSearchingEvent(keyword: keyword.text);
+                  },
+                ),
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: state.products.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(state.products[index].productName ?? "null"),
+                          subtitle:
+                              Text(state.products[index].totalInventory.toString()),
+                          trailing: IconButton(
+                              onPressed: () {
+                                context.read<ProductsCubit>().deleteProduct(
+                                    id: state.products[index].productId!);
+                              },
+                              icon: Icon(Icons.delete)),
+                        );
+                      }),
+                ),
+              ],
+            );
           }
           return Container();
         },

@@ -26,7 +26,7 @@ packages:
     source: hosted
     version: "2.2.9"
   bidi:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: bidi
       sha256: "9a712c7ddf708f7c41b1923aa83648a3ed44cfd75b04f72d598c45e5be287f9d"

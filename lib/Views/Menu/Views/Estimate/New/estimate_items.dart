@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:zaitoon_invoice/Components/Widgets/product_searchable_field.dart';
+import 'package:zaitoon_invoice/Components/Widgets/underline_textfield.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/New/product_textfield.dart';
 import '../../../../../Json/z_estimate.dart';
 
 class EstimateRow extends StatelessWidget {
@@ -17,7 +18,7 @@ class EstimateRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Table(
         defaultVerticalAlignment: TableCellVerticalAlignment.bottom,
         columnWidths: const {
@@ -30,12 +31,6 @@ class EstimateRow extends StatelessWidget {
           6: FixedColumnWidth(110), // Total
           7: FixedColumnWidth(60), // Action Button
         },
-        border: TableBorder.symmetric(
-          outside: BorderSide(
-              color: Colors.grey.withOpacity(.2),
-              width: 1), // Table border outline
-          inside: BorderSide.none, // No internal borders
-        ),
         children: [
           TableRow(
             children: [
@@ -51,6 +46,10 @@ class EstimateRow extends StatelessWidget {
                     color: Colors.black87,
                   ),
                 ),
+              ),
+
+              ProductTextField(
+                controller: TextEditingController(text: row.itemName),
               ),
 
               _buildTextField('Qty', row.quantity.toString(), (value) {
@@ -91,16 +90,10 @@ class EstimateRow extends StatelessWidget {
 
   Widget _buildTextField(
       String label, String value, Function(String) onChanged) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: TextFormField(
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
-        ),
-        controller: TextEditingController(text: value),
-        onChanged: onChanged,
-      ),
+    return UnderlineTextfield(
+      title: "",
+      controller: TextEditingController(text: value),
+      onChanged: onChanged,
     );
   }
 }

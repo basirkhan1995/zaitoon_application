@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:zaitoon_invoice/Bloc/AuthCubit/cubit/auth_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/AuthCubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/EstimateBloc/bloc/estimate_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:zaitoon_invoice/Components/Widgets/product_searchable_field.dart';
 import 'package:zaitoon_invoice/Components/Widgets/underline_textfield.dart';
 import 'package:zaitoon_invoice/Json/estimate.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/New/product_textfield.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/customer_searchable_field.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate_pdf.dart';
 
@@ -23,7 +23,6 @@ class EstimateView extends StatefulWidget {
 
 class _EstimateViewState extends State<EstimateView> {
   final formKey = GlobalKey<FormState>();
-  final formKeyInvoiceItem = GlobalKey<FormState>();
 
   List<EstimateItemsModel> invoiceItems = [];
 
@@ -32,7 +31,7 @@ class _EstimateViewState extends State<EstimateView> {
   final dueDate = TextEditingController();
   final issueDate = TextEditingController();
 
-  final estimatePdf = InvoiceComponents();
+
   final estimateDetails = EstimateInfoModel();
 
   @override
@@ -47,19 +46,36 @@ class _EstimateViewState extends State<EstimateView> {
 
   @override
   Widget build(BuildContext context) {
+    final estimatePdf = InvoiceComponents(localizations: AppLocalizations.of(context)!);
     return Scaffold(
-      body: Column(
+      body: BlocBuilder<AuthCubit, AuthState>(
+  builder: (context, state) {
+    if(state is AuthenticatedState){
+      //estimateDetails.currency = state.user.currencyCode ?? "";
+      estimateDetails.supplier = state.user.businessName ?? "";
+      estimateDetails.supplierAddress = state.user.address ?? "";
+      estimateDetails.supplierMobile = state.user.mobile1 ?? "";
+      estimateDetails.supplierTelephone = state.user.mobile2 ?? "";
+      estimateDetails.logo = state.user.companyLogo;
+      estimateDetails.supplierEmail = state.user.email ?? "";
+      estimateDetails.invoiceNumber = invoiceNumber.text;
+      estimateDetails.clientName = customer.text;
+    }
+    return Column(
         children: [
           buildAppBar(context),
           buildEstimate(context),
         ],
-      ),
+      );
+  },
+),
     );
   }
 
   Widget buildAppBar(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final theme = Theme.of(context).textTheme;
+    final estimatePdf = InvoiceComponents(localizations: AppLocalizations.of(context)!);
     List<String> headerTitles = [
       "#",
       AppLocalizations.of(context)!.itemName,
@@ -75,44 +91,31 @@ class _EstimateViewState extends State<EstimateView> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(locale.newEstimate, style: theme.titleLarge),
-          ZOutlineButton(
-              height: 45,
-              width: 120,
-              icon: FontAwesomeIcons.solidFilePdf,
-              label: Text("PDF"),
-              onPressed: () {
-                BlocBuilder<LanguageCubit, Locale>(
-                  builder: (context, locale) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 5),
-                      child: ZOutlineButton(
-                        width: 100,
-                        height: 40,
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {
-                            estimatePdf.generateInvoice(
-                                invoiceInfo: estimateDetails,
-                                invoiceItems: invoiceItems,
-                                headerTitles: headerTitles,
-                                appLanguage: locale.languageCode,
-                                customerTitle: "Client Name",
-                                supplierTitle: "Supplier",
-                                discountTitle:
-                                    AppLocalizations.of(context)!.discount,
-                                totalTitle: AppLocalizations.of(context)!.total,
-                                subtotalTitle: "Subtotal",
-                                vatTitle: "Vat",
-                                termsAndConditionTitle: "terms and condition");
-                          }
-                        },
-                        icon: FontAwesomeIcons.solidFilePdf,
-                        label: const Text("PDF"),
-                      ),
-                    );
-                  },
-                );
-              })
+          BlocBuilder<LanguageCubit, Locale>(
+            builder: (context, locale) {
+              return ZOutlineButton(
+                  height: 45,
+                  width: 120,
+                  icon: FontAwesomeIcons.solidFilePdf,
+                  label: Text("PDF"),
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      estimatePdf.generateInvoice(
+                          invoiceInfo: estimateDetails,
+                          invoiceItems: invoiceItems,
+                          headerTitles: headerTitles,
+                          appLanguage: locale.languageCode,
+                          customerTitle: AppLocalizations.of(context)!.client,
+                          supplierTitle: AppLocalizations.of(context)!.supplier,
+                          discountTitle: AppLocalizations.of(context)!.discount,
+                          totalTitle: AppLocalizations.of(context)!.total,
+                          subtotalTitle: AppLocalizations.of(context)!.subtotal,
+                          vatTitle: AppLocalizations.of(context)!.vat,
+                          termsAndConditionTitle: AppLocalizations.of(context)!.termsAndCondition);
+                    }
+                  });
+            },
+          )
         ],
       ),
     );
@@ -149,6 +152,17 @@ class _EstimateViewState extends State<EstimateView> {
               AccountSearchableInputField(
                 title: locale.customer,
                 controller: customer,
+                onChanged: (value){
+                  setState(() {
+                    estimateDetails.clientName = customer.text;
+                  });
+                },
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return locale.required(locale.client);
+                  }
+                  return null;
+                },
                 isRequire: true,
                 end: IconButton(
                   padding: EdgeInsets.zero,
@@ -183,7 +197,7 @@ class _EstimateViewState extends State<EstimateView> {
   }
 
   void initialDate() {
-    invoiceNumber.text = "INV000001";
+    invoiceNumber.text = "INV0001";
     final now = DateTime.now();
     final defaultIssueDate = DateFormat('MMM dd, yyyy').format(now);
     final defaultDueDate =
@@ -226,6 +240,7 @@ class _EstimateViewState extends State<EstimateView> {
       {required List<EstimateItemsModel> invoiceItems,
       required EstimateInfoModel info}) {
     return BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
+      final locale = AppLocalizations.of(context)!;
       double calculateSubtotal() {
         double subtotal = 0.0;
         for (var item in invoiceItems) {
@@ -281,7 +296,7 @@ class _EstimateViewState extends State<EstimateView> {
                   spacing: 5,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Subtotal"),
+                    Text(locale.subtotal),
                     Text("${subtotal.toStringAsFixed(2)} $currency",
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                   ],
@@ -329,16 +344,16 @@ class _EstimateViewState extends State<EstimateView> {
   Widget buildEstimateItems() {
     return BlocConsumer<EstimateBloc, EstimateState>(
       listener: (context, state) {
-        if (state is InvoiceItemsLoadedState) {
+        if (state is EstimateItemsLoadedState) {
           invoiceItems = state.items;
         }
       },
       builder: (context, state) {
-        if (state is InvoiceItemsLoadedState) {
+        if (state is EstimateItemsLoadedState) {
           return Padding(
-            padding: const EdgeInsets.only(top: 30, right: 10, left: 10),
+            padding: const EdgeInsets.only(top: 20, right: 10, left: 10),
             child: Form(
-              key: formKeyInvoiceItem,
+              key: formKey,
               child: Table(
                 defaultVerticalAlignment: TableCellVerticalAlignment.bottom,
                 columnWidths: const {
@@ -395,7 +410,7 @@ class _EstimateViewState extends State<EstimateView> {
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onPrimary)),
-                      Text("Action",
+                      Text(AppLocalizations.of(context)!.action,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onPrimary)),
@@ -418,12 +433,13 @@ class _EstimateViewState extends State<EstimateView> {
                     return TableRow(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 0),
                           child: Center(child: Text(rowNumber.toString())),
                         ),
-                        ProductSearchableField(
+                        ProductTextField(
                           end: IconButton(
-                              padding: EdgeInsets.zero,
+                              padding: EdgeInsets.symmetric(horizontal: 5),
                               iconSize: 15,
                               constraints: BoxConstraints(),
                               onPressed: () {},
@@ -441,7 +457,6 @@ class _EstimateViewState extends State<EstimateView> {
                                 );
                           },
                           hintText: "",
-                          title: "",
                         ),
                         UnderlineTextfield(
                           enabledColor: Colors.cyan,
@@ -451,7 +466,7 @@ class _EstimateViewState extends State<EstimateView> {
                                   UpdateItemEvent(
                                     index,
                                     item.copyWith(
-                                        quantity: int.tryParse(value) ?? 1),
+                                        quantity: int.tryParse(item.controller!.text) ?? 1),
                                   ),
                                 );
                           },
@@ -542,15 +557,17 @@ class _EstimateViewState extends State<EstimateView> {
             children: [
               GestureDetector(
                   onTap: () {
-                    context
-                        .read<EstimateBloc>()
-                        .add(AddItemEvent(invoiceItems));
+                    setState(() {
+                      context
+                          .read<EstimateBloc>()
+                          .add(AddItemEvent(invoiceItems));
+                    });
                   },
                   child: Chip(
                       side: BorderSide.none,
                       avatar: const Icon(Icons.add_circle_outline_rounded),
                       label: Text(
-                        "Add item",
+                        AppLocalizations.of(context)!.addItem,
                         style: TextStyle(
                             color: Theme.of(context).colorScheme.primary),
                       ))),
@@ -558,7 +575,7 @@ class _EstimateViewState extends State<EstimateView> {
           ),
           Expanded(child: BlocBuilder<EstimateBloc, EstimateState>(
             builder: (context, state) {
-              if (state is InvoiceItemsLoadedState) {
+              if (state is EstimateItemsLoadedState) {
                 return buildTotal(
                     invoiceItems: state.items, info: estimateDetails);
               }

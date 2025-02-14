@@ -98,5 +98,12 @@
   "dueDate": "تسلیمی نیته",
   "invoiceDate": "بل نیته",
   "newEstimate": "قیمت دهی",
-  "duplicateProductMessage": "دا محصول مخکی ثبت شوی"
+  "duplicateProductMessage": "دا محصول مخکی ثبت شوی",
+  "vat": "مالیات",
+  "client": "پیرودونکی",
+  "subtotal": "فرعی مجموعه",
+  "supplier": "عرضه کونکی",
+  "termsAndCondition": "شرایط او قوانین",
+  "action": "عملیات",
+  "addItem": "اضافه کول"
 }

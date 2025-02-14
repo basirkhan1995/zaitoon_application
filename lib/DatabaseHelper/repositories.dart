@@ -138,11 +138,10 @@ class Repositories {
   Future<Users> getUserById({required int userId}) async {
     final db = DatabaseHelper.db;
     final usr = db.select('''
-    SELECT user.*, meta.*, role.*
+    SELECT user.*, meta.*
     FROM ${Tables.userTableName} as user INNER JOIN ${Tables.appMetadataTableName} as meta
-    ON user.businessId = meta.bId INNER JOIN ${Tables.userRoleTableName} as role
-    ON user.userRoleId = role.roleId
-    WHERE user.userId = ?
+    ON user.businessId = meta.bId
+    WHERE user.usrId = ?
    ''', [userId]);
     if (usr.isNotEmpty) {
       return Users.fromMap(usr.first);
@@ -199,7 +198,7 @@ class Repositories {
 
     // Fetch user securely
     final response = await Future(() => db.select(
-        '''SELECT password FROM ${Tables.userTableName} WHERE userId = ?''',
+        '''SELECT password FROM ${Tables.userTableName} WHERE usrId = ?''',
         [userId]));
 
     if (response.isEmpty) {
@@ -265,6 +264,17 @@ class Repositories {
   ''', categories); // Directly pass list elements as parameters
 
     return response.map((row) => Accounts.fromMap(row)).toList();
+  }
+
+  Future<List<Accounts>> searchAccounts({required String keyword}) async {
+    final db = DatabaseHelper.db;
+    // Check if the keyword is numeric
+    final isNumeric = int.tryParse(keyword) != null;
+    final response = db.select( '''
+    SELECT accId, accountName FROM ${Tables.accountTableName} 
+    WHERE (:keyword IS NULL OR :keyword = '' OR accId = :keyword OR accountName LIKE '%' || :keyword || '%')''',
+    isNumeric ? [keyword] : ["%$keyword%"]);
+    return response.map((e) => Accounts.fromMap(e)).toList();
   }
 
   //Products
@@ -477,7 +487,7 @@ ORDER BY
     // Construct the query dynamically
     final items = await Future(() => db.select('''
     SELECT products.*, unit.*
-    FROM ${Tables.productTableName} as i
+    FROM ${Tables.productTableName} as products
     INNER JOIN ${Tables.productUnitTableName} as unit ON products.unit = unit.unitId
     WHERE ${isNumeric ? "productId = ?" : "productName LIKE ? "}
   ''', isNumeric ? [keyword] : ["%$keyword%"]));

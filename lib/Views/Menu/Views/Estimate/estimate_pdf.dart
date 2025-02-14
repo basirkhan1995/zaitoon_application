@@ -5,11 +5,21 @@ import 'package:pdf/widgets.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:file_selector/file_selector.dart';
 import 'package:zaitoon_invoice/Json/estimate.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:bidi/bidi.dart' as bidi;
+
 
 class InvoiceComponents {
+  final AppLocalizations localizations;
+  InvoiceComponents({required this.localizations});
+
   String? directoryPath;
 
-  Future<void> generateInvoice({
+  static String formatBidiText(String input) {
+    // Manually add RTL control characters
+    return '\u202B$input\u202C';
+  }
+   Future<void> generateInvoice({
     required List<EstimateItemsModel> invoiceItems,
     required List<String> headerTitles,
     required EstimateInfoModel invoiceInfo,
@@ -24,11 +34,10 @@ class InvoiceComponents {
   }) async {
     final englishFontData =
         await rootBundle.load('assets/fonts/NotoSans/NotoSans-Regular.ttf');
-    final persianFontData =
-        await rootBundle.load('assets/fonts/Dubai/Dubai-Regular.ttf');
-
-    final englishFont = Font.ttf(englishFontData);
+    final persianFontData = await rootBundle.load('assets/fonts/Amiri/Amiri-Regular.ttf');
     final persianFont = Font.ttf(persianFontData);
+    final englishFont = Font.ttf(englishFontData);
+
 
     // Determine language settings
     final isEnglish = appLanguage == 'en';
@@ -40,7 +49,7 @@ class InvoiceComponents {
       base: Font.ttf(
           await rootBundle.load("assets/fonts/OpenSans/OpenSans-Regular.ttf")),
       bold: Font.ttf(
-          await rootBundle.load("assets/fonts/Dubai/Dubai-Regular.ttf")),
+          await rootBundle.load("assets/fonts/Amiri/Amiri-Regular.ttf")),
       italic: Font.ttf(
           await rootBundle.load("assets/fonts/Roboto/Roboto-Regular.ttf")),
       boldItalic: Font.ttf(
@@ -91,7 +100,7 @@ class InvoiceComponents {
             titleTextStyle: titleTextStyle,
             termsAndConditionTitle: termsAndConditionTitle),
       ],
-      header: (context) => buildTopHeader(invoiceInfo: invoiceInfo),
+      header: (context) => buildTopHeader(invoiceInfo: invoiceInfo,locale: localizations,persianFont: persianFont),
       footer: (context) =>
           buildFooter(info: invoiceInfo, font: font, direction: textDirection),
     ));
@@ -117,11 +126,10 @@ class InvoiceComponents {
             ]));
   }
 
-  static Widget buildTopHeader({required EstimateInfoModel invoiceInfo}) {
+  static Widget buildTopHeader({required EstimateInfoModel invoiceInfo, required AppLocalizations locale, required Font persianFont}) {
     final image = invoiceInfo.logo != null && invoiceInfo.logo!.isNotEmpty
         ? MemoryImage(invoiceInfo.logo!)
         : null;
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 10),
       child: Row(
@@ -133,9 +141,8 @@ class InvoiceComponents {
               Row(children: [
                 image == null
                     ? Text(
-                        invoiceInfo.supplier,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
+                    '\u202B${invoiceInfo.supplier}\u202C',
+                        style: TextStyle(font: persianFont)
                       )
                     : Image(
                         image,
@@ -150,7 +157,7 @@ class InvoiceComponents {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(invoiceInfo.supplier),
+                              Text(invoiceInfo.supplier,style: TextStyle(font: persianFont)),
                               Text(invoiceInfo.supplierMobile,
                                   style: const TextStyle(fontSize: 10)),
                               Text(invoiceInfo.supplierEmail,
@@ -169,7 +176,7 @@ class InvoiceComponents {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text("Invoice Date",
+                  Text(locale.invoiceDate,
                       style: const TextStyle(color: PdfColors.grey)),
                   Text(
                     invoiceInfo.invoiceDate,
@@ -185,7 +192,7 @@ class InvoiceComponents {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text("Invoice #",
+                  Text(locale.invoiceNumber,
                       style: const TextStyle(color: PdfColors.grey)),
                   Text(
                     invoiceInfo.invoiceNumber,

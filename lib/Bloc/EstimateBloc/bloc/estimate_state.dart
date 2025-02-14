@@ -9,12 +9,16 @@ sealed class EstimateState extends Equatable {
 
 final class EstimateInitial extends EstimateState {}
 
-class InvoiceItemsLoadedState extends EstimateState {
+class EstimateItemsLoadedState extends EstimateState {
   final List<EstimateItemsModel> items;
-  const InvoiceItemsLoadedState(this.items);
+  const EstimateItemsLoadedState(this.items);
+  @override
+  List<Object> get props => [items];
 }
 
-class InvoiceItemError extends EstimateState {
+class EstimateItemError extends EstimateState {
   final String error;
-  const InvoiceItemError(this.error);
+  const EstimateItemError(this.error);
+  @override
+  List<Object> get props => [error];
 }
