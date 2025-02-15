@@ -80,3 +80,9 @@ flutter:
         - asset: assets/fonts/Amiri/Amiri-Bold.ttf
         - asset: assets/fonts/Amiri/Amiri-Italic.ttf
         - asset: assets/fonts/Amiri/Amiri-BoldItalic.ttf
+    - family: Noto
+      fonts:
+        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-Regular.ttf
+        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-Bold.ttf
+        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-Medium.ttf
+        - asset: assets/fonts/NotoNaskh/NotoNaskhArabic-SemiBold.ttf

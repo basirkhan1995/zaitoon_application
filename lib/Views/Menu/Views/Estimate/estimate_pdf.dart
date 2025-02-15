@@ -13,11 +13,6 @@ class InvoiceComponents {
 
   String? directoryPath;
 
-  static String formatBidiText(String input) {
-    // Manually add RTL control characters
-    return '\u202B$input\u202C';
-  }
-
   Future<void> generateInvoice({
     required List<EstimateItemsModel> invoiceItems,
     required List<String> headerTitles,
@@ -35,14 +30,24 @@ class InvoiceComponents {
         await rootBundle.load('assets/fonts/NotoSans/NotoSans-Regular.ttf');
     final persianFontData =
         await rootBundle.load('assets/fonts/Amiri/Amiri-Regular.ttf');
+    final arabic = await rootBundle.load('assets/fonts/NotoNaskh/NotoNaskhArabic-regular.ttf');
     final persianFont = Font.ttf(persianFontData);
     final englishFont = Font.ttf(englishFontData);
+    final arabicFont = Font.ttf(arabic);
+
+    bool isRTL(String text) {
+      final rtlRegex = RegExp(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]');
+      return rtlRegex.hasMatch(text);
+    }
 
     // Determine language settings
     final isEnglish = appLanguage == 'en';
     final font = isEnglish ? englishFont : persianFont;
     final textDirection = isEnglish ? TextDirection.ltr : TextDirection.rtl;
 
+    Future<Font> getFont(String text)async{
+     return isRTL(text) ? arabicFont : englishFont;
+    }
     var myTheme = ThemeData.withFont(
       fontFallback: [englishFont, persianFont],
       base: Font.ttf(
@@ -145,7 +150,7 @@ class InvoiceComponents {
             children: [
               Row(children: [
                 image == null
-                    ? Text('\u202B${invoiceInfo.supplier}\u202C',
+                    ? Text(invoiceInfo.supplier,
                         style: TextStyle(font: persianFont))
                     : Image(
                         image,
