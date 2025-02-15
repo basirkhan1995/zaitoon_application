@@ -9,8 +9,8 @@ part 'estimate_state.dart';
 class EstimateBloc extends Bloc<EstimateEvent, EstimateState> {
   final List<EstimateItemsModel> items = [];
   EstimateBloc() : super(EstimateInitial()) {
-
     on<LoadItemsEvent>((event, emit) {
+      items.clear();
       try {
         if (items.isEmpty) {
           items.add(EstimateItemsModel(

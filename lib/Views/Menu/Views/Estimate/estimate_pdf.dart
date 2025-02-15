@@ -6,8 +6,6 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:file_selector/file_selector.dart';
 import 'package:zaitoon_invoice/Json/estimate.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:bidi/bidi.dart' as bidi;
-
 
 class InvoiceComponents {
   final AppLocalizations localizations;
@@ -19,7 +17,8 @@ class InvoiceComponents {
     // Manually add RTL control characters
     return '\u202B$input\u202C';
   }
-   Future<void> generateInvoice({
+
+  Future<void> generateInvoice({
     required List<EstimateItemsModel> invoiceItems,
     required List<String> headerTitles,
     required EstimateInfoModel invoiceInfo,
@@ -34,10 +33,10 @@ class InvoiceComponents {
   }) async {
     final englishFontData =
         await rootBundle.load('assets/fonts/NotoSans/NotoSans-Regular.ttf');
-    final persianFontData = await rootBundle.load('assets/fonts/Amiri/Amiri-Regular.ttf');
+    final persianFontData =
+        await rootBundle.load('assets/fonts/Amiri/Amiri-Regular.ttf');
     final persianFont = Font.ttf(persianFontData);
     final englishFont = Font.ttf(englishFontData);
-
 
     // Determine language settings
     final isEnglish = appLanguage == 'en';
@@ -100,7 +99,10 @@ class InvoiceComponents {
             titleTextStyle: titleTextStyle,
             termsAndConditionTitle: termsAndConditionTitle),
       ],
-      header: (context) => buildTopHeader(invoiceInfo: invoiceInfo,locale: localizations,persianFont: persianFont),
+      header: (context) => buildTopHeader(
+          invoiceInfo: invoiceInfo,
+          locale: localizations,
+          persianFont: persianFont),
       footer: (context) =>
           buildFooter(info: invoiceInfo, font: font, direction: textDirection),
     ));
@@ -126,7 +128,10 @@ class InvoiceComponents {
             ]));
   }
 
-  static Widget buildTopHeader({required EstimateInfoModel invoiceInfo, required AppLocalizations locale, required Font persianFont}) {
+  static Widget buildTopHeader(
+      {required EstimateInfoModel invoiceInfo,
+      required AppLocalizations locale,
+      required Font persianFont}) {
     final image = invoiceInfo.logo != null && invoiceInfo.logo!.isNotEmpty
         ? MemoryImage(invoiceInfo.logo!)
         : null;
@@ -140,10 +145,8 @@ class InvoiceComponents {
             children: [
               Row(children: [
                 image == null
-                    ? Text(
-                    '\u202B${invoiceInfo.supplier}\u202C',
-                        style: TextStyle(font: persianFont)
-                      )
+                    ? Text('\u202B${invoiceInfo.supplier}\u202C',
+                        style: TextStyle(font: persianFont))
                     : Image(
                         image,
                         width: 70,
@@ -157,7 +160,8 @@ class InvoiceComponents {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(invoiceInfo.supplier,style: TextStyle(font: persianFont)),
+                              Text(invoiceInfo.supplier,
+                                  style: TextStyle(font: persianFont)),
                               Text(invoiceInfo.supplierMobile,
                                   style: const TextStyle(fontSize: 10)),
                               Text(invoiceInfo.supplierEmail,
