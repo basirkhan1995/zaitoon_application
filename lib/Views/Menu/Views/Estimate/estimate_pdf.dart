@@ -107,7 +107,7 @@ class InvoiceComponents {
       header: (context) => buildTopHeader(
           invoiceInfo: invoiceInfo,
           locale: localizations,
-          persianFont: persianFont),
+          textStyle: titleTextStyle),
       footer: (context) =>
           buildFooter(info: invoiceInfo, font: font, direction: textDirection),
     ));
@@ -136,7 +136,7 @@ class InvoiceComponents {
   static Widget buildTopHeader(
       {required EstimateInfoModel invoiceInfo,
       required AppLocalizations locale,
-      required Font persianFont}) {
+      required TextStyle textStyle}) {
     final image = invoiceInfo.logo != null && invoiceInfo.logo!.isNotEmpty
         ? MemoryImage(invoiceInfo.logo!)
         : null;
@@ -151,7 +151,7 @@ class InvoiceComponents {
               Row(children: [
                 image == null
                     ? Text(invoiceInfo.supplier,
-                        style: TextStyle(font: persianFont))
+                        style: textStyle)
                     : Image(
                         image,
                         width: 70,
@@ -166,7 +166,7 @@ class InvoiceComponents {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(invoiceInfo.supplier,
-                                  style: TextStyle(font: persianFont)),
+                                  style: textStyle),
                               Text(invoiceInfo.supplierMobile,
                                   style: const TextStyle(fontSize: 10)),
                               Text(invoiceInfo.supplierEmail,
