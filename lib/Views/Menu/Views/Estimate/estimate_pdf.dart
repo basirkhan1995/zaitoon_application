@@ -11,7 +11,47 @@ class InvoiceComponents {
   final AppLocalizations localizations;
   InvoiceComponents({required this.localizations});
 
+  Future<Font> getPersianFont() async {
+    final ByteData fontData =
+        await rootBundle.load('assets/fonts/Amiri/Amiri-Regular.ttf');
+    final Uint8List bytes = fontData.buffer.asUint8List();
+    return Font.ttf(bytes.buffer.asByteData());
+  }
+
+  // Declare variables for fonts
+  static late Font _englishFont;
+  static late Font _persianFont;
+
+  // Method to load English Persian font
+  static Future<void> loadFonts() async {
+    final ByteData englishFontData =
+        await rootBundle.load('assets/fonts/NotoSans/NotoSans-Regular.ttf');
+    final Uint8List englishBytes = englishFontData.buffer.asUint8List();
+    _englishFont = Font.ttf(englishBytes.buffer.asByteData());
+
+    final ByteData persianFontData = await rootBundle.load(
+        'assets/fonts/Vazir-Regular.ttf'); // Ensure you have Persian font in assets
+    final Uint8List persianBytes = persianFontData.buffer.asUint8List();
+    _persianFont = Font.ttf(persianBytes.buffer.asByteData());
+  }
+
+  // Getter for Persian font
+  static Font get persianGlobalFont => _persianFont;
+
+  // Getter for English font
+  static Font get englishGlobalFont => _englishFont;
+
   String? directoryPath;
+
+  static bool isRTL(String text) {
+    final rtlRegex = RegExp(
+        r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]');
+    return rtlRegex.hasMatch(text);
+  }
+
+  static Future<Font> biDirectional(String text) async {
+    return isRTL(text) ? persianGlobalFont : englishGlobalFont;
+  }
 
   Future<void> generateInvoice({
     required List<EstimateItemsModel> invoiceItems,
@@ -30,24 +70,17 @@ class InvoiceComponents {
         await rootBundle.load('assets/fonts/NotoSans/NotoSans-Regular.ttf');
     final persianFontData =
         await rootBundle.load('assets/fonts/Amiri/Amiri-Regular.ttf');
-    final arabic = await rootBundle.load('assets/fonts/NotoNaskh/NotoNaskhArabic-regular.ttf');
+    final arabic = await rootBundle
+        .load('assets/fonts/NotoNaskh/NotoNaskhArabic-regular.ttf');
     final persianFont = Font.ttf(persianFontData);
     final englishFont = Font.ttf(englishFontData);
     final arabicFont = Font.ttf(arabic);
-
-    bool isRTL(String text) {
-      final rtlRegex = RegExp(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]');
-      return rtlRegex.hasMatch(text);
-    }
 
     // Determine language settings
     final isEnglish = appLanguage == 'en';
     final font = isEnglish ? englishFont : persianFont;
     final textDirection = isEnglish ? TextDirection.ltr : TextDirection.rtl;
 
-    Future<Font> getFont(String text)async{
-     return isRTL(text) ? arabicFont : englishFont;
-    }
     var myTheme = ThemeData.withFont(
       fontFallback: [englishFont, persianFont],
       base: Font.ttf(
@@ -150,8 +183,7 @@ class InvoiceComponents {
             children: [
               Row(children: [
                 image == null
-                    ? Text(invoiceInfo.supplier,
-                        style: textStyle)
+                    ? Text(invoiceInfo.supplier, style: textStyle)
                     : Image(
                         image,
                         width: 70,
@@ -165,8 +197,7 @@ class InvoiceComponents {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(invoiceInfo.supplier,
-                                  style: textStyle),
+                              Text(invoiceInfo.supplier),
                               Text(invoiceInfo.supplierMobile,
                                   style: const TextStyle(fontSize: 10)),
                               Text(invoiceInfo.supplierEmail,
