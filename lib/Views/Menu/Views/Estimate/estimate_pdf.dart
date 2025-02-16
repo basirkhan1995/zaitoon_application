@@ -10,17 +10,19 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class InvoiceComponents {
   final AppLocalizations localizations;
   InvoiceComponents({required this.localizations});
-
-  Future<Font> getPersianFont() async {
-    final ByteData fontData =
-        await rootBundle.load('assets/fonts/Amiri/Amiri-Regular.ttf');
-    final Uint8List bytes = fontData.buffer.asUint8List();
-    return Font.ttf(bytes.buffer.asByteData());
-  }
+  //PDF Directory
+  late String _directoryPath;
+  String get directoryPath => _directoryPath;
 
   // Declare variables for fonts
   static late Font _englishFont;
   static late Font _persianFont;
+
+  // Getter for Persian font
+  static Font get persianGlobalFont => _persianFont;
+
+  // Getter for English font
+  static Font get englishGlobalFont => _englishFont;
 
   // Method to load English Persian font
   static Future<void> loadFonts() async {
@@ -30,18 +32,10 @@ class InvoiceComponents {
     _englishFont = Font.ttf(englishBytes.buffer.asByteData());
 
     final ByteData persianFontData = await rootBundle.load(
-        'assets/fonts/Vazir-Regular.ttf'); // Ensure you have Persian font in assets
+        'assets/fonts/Amiri/Amiri-Regular.ttf'); // Ensure you have Persian font in assets
     final Uint8List persianBytes = persianFontData.buffer.asUint8List();
     _persianFont = Font.ttf(persianBytes.buffer.asByteData());
   }
-
-  // Getter for Persian font
-  static Font get persianGlobalFont => _persianFont;
-
-  // Getter for English font
-  static Font get englishGlobalFont => _englishFont;
-
-  String? directoryPath;
 
   static bool isRTL(String text) {
     final rtlRegex = RegExp(
@@ -51,6 +45,10 @@ class InvoiceComponents {
 
   static Future<Font> biDirectional(String text) async {
     return isRTL(text) ? persianGlobalFont : englishGlobalFont;
+  }
+
+  static Future<TextDirection> textDirection(String text) async {
+    return isRTL(text) ? TextDirection.rtl : TextDirection.ltr;
   }
 
   Future<void> generateInvoice({
