@@ -38,8 +38,7 @@ class InvoiceComponents {
   }
 
   static bool isRTL(String text) {
-    final rtlRegex = RegExp(
-        r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]');
+    final rtlRegex = RegExp(r'[\u0600-\u06FF]');
     return rtlRegex.hasMatch(text);
   }
 
@@ -195,11 +194,12 @@ class InvoiceComponents {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(invoiceInfo.supplier),
+                              Text(invoiceInfo.supplier,
+                                  style: TextStyle(font: persianGlobalFont)),
                               Text(invoiceInfo.supplierMobile,
                                   style: const TextStyle(fontSize: 10)),
                               Text(invoiceInfo.supplierEmail,
-                                  style: const TextStyle(fontSize: 10)),
+                                  style: TextStyle(fontSize: 10)),
                             ]),
                       )
                     : SizedBox()
@@ -270,7 +270,10 @@ class InvoiceComponents {
                     Text(supplierTitleText,
                         style: textStyle, textDirection: textDirection),
                     SizedBox(height: 3),
-                    Text(invoiceInfo.supplier, style: textStyle),
+                    Text(
+                      invoiceInfo.supplier,
+                      style: textStyle,
+                    ),
                     SizedBox(height: 3),
                     Text(invoiceInfo.supplierEmail, style: textStyle),
                     SizedBox(height: 3),
