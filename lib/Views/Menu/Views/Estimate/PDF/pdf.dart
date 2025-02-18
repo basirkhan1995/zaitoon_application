@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:file_selector/file_selector.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -38,16 +37,18 @@ class Pdf {
     _persianFont = Font.ttf(persianBytes.buffer.asByteData());
   }
 
-  Future<void> createInvoice() async {
+  Future<void> createInvoice(
+      {required String language, required PageOrientation orientaion}) async {
     pdf.addPage(MultiPage(
-      textDirection: TextDirection.rtl,
+      textDirection: pdfLanguage(language: language),
+      orientation: orientaion,
       build: (context) => [body()],
       header: (context) => header(),
       footer: (context) => footer(),
     ));
 
     // Preview the PDF
-    await previewPdf();
+    //await previewPdf();
     await saveDocument(suggestedName: "Invoice.pdf", pdf: pdf);
   }
 
@@ -87,6 +88,10 @@ class Pdf {
   static TextDirection textDirection({required String text}) {
     bool persian = _isPersian(text);
     return persian ? TextDirection.rtl : TextDirection.ltr;
+  }
+
+  static TextDirection pdfLanguage({required String language}) {
+    return language == 'English' ? TextDirection.ltr : TextDirection.rtl;
   }
 
   static TextStyle textStyle({required String text}) {
@@ -140,6 +145,25 @@ class Pdf {
         // Return the generated PDF bytes here
         final pdfBytes = await pdf.save();
         return pdfBytes;
+      },
+    );
+  }
+
+  Future<void> print(
+      {required Printer selectedPrinter, required String language}) async {
+    pdf.addPage(MultiPage(
+      textDirection: pdfLanguage(language: language),
+      build: (context) => [body()],
+      header: (context) => header(),
+      footer: (context) => footer(),
+    ));
+
+    // Preview the PDF
+    //await previewPdf();
+    await Printing.directPrintPdf(
+      printer: selectedPrinter,
+      onLayout: (PdfPageFormat format) async {
+        return pdf.save();
       },
     );
   }
