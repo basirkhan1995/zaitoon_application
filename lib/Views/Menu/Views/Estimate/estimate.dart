@@ -11,9 +11,10 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Components/Widgets/underline_textfield.dart';
 import 'package:zaitoon_invoice/Json/estimate.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/New/product_textfield.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/print.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/customer_searchable_field.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate_pdf.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/pdf.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 
 class EstimateView extends StatefulWidget {
   const EstimateView({super.key});
@@ -44,7 +45,6 @@ class _EstimateViewState extends State<EstimateView> {
     super.initState();
   }
 
-  final pdf = Pdf();
   @override
   Widget build(BuildContext context) {
     final estimatePdf =
@@ -96,7 +96,14 @@ class _EstimateViewState extends State<EstimateView> {
         children: [
           Text(locale.newEstimate, style: theme.titleLarge),
           IconButton(
-              onPressed: () => pdf.createInvoice(), icon: Text("Create PDF")),
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return PdfPrintSetting();
+                    });
+              },
+              icon: Icon(Icons.picture_as_pdf)),
           BlocBuilder<LanguageCubit, Locale>(
             builder: (context, locale) {
               return ZOutlineButton(
