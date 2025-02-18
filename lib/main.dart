@@ -22,10 +22,14 @@ import 'package:zaitoon_invoice/Views/DatabaseView/databases.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/pdf.dart';
 import 'Bloc/MenuCubit/MainMenu/menu_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Pdf.loadPersianFont(); // Load Persian Font
+  await Pdf.loadEnglishFont(); // Load English Font
+
   if (Platform.isWindows || Platform.isMacOS) {
     await windowManager.ensureInitialized();
     windowManager.setMinimumSize(const Size(750, 500));
@@ -61,7 +65,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => BackupBloc()),
         //Accounts
         BlocProvider(
-            create: (context) => AccountsCubit(Repositories())..loadAccountsEvent()),
+            create: (context) =>
+                AccountsCubit(Repositories())..loadAccountsEvent()),
         //Products
         BlocProvider(
             create: (context) =>

@@ -13,6 +13,7 @@ import 'package:zaitoon_invoice/Json/estimate.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/New/product_textfield.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/customer_searchable_field.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate_pdf.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/pdf.dart';
 
 class EstimateView extends StatefulWidget {
   const EstimateView({super.key});
@@ -31,7 +32,6 @@ class _EstimateViewState extends State<EstimateView> {
   final dueDate = TextEditingController();
   final issueDate = TextEditingController();
 
-
   final estimateDetails = EstimateInfoModel();
 
   @override
@@ -44,38 +44,42 @@ class _EstimateViewState extends State<EstimateView> {
     super.initState();
   }
 
+  final pdf = Pdf();
   @override
   Widget build(BuildContext context) {
-    final estimatePdf = InvoiceComponents(localizations: AppLocalizations.of(context)!);
+    final estimatePdf =
+        InvoiceComponents(localizations: AppLocalizations.of(context)!);
+
     return Scaffold(
       body: BlocBuilder<AuthCubit, AuthState>(
-  builder: (context, state) {
-    if(state is AuthenticatedState){
-      //estimateDetails.currency = state.user.currencyCode ?? "";
-      estimateDetails.supplier = state.user.businessName ?? "";
-      estimateDetails.supplierAddress = state.user.address ?? "";
-      estimateDetails.supplierMobile = state.user.mobile1 ?? "";
-      estimateDetails.supplierTelephone = state.user.mobile2 ?? "";
-      estimateDetails.logo = state.user.companyLogo;
-      estimateDetails.supplierEmail = state.user.email ?? "";
-      estimateDetails.invoiceNumber = invoiceNumber.text;
-      estimateDetails.clientName = customer.text;
-    }
-    return Column(
-        children: [
-          buildAppBar(context),
-          buildEstimate(context),
-        ],
-      );
-  },
-),
+        builder: (context, state) {
+          if (state is AuthenticatedState) {
+            //estimateDetails.currency = state.user.currencyCode ?? "";
+            estimateDetails.supplier = state.user.businessName ?? "";
+            estimateDetails.supplierAddress = state.user.address ?? "";
+            estimateDetails.supplierMobile = state.user.mobile1 ?? "";
+            estimateDetails.supplierTelephone = state.user.mobile2 ?? "";
+            estimateDetails.logo = state.user.companyLogo;
+            estimateDetails.supplierEmail = state.user.email ?? "";
+            estimateDetails.invoiceNumber = invoiceNumber.text;
+            estimateDetails.clientName = customer.text;
+          }
+          return Column(
+            children: [
+              buildAppBar(context),
+              buildEstimate(context),
+            ],
+          );
+        },
+      ),
     );
   }
 
   Widget buildAppBar(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final theme = Theme.of(context).textTheme;
-    final estimatePdf = InvoiceComponents(localizations: AppLocalizations.of(context)!);
+    final estimatePdf =
+        InvoiceComponents(localizations: AppLocalizations.of(context)!);
     List<String> headerTitles = [
       "#",
       AppLocalizations.of(context)!.itemName,
@@ -91,6 +95,8 @@ class _EstimateViewState extends State<EstimateView> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(locale.newEstimate, style: theme.titleLarge),
+          IconButton(
+              onPressed: () => pdf.createInvoice(), icon: Text("Create PDF")),
           BlocBuilder<LanguageCubit, Locale>(
             builder: (context, locale) {
               return ZOutlineButton(
@@ -111,7 +117,8 @@ class _EstimateViewState extends State<EstimateView> {
                           totalTitle: AppLocalizations.of(context)!.total,
                           subtotalTitle: AppLocalizations.of(context)!.subtotal,
                           vatTitle: AppLocalizations.of(context)!.vat,
-                          termsAndConditionTitle: AppLocalizations.of(context)!.termsAndCondition);
+                          termsAndConditionTitle:
+                              AppLocalizations.of(context)!.termsAndCondition);
                     }
                   });
             },
@@ -152,7 +159,7 @@ class _EstimateViewState extends State<EstimateView> {
               AccountSearchableInputField(
                 title: locale.customer,
                 controller: customer,
-                onChanged: (value){
+                onChanged: (value) {
                   setState(() {
                     estimateDetails.clientName = customer.text;
                   });
@@ -466,7 +473,9 @@ class _EstimateViewState extends State<EstimateView> {
                                   UpdateItemEvent(
                                     index,
                                     item.copyWith(
-                                        quantity: int.tryParse(item.controller!.text) ?? 1),
+                                        quantity: int.tryParse(
+                                                item.controller!.text) ??
+                                            1),
                                   ),
                                 );
                           },
