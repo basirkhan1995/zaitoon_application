@@ -50,7 +50,7 @@ class _PdfLanguageSelectionState extends State<PdfLanguageSelection> {
       _overlayEntry.remove();
     } else {
       _overlayEntry = _createOverlayEntry(context);
-      Overlay.of(context)!.insert(_overlayEntry);
+      Overlay.of(context).insert(_overlayEntry);
     }
     setState(() {
       _isOpen = !_isOpen;

@@ -52,8 +52,8 @@ class InvoiceComponents {
 
   Future<void> generateInvoice({
     required List<EstimateItemsModel> invoiceItems,
-    required List<String> headerTitles,
     required EstimateInfoModel invoiceInfo,
+    required List<String> headerTitles,
     required String appLanguage,
     required String supplierTitle,
     required String customerTitle,

@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:zaitoon_invoice/Bloc/AuthCubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/PDF/pdf_language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/Printer/printer_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
+import 'package:zaitoon_invoice/Json/estimate.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/document_language.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/printers_drop.dart';
@@ -18,11 +20,31 @@ class PdfPrintSetting extends StatefulWidget {
 }
 
 class _PdfPrintSettingState extends State<PdfPrintSetting> {
+  final formKey = GlobalKey<FormState>();
+  final clientName = TextEditingController();
+  final invoiceNumber = TextEditingController();
+  final dueDate = TextEditingController();
+  final issueDate = TextEditingController();
+
+
   // Track the current orientation
   pw.PageOrientation selectedOrientation = pw.PageOrientation.portrait;
-
+  EstimateInfoModel estimateInfo = EstimateInfoModel();
+  List<EstimateItemsModel> estimateItems = [];
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<AuthCubit, AuthState>(
+  builder: (context, state) {
+    if (state is AuthenticatedState) {
+      estimateInfo.supplier = state.user.businessName ?? "";
+      estimateInfo.supplierAddress = state.user.address ?? "";
+      estimateInfo.supplierMobile = state.user.mobile1 ?? "";
+      estimateInfo.supplierTelephone = state.user.mobile2 ?? "";
+      estimateInfo.logo = state.user.companyLogo;
+      estimateInfo.supplierEmail = state.user.email ?? "";
+      estimateInfo.invoiceNumber = invoiceNumber.text;
+      estimateInfo.clientName = clientName.text;
+    }
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       insetPadding: EdgeInsets.zero,
@@ -83,6 +105,8 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
         ),
       ),
     );
+  },
+);
   }
 
   Widget printPreview() {
@@ -100,7 +124,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                     BoxShadow(
                         blurRadius: 1,
                         spreadRadius: 0,
-                        color: Colors.grey.withOpacity(.3))
+                        color: Colors.grey.withValues(alpha: .3))
                   ]),
               child: PdfPreview(
                 padding: EdgeInsets.zero,
@@ -117,7 +141,9 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                   // Generate a new document each time based on the selected printer and language
                   final document = await Pdf().printPreview(
                     language: selectedLanguage ?? "English",
-                    orientaion: selectedOrientation,
+                    orientation: selectedOrientation,
+                    invoiceInfo: estimateInfo,
+                    items: estimateItems
                   );
                   return document.save(); // Save and return the document
                 },
@@ -141,7 +167,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
             BoxShadow(
                 blurRadius: 1,
                 spreadRadius: 0,
-                color: Colors.grey.withOpacity(.3))
+                color: Colors.grey.withValues(alpha: .3))
           ]),
       child: Column(
         spacing: 5,
@@ -194,7 +220,10 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                       Pdf().print(
                           selectedPrinter: selectedPrinter!,
                           language: selectedLanguage ?? "English",
-                          orientation: selectedOrientation);
+                          orientation: selectedOrientation,
+                          invoiceInfo: estimateInfo,
+                          items: estimateItems
+                      );
                     }),
                 ZOutlineButton(
                     width: double.infinity,
@@ -206,7 +235,11 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                           context.read<PDFLanguageCubit>().state;
                       Pdf().createInvoice(
                           language: selectedLanguage ?? "English",
-                          orientaion: selectedOrientation);
+                          orientation: selectedOrientation,
+                          invoiceInfo: estimateInfo,
+                          items: estimateItems,
+
+                      );
                     }),
               ],
             ),

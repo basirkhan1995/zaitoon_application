@@ -14,7 +14,6 @@ import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/New/product_textfield.
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/print.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/customer_searchable_field.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate_pdf.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 
 class EstimateView extends StatefulWidget {
   const EstimateView({super.key});
@@ -25,13 +24,11 @@ class EstimateView extends StatefulWidget {
 
 class _EstimateViewState extends State<EstimateView> {
   final formKey = GlobalKey<FormState>();
-
-  List<EstimateItemsModel> invoiceItems = [];
-
   final customer = TextEditingController();
   final invoiceNumber = TextEditingController();
   final dueDate = TextEditingController();
   final issueDate = TextEditingController();
+  List<EstimateItemsModel> invoiceItems = [];
 
   final estimateDetails = EstimateInfoModel();
 
