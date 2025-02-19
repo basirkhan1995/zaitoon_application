@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:zaitoon_invoice/Bloc/LanguageCubit/PDF/pdf_language_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/Printer/printer_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/document_language.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
@@ -15,8 +18,9 @@ class PdfPrintSetting extends StatefulWidget {
 }
 
 class _PdfPrintSettingState extends State<PdfPrintSetting> {
-  Printer? _selectedPrinter;
-  String pdfSelectedLanguage = "English";
+  // Track the current orientation
+  pw.PageOrientation selectedOrientation = pw.PageOrientation.portrait;
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -68,15 +72,60 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                 ),
               ),
             ),
+
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: [box(), Text("Hello pdf")],
+                children: [box(), Expanded(child: printPreview())],
               ),
             )
           ],
         ),
       ),
+    );
+  }
+
+  Widget printPreview() {
+    return BlocBuilder<PrinterCubit, Printer?>(
+      builder: (context, selectedPrinter) {
+        return BlocBuilder<PDFLanguageCubit, String?>(
+          builder: (context, selectedLanguage) {
+            return Container(
+              margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              height: double.infinity,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  boxShadow: [
+                    BoxShadow(
+                        blurRadius: 1,
+                        spreadRadius: 0,
+                        color: Colors.grey.withOpacity(.3))
+                  ]),
+              child: PdfPreview(
+                padding: EdgeInsets.zero,
+                useActions: false,
+                previewPageMargin: EdgeInsets.zero,
+                maxPageWidth: double.infinity,
+                dynamicLayout: true,
+                shouldRepaint: true,
+                canChangeOrientation: true,
+                pdfPreviewPageDecoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                ),
+                build: (context) async {
+                  // Generate a new document each time based on the selected printer and language
+                  final document = await Pdf().printPreview(
+                    language: selectedLanguage ?? "English",
+                    orientaion: selectedOrientation,
+                  );
+                  return document.save(); // Save and return the document
+                },
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -86,26 +135,45 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       width: 230,
       height: double.infinity,
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface),
+      decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          boxShadow: [
+            BoxShadow(
+                blurRadius: 1,
+                spreadRadius: 0,
+                color: Colors.grey.withOpacity(.3))
+          ]),
       child: Column(
         spacing: 5,
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          PrintersDropdown(
-            title: 'Printer',
-            onSelected: (Printer selectedPrinter) {
-              // Handle the selected printer
-              setState(() {
-                _selectedPrinter = selectedPrinter;
-              });
+          // Printer Dropdown
+          BlocBuilder<PrinterCubit, Printer?>(
+            builder: (context, selectedPrinter) {
+              return PrintersDropdown(
+                title: 'Printer',
+                onSelected: (Printer printer) {
+                  // Update printer state
+                  context.read<PrinterCubit>().setPrinter(printer);
+                },
+              );
             },
           ),
-          PdfLanguageSelection(
-              title: "Language",
-              onSelected: (value) {
-                pdfSelectedLanguage = value;
-              }),
+
+          // Language Selection
+          BlocBuilder<PDFLanguageCubit, String?>(
+            builder: (context, selectedLanguage) {
+              return PdfLanguageSelection(
+                title: 'Language',
+                onSelected: (value) {
+                  // Update language state
+                  context.read<PDFLanguageCubit>().setLanguage(value);
+                },
+              );
+            },
+          ),
+
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -113,26 +181,36 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
               spacing: 8,
               children: [
                 ZOutlineButton(
-                  width: double.infinity,
-                  height: 45,
-                  icon: Icons.print,
-                  label: Text("Print"),
-                  onPressed: () => Pdf().print(
-                      selectedPrinter: _selectedPrinter!,
-                      language: pdfSelectedLanguage),
-                ),
+                    width: double.infinity,
+                    height: 45,
+                    icon: Icons.print,
+                    label: Text("Print"),
+                    onPressed: () {
+                      // Get the latest state values for printer and language
+                      final selectedPrinter =
+                          context.read<PrinterCubit>().state;
+                      final selectedLanguage =
+                          context.read<PDFLanguageCubit>().state;
+                      Pdf().print(
+                          selectedPrinter: selectedPrinter!,
+                          language: selectedLanguage ?? "English",
+                          orientation: selectedOrientation);
+                    }),
                 ZOutlineButton(
-                  width: double.infinity,
-                  height: 45,
-                  icon: FontAwesomeIcons.solidFilePdf,
-                  label: Text("PDF"),
-                  onPressed: () => Pdf().createInvoice(
-                      language: pdfSelectedLanguage,
-                      orientaion: pw.PageOrientation.portrait),
-                ),
+                    width: double.infinity,
+                    height: 45,
+                    icon: FontAwesomeIcons.solidFilePdf,
+                    label: Text("PDF"),
+                    onPressed: () {
+                      final selectedLanguage =
+                          context.read<PDFLanguageCubit>().state;
+                      Pdf().createInvoice(
+                          language: selectedLanguage ?? "English",
+                          orientaion: selectedOrientation);
+                    }),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

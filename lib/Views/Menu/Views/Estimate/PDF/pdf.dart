@@ -37,6 +37,23 @@ class Pdf {
     _persianFont = Font.ttf(persianBytes.buffer.asByteData());
   }
 
+  Future<Document> printPreview({
+    required String language,
+    required PageOrientation orientaion,
+  }) async {
+    final document = Document(); // Create a new document each time
+
+    document.addPage(MultiPage(
+      textDirection: pdfLanguage(language: language),
+      orientation: orientaion,
+      build: (context) => [body()],
+      header: (context) => header(),
+      footer: (context) => footer(),
+    ));
+
+    return document; // Return the document without saving it
+  }
+
   Future<void> createInvoice(
       {required String language, required PageOrientation orientaion}) async {
     pdf.addPage(MultiPage(
@@ -46,9 +63,6 @@ class Pdf {
       header: (context) => header(),
       footer: (context) => footer(),
     ));
-
-    // Preview the PDF
-    //await previewPdf();
     await saveDocument(suggestedName: "Invoice.pdf", pdf: pdf);
   }
 
@@ -62,7 +76,7 @@ class Pdf {
   }
 
   static Widget header() {
-    final text = "English Content شرکت تکنالوزی زیتون";
+    final text = "Zaitoon Technology Organization";
     return Row(children: [
       Text(text,
           style: textStyle(text: text),
@@ -138,21 +152,13 @@ class Pdf {
     }
   }
 
-  // Method to preview the generated PDF
-  Future<void> previewPdf() async {
-    await Printing.layoutPdf(
-      onLayout: (PdfPageFormat format) async {
-        // Return the generated PDF bytes here
-        final pdfBytes = await pdf.save();
-        return pdfBytes;
-      },
-    );
-  }
-
   Future<void> print(
-      {required Printer selectedPrinter, required String language}) async {
+      {required Printer selectedPrinter,
+      required String language,
+      required PageOrientation orientation}) async {
     pdf.addPage(MultiPage(
       textDirection: pdfLanguage(language: language),
+      orientation: orientation,
       build: (context) => [body()],
       header: (context) => header(),
       footer: (context) => footer(),

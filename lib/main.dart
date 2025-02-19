@@ -8,9 +8,11 @@ import 'package:zaitoon_invoice/Bloc/CurrencyCubit/Currency/currency_cubit.dart'
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/EstimateBloc/bloc/estimate_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/EstimateCubit/estimate_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/LanguageCubit/PDF/pdf_language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/General/general_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/PasswordCubit/password_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/Printer/printer_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/ProductsCubit/Categories/product_category_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/ProductsCubit/Inventory/inventory_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/ProductsCubit/Units/units_cubit.dart';
@@ -47,6 +49,10 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => EstimateCubit()),
         //Language
         BlocProvider(create: (context) => LanguageCubit()),
+        //PDF Language
+        BlocProvider(create: (context) => PDFLanguageCubit()),
+        //Printer Cubit
+        BlocProvider(create: (context) => PrinterCubit()),
         //Theme
         BlocProvider(create: (context) => ThemeCubit()),
         //Database Cubit
