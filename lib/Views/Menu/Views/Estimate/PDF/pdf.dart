@@ -372,10 +372,13 @@ class Pdf {
         : titles[language]!.reversed.toList();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 35),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Column(
         children: [
           TableHelper.fromTextArray(
+            tableDirection: language == "English"
+      ? pw.TextDirection.ltr
+          : pw.TextDirection.rtl,
             headerDirection: language == "English"
                 ? pw.TextDirection.ltr
                 : pw.TextDirection.rtl, // Force RTL for Persian & Pashto
@@ -396,7 +399,7 @@ class Pdf {
             headerHeight: 35,
             columnWidths: language == "English"
                 ? {
-              0: const pw.FixedColumnWidth(30),
+              0: const pw.FixedColumnWidth(35),
               1: const pw.FlexColumnWidth(10),
               2: const pw.FixedColumnWidth(50),
               3: const pw.FixedColumnWidth(70),
@@ -405,7 +408,7 @@ class Pdf {
               6: const pw.FixedColumnWidth(70),
             }
                 : {
-              6: const pw.FixedColumnWidth(30),
+              6: const pw.FixedColumnWidth(35),
               5: const pw.FlexColumnWidth(10),
               4: const pw.FixedColumnWidth(50),
               3: const pw.FixedColumnWidth(70),
