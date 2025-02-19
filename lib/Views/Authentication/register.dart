@@ -51,14 +51,10 @@ class _RegisterViewState extends State<RegisterView> {
   //To pick a custom directory | Database
   Future<void> _pickDirectory() async {
     String? dirPath = await FilePicker.platform.getDirectoryPath();
-    if (dirPath == null) {
-      await _getDirectoryPath();
-    } else {
-      setState(() {
-        documentDirectory = dirPath;
-      });
+    setState(() {
+      documentDirectory = dirPath;
+    });
     }
-  }
 
   @override
   void initState() {

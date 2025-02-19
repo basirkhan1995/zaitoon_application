@@ -16,9 +16,9 @@ class LanguageCubit extends Cubit<Locale> {
 
   void _loadLocale() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? languageCode = prefs.getString('languageCode');
-    String? countryCode = prefs.getString('countryCode');
+    String? languageCode = prefs.getString('languageCode') ?? "en";
+    String? countryCode = prefs.getString('countryCode') ?? "US";
 
-    emit(Locale(languageCode!, countryCode!.isNotEmpty ? countryCode : null));
+    emit(Locale(languageCode, countryCode.isNotEmpty ? countryCode : null));
   }
 }
