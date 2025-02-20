@@ -13,7 +13,9 @@ import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/printers_drop.dart';
 
 class PdfPrintSetting extends StatefulWidget {
-  const PdfPrintSetting({super.key});
+  final EstimateInfoModel info;
+  final List<EstimateItemsModel> items;
+  const PdfPrintSetting({super.key, required this.info, required this.items});
 
   @override
   State<PdfPrintSetting> createState() => _PdfPrintSettingState();
@@ -26,7 +28,6 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
   final dueDate = TextEditingController();
   final issueDate = TextEditingController();
 
-
   // Track the current orientation
   pw.PageOrientation selectedOrientation = pw.PageOrientation.portrait;
   EstimateInfoModel estimateInfo = EstimateInfoModel();
@@ -34,79 +35,79 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
-  builder: (context, state) {
-    if (state is AuthenticatedState) {
-      estimateInfo.supplier = state.user.businessName ?? "";
-      estimateInfo.supplierAddress = state.user.address ?? "";
-      estimateInfo.supplierMobile = state.user.mobile1 ?? "";
-      estimateInfo.supplierTelephone = state.user.mobile2 ?? "";
-      estimateInfo.logo = state.user.companyLogo;
-      estimateInfo.supplierEmail = state.user.email ?? "";
-      estimateInfo.invoiceNumber = invoiceNumber.text;
-      estimateInfo.clientName = clientName.text;
-    }
-    return AlertDialog(
-      contentPadding: EdgeInsets.zero,
-      insetPadding: EdgeInsets.zero,
-      titlePadding: EdgeInsets.zero, // Removes padding around the title
-      actionsPadding: EdgeInsets.zero,
+      builder: (context, state) {
+        if (state is AuthenticatedState) {
+          estimateInfo.supplier = state.user.businessName ?? "";
+          estimateInfo.supplierAddress = state.user.address ?? "";
+          estimateInfo.supplierMobile = state.user.mobile1 ?? "";
+          estimateInfo.supplierTelephone = state.user.mobile2 ?? "";
+          estimateInfo.logo = state.user.companyLogo;
+          estimateInfo.supplierEmail = state.user.email ?? "";
+          estimateInfo.invoiceNumber = invoiceNumber.text;
+          estimateInfo.clientName = clientName.text;
+        }
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          insetPadding: EdgeInsets.zero,
+          titlePadding: EdgeInsets.zero, // Removes padding around the title
+          actionsPadding: EdgeInsets.zero,
 
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
 
-      content: Container(
-        margin: EdgeInsets.zero,
-        padding: EdgeInsets.zero,
-        height: MediaQuery.sizeOf(context).height * .9,
-        width: MediaQuery.sizeOf(context).width * .9,
-        decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(8)),
-        child: Column(
-          children: [
-            //Title
-            Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Theme.of(context).colorScheme.surface),
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+          content: Container(
+            margin: EdgeInsets.zero,
+            padding: EdgeInsets.zero,
+            height: MediaQuery.sizeOf(context).height * .9,
+            width: MediaQuery.sizeOf(context).width * .9,
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(8)),
+            child: Column(
+              children: [
+                //Title
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Theme.of(context).colorScheme.surface),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Icon(Icons.print),
-                        const SizedBox(width: 10),
-                        Text(
-                          "Print preview",
-                          style: const TextStyle(fontSize: 17),
-                        )
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.print),
+                            const SizedBox(width: 10),
+                            Text(
+                              "Print preview",
+                              style: const TextStyle(fontSize: 17),
+                            )
+                          ],
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(Icons.clear))
                       ],
                     ),
-                    IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.clear))
-                  ],
+                  ),
                 ),
-              ),
-            ),
 
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [box(), Expanded(child: printPreview())],
-              ),
-            )
-          ],
-        ),
-      ),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [box(), Expanded(child: printPreview())],
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
-  },
-);
   }
 
   Widget printPreview() {
@@ -140,11 +141,10 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                 build: (context) async {
                   // Generate a new document each time based on the selected printer and language
                   final document = await Pdf().printPreview(
-                    language: selectedLanguage ?? "English",
-                    orientation: selectedOrientation,
-                    invoiceInfo: estimateInfo,
-                    items: estimateItems
-                  );
+                      language: selectedLanguage ?? "English",
+                      orientation: selectedOrientation,
+                      invoiceInfo: widget.info,
+                      items: widget.items);
                   return document.save(); // Save and return the document
                 },
               ),
@@ -222,8 +222,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                           language: selectedLanguage ?? "English",
                           orientation: selectedOrientation,
                           invoiceInfo: estimateInfo,
-                          items: estimateItems
-                      );
+                          items: estimateItems);
                     }),
                 ZOutlineButton(
                     width: double.infinity,
@@ -234,11 +233,10 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                       final selectedLanguage =
                           context.read<PDFLanguageCubit>().state;
                       Pdf().createInvoice(
-                          language: selectedLanguage ?? "English",
-                          orientation: selectedOrientation,
-                          invoiceInfo: estimateInfo,
-                          items: estimateItems,
-
+                        language: selectedLanguage ?? "English",
+                        orientation: selectedOrientation,
+                        info: widget.info,
+                        items: widget.items,
                       );
                     }),
               ],

@@ -25,7 +25,8 @@ class Pdf {
   // Getter for English font
   static Font get englishGlobalFont => _englishFont;
 
-  static String dateTime = DateFormat("MM dd, yyyy | HH:mm:ss").format(DateTime.now());
+  static String dateTime =
+      DateFormat("MM dd, yyyy | HH:mm:ss").format(DateTime.now());
   // Method to load English Persian font
   static Future<void> loadEnglishFont() async {
     final ByteData englishFontData =
@@ -42,23 +43,24 @@ class Pdf {
   }
 
   Future<Document> printPreview(
-      {
-      required String language,
+      {required String language,
       required PageOrientation orientation,
-        required List<EstimateItemsModel> items,
+      required List<EstimateItemsModel> items,
       required EstimateInfoModel invoiceInfo}) async {
-      final document = Document(); // Create a new document each time
+    final document = Document(); // Create a new document each time
 
     document.addPage(MultiPage(
       margin: EdgeInsets.zero,
       textDirection: pdfLanguage(language: language),
       orientation: orientation,
       build: (context) => [
-        header(invoiceInfo: invoiceInfo,language: language),
+        header(invoiceInfo: invoiceInfo, language: language),
         body(items: items, language: language),
       ],
-      header: (context) => buildTopHeader(invoiceInfo: invoiceInfo,language: language),
-      footer: (context) => footer(estimateInfo: invoiceInfo,language: language),
+      header: (context) =>
+          buildTopHeader(invoiceInfo: invoiceInfo, language: language),
+      footer: (context) =>
+          footer(estimateInfo: invoiceInfo, language: language),
     ));
 
     return document; // Return the document without saving it
@@ -66,20 +68,24 @@ class Pdf {
 
   Future<void> createInvoice({
     required List<EstimateItemsModel> items,
-    required EstimateInfoModel invoiceInfo,
+    required EstimateInfoModel info,
     required String language,
     required PageOrientation orientation,
   }) async {
     try {
-      final pdf = Document(); // Ensure a new instance is created
+      final document = Document(); // Ensure a new instance is created
 
-      pdf.addPage(MultiPage(
+      document.addPage(MultiPage(
         margin: EdgeInsets.zero,
         textDirection: pdfLanguage(language: language),
         orientation: orientation,
-        build: (context) => [body(items: items, language: language)],
-        header: (context) => header(invoiceInfo: invoiceInfo,language: language),
-        footer: (context) => footer(estimateInfo: invoiceInfo,language: language),
+        build: (context) => [
+          header(invoiceInfo: info, language: language),
+          body(items: items, language: language),
+        ],
+        header: (context) =>
+            buildTopHeader(invoiceInfo: info, language: language),
+        footer: (context) => footer(estimateInfo: info, language: language),
       ));
       // Check if the PDF has content before saving
       await saveDocument(suggestedName: "Invoice.pdf", pdf: pdf);
@@ -88,17 +94,30 @@ class Pdf {
     }
   }
 
-  static body({required List<EstimateItemsModel> items, required String language}) {
-    final text = 'body is here';
+  static body(
+      {required List<EstimateItemsModel> items, required String language}) {
     return Column(children: [
       buildTableHeader(items: items, language: language),
     ]);
   }
 
-  static Widget header({required EstimateInfoModel invoiceInfo, required String language}) {
-    final supplierTitleText = language == "English"? "Supplier" : language == "فارسی" ? "عرضه کننده" : language == "پشتو" ? "عرضه کونکی" : "Supplier";
+  static Widget header(
+      {required EstimateInfoModel invoiceInfo, required String language}) {
+    final supplierTitleText = language == "English"
+        ? "Supplier"
+        : language == "فارسی"
+            ? "عرضه کننده"
+            : language == "پشتو"
+                ? "عرضه کونکی"
+                : "Supplier";
 
-    String clientTitleText = language == "English"? "Client" : language == "فارسی" ? "مشتری" : language == "پشتو" ? "پیرودونکی" : "Client";
+    String clientTitleText = language == "English"
+        ? "Client"
+        : language == "فارسی"
+            ? "مشتری"
+            : language == "پشتو"
+                ? "پیرودونکی"
+                : "Client";
 
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 10),
@@ -117,8 +136,7 @@ class Pdf {
                         style: textStyle(text: supplierTitleText),
                         textDirection: textDirection(text: supplierTitleText)),
                     SizedBox(height: 3),
-                    buildTextWidget(
-                    text: invoiceInfo.supplier),
+                    buildTextWidget(text: invoiceInfo.supplier),
                     SizedBox(height: 3),
                     Text(invoiceInfo.supplierEmail),
                     SizedBox(height: 5),
@@ -132,40 +150,44 @@ class Pdf {
                   children: [
                     buildTextWidget(text: clientTitleText),
                     SizedBox(height: 3),
-                    Text(invoiceInfo.clientName, style: textStyle(text: invoiceInfo.clientName)),
-
+                    Text(invoiceInfo.clientName,
+                        style: textStyle(text: invoiceInfo.clientName)),
                   ])
             ]));
   }
 
-  static Widget footer({required EstimateInfoModel estimateInfo,required String language}) {
-    final timeStampText = language == "English"? "Print time: " : language == "فارسی" ? "زمان چاپ: " : language == "پشتو" ? "چاپ وقت: " : "Client";
+  static Widget footer(
+      {required EstimateInfoModel estimateInfo, required String language}) {
+    final timeStampText = language == "English"
+        ? "Print time: "
+        : language == "فارسی"
+            ? "زمان چاپ: "
+            : language == "پشتو"
+                ? "چاپ وقت: "
+                : "Client";
 
     return Padding(
-        padding: EdgeInsets.symmetric(horizontal: 35,vertical: 20),
-       child: Column(
-         mainAxisAlignment: MainAxisAlignment.start,
-         crossAxisAlignment: CrossAxisAlignment.start,
-         children: [
-           Row(
-             children: [
-               buildTextWidget(text: timeStampText),
-               SizedBox(width: 3),
-               Text(dateTime.toString(),style: TextStyle(fontSize: 11)),
-             ]
-           ),
-           Row(
-               children: [
-                 SizedBox(height: 2 * PdfPageFormat.mm),
-                 buildTextWidget(text: estimateInfo.supplierMobile),
-                 verticalDividerWidget(width: 1, height: 15),
-                 buildTextWidget(text: estimateInfo.supplierEmail),
-                 estimateInfo.supplierEmail.isNotEmpty? verticalDividerWidget(width: 1, height: 15) : SizedBox(),
-                 buildTextWidget(text: estimateInfo.supplierAddress),
-               ]),
-         ]
-       )
-    );
+        padding: EdgeInsets.symmetric(horizontal: 35, vertical: 20),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(children: [
+                buildTextWidget(text: timeStampText),
+                SizedBox(width: 3),
+                Text(dateTime.toString(), style: TextStyle(fontSize: 11)),
+              ]),
+              Row(children: [
+                SizedBox(height: 2 * PdfPageFormat.mm),
+                buildTextWidget(text: estimateInfo.supplierMobile),
+                verticalDividerWidget(width: 1, height: 15),
+                buildTextWidget(text: estimateInfo.supplierEmail),
+                estimateInfo.supplierEmail.isNotEmpty
+                    ? verticalDividerWidget(width: 1, height: 15)
+                    : SizedBox(),
+                buildTextWidget(text: estimateInfo.supplierAddress),
+              ]),
+            ]));
   }
 
   // Method to detect if the input is Persian (RTL)
@@ -235,18 +257,19 @@ class Pdf {
       required List<EstimateItemsModel> items,
       required PageOrientation orientation}) async {
     pdf.addPage(MultiPage(
+      margin: EdgeInsets.zero,
       textDirection: pdfLanguage(language: language),
       orientation: orientation,
       build: (context) => [
-        header(invoiceInfo: invoiceInfo,language: language),
-        body(items: items,language: language),
+        header(invoiceInfo: invoiceInfo, language: language),
+        body(items: items, language: language),
       ],
-      header: (context) => buildTopHeader(invoiceInfo: invoiceInfo,language: language),
-      footer: (context) => footer(estimateInfo: invoiceInfo,language: language),
+      header: (context) =>
+          buildTopHeader(invoiceInfo: invoiceInfo, language: language),
+      footer: (context) =>
+          footer(estimateInfo: invoiceInfo, language: language),
     ));
 
-    // Preview the PDF
-    //await previewPdf();
     await Printing.directPrintPdf(
       printer: selectedPrinter,
       onLayout: (PdfPageFormat format) async {
@@ -256,12 +279,24 @@ class Pdf {
   }
 
   static Widget buildTopHeader(
-      {required EstimateInfoModel invoiceInfo,required String language}) {
+      {required EstimateInfoModel invoiceInfo, required String language}) {
     final image = invoiceInfo.logo != null && invoiceInfo.logo!.isNotEmpty
         ? MemoryImage(invoiceInfo.logo!)
         : null;
-    String invoiceDateText =  language == "English"? "Invoice Date" : language == "فارسی" ? "تاریخ بل" : language == "پشتو" ? "بل نیته" : "Date";
-    String invoiceNumberText =  language == "English"? "Invoice Number" : language == "فارسی" ? "شماره بل" : language == "پشتو" ? "بل شمیره" : "Invoice Number";
+    String invoiceDateText = language == "English"
+        ? "Invoice Date"
+        : language == "فارسی"
+            ? "تاریخ بل"
+            : language == "پشتو"
+                ? "بل نیته"
+                : "Date";
+    String invoiceNumberText = language == "English"
+        ? "Invoice Number"
+        : language == "فارسی"
+            ? "شماره بل"
+            : language == "پشتو"
+                ? "بل شمیره"
+                : "Invoice Number";
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -275,27 +310,27 @@ class Pdf {
                 image == null
                     ? buildTextWidget(text: invoiceInfo.supplier)
                     : Image(
-                  image,
-                  width: 70,
-                  height: 70,
-                  alignment: Alignment.center,
-                ),
+                        image,
+                        width: 70,
+                        height: 70,
+                        alignment: Alignment.center,
+                      ),
                 image != null
                     ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        buildTextWidget(text: invoiceInfo.supplier),
-                        SizedBox(height: 2),
-                        Text(invoiceInfo.supplierMobile,
-                            style: const TextStyle(fontSize: 10)),
-                        SizedBox(height: 2),
-                        Text(invoiceInfo.supplierEmail,
-                            style: TextStyle(fontSize: 10)),
-                      ]),
-                )
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildTextWidget(text: invoiceInfo.supplier),
+                              SizedBox(height: 2),
+                              Text(invoiceInfo.supplierMobile,
+                                  style: const TextStyle(fontSize: 10)),
+                              SizedBox(height: 2),
+                              Text(invoiceInfo.supplierEmail,
+                                  style: TextStyle(fontSize: 10)),
+                            ]),
+                      )
                     : SizedBox()
               ])
             ],
@@ -352,8 +387,9 @@ class Pdf {
     );
   }
 
-  static Widget buildTextWidget({required text}){
-    return Text(text,style: textStyle(text: text), textDirection: textDirection(text: text));
+  static Widget buildTextWidget({required text}) {
+    return Text(text,
+        style: textStyle(text: text), textDirection: textDirection(text: text));
   }
 
   static Widget buildTableHeader({
@@ -361,7 +397,15 @@ class Pdf {
     required String language,
   }) {
     final Map<String, List<String>> titles = {
-      "English": ["NO", "Description", "QTY", "Rate", "Tax", "Discount", "Total"],
+      "English": [
+        "NO",
+        "Item Description",
+        "QTY",
+        "Rate",
+        "Tax",
+        "Discount",
+        "Total"
+      ],
       "فارسی": ["ردیف", "توضیحات", "تعداد", "نرخ", "مالیات", "تخفیف", "مجموع"],
       "پشتو": ["شمېره", "توضیحات", "شمېر", "نرخ", "مالیه", "تخفیف", "مجموع"],
     };
@@ -377,12 +421,12 @@ class Pdf {
         children: [
           TableHelper.fromTextArray(
             tableDirection: language == "English"
-      ? pw.TextDirection.ltr
-          : pw.TextDirection.rtl,
+                ? pw.TextDirection.ltr
+                : pw.TextDirection.rtl,
             headerDirection: language == "English"
                 ? pw.TextDirection.ltr
                 : pw.TextDirection.rtl, // Force RTL for Persian & Pashto
-            cellStyle: pw.TextStyle(),
+
             headerStyle: textStyle(text: localizedTitles.first),
             oddRowDecoration: const BoxDecoration(
               color: PdfColors.cyan50,
@@ -399,42 +443,42 @@ class Pdf {
             headerHeight: 35,
             columnWidths: language == "English"
                 ? {
-              0: const pw.FixedColumnWidth(35),
-              1: const pw.FlexColumnWidth(10),
-              2: const pw.FixedColumnWidth(50),
-              3: const pw.FixedColumnWidth(70),
-              4: const pw.FixedColumnWidth(50),
-              5: const pw.FixedColumnWidth(65),
-              6: const pw.FixedColumnWidth(70),
-            }
+                    0: const pw.FixedColumnWidth(35),
+                    1: const pw.FlexColumnWidth(10),
+                    2: const pw.FixedColumnWidth(50),
+                    3: const pw.FixedColumnWidth(70),
+                    4: const pw.FixedColumnWidth(50),
+                    5: const pw.FixedColumnWidth(65),
+                    6: const pw.FixedColumnWidth(70),
+                  }
                 : {
-              6: const pw.FixedColumnWidth(35),
-              5: const pw.FlexColumnWidth(10),
-              4: const pw.FixedColumnWidth(50),
-              3: const pw.FixedColumnWidth(70),
-              2: const pw.FixedColumnWidth(50),
-              1: const pw.FixedColumnWidth(65),
-              0: const pw.FixedColumnWidth(70),
-            },
+                    6: const pw.FixedColumnWidth(35),
+                    5: const pw.FlexColumnWidth(10),
+                    4: const pw.FixedColumnWidth(50),
+                    3: const pw.FixedColumnWidth(70),
+                    2: const pw.FixedColumnWidth(50),
+                    1: const pw.FixedColumnWidth(65),
+                    0: const pw.FixedColumnWidth(70),
+                  },
             cellAlignments: language == "English"
                 ? {
-              0: pw.Alignment.centerLeft, // Row number
-              1: pw.Alignment.centerLeft, // Item name
-              2: pw.Alignment.center, // Quantity
-              3: pw.Alignment.center, // Unit price
-              4: pw.Alignment.center, // Tax
-              5: pw.Alignment.center, // Discount
-              6: pw.Alignment.centerRight, // Total
-            }
+                    0: pw.Alignment.center, // Row number
+                    1: pw.Alignment.centerLeft, // Item name
+                    2: pw.Alignment.center, // Quantity
+                    3: pw.Alignment.center, // Unit price
+                    4: pw.Alignment.center, // Tax
+                    5: pw.Alignment.center, // Discount
+                    6: pw.Alignment.centerRight, // Total
+                  }
                 : {
-              6: pw.Alignment.centerLeft, // Total
-              5: pw.Alignment.center, // Discount
-              4: pw.Alignment.center, // Tax
-              3: pw.Alignment.center, // Unit price
-              2: pw.Alignment.center, // Quantity
-              1: pw.Alignment.centerRight, // Item name
-              0: pw.Alignment.centerRight, // Row number
-            },
+                    6: pw.Alignment.centerLeft, // Total
+                    5: pw.Alignment.center, // Discount
+                    4: pw.Alignment.center, // Tax
+                    3: pw.Alignment.center, // Unit price
+                    2: pw.Alignment.center, // Quantity
+                    1: pw.Alignment.centerRight, // Item name
+                    0: pw.Alignment.center, // Row number
+                  },
             headers: localizedTitles, // Reversed headers for Persian/Pashto
             data: items.map((e) {
               final row = [
@@ -446,7 +490,13 @@ class Pdf {
                 e.discount,
                 e.total,
               ];
-              return language == "English" ? row : row.reversed.toList();
+              // Reverse row data for Persian/Pashto
+              final languageAdjustedRow =
+                  language == "English" ? row : row.reversed.toList();
+              // Return each row with the proper textStyle for each cell
+              return languageAdjustedRow.map((cell) {
+                return buildTextWidget(text: cell.toString());
+              }).toList();
             }).toList(),
           ),
           // Add a border under the table header
@@ -460,6 +510,4 @@ class Pdf {
       ),
     );
   }
-
-
 }
