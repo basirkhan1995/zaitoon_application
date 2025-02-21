@@ -26,11 +26,11 @@ class Pdf {
   static Font get englishGlobalFont => _englishFont;
 
   static String dateTime =
-      DateFormat("MM dd, yyyy | HH:mm:ss").format(DateTime.now());
+      DateFormat("MM/dd/yyyy | HH:mm:ss").format(DateTime.now());
   // Method to load English Persian font
   static Future<void> loadEnglishFont() async {
     final ByteData englishFontData =
-        await rootBundle.load('assets/fonts/NotoSans/NotoSans-Regular.ttf');
+        await rootBundle.load('assets/fonts/OpenSans/OpenSans-Regular.ttf');
     final Uint8List englishBytes = englishFontData.buffer.asUint8List();
     _englishFont = Font.ttf(englishBytes.buffer.asByteData());
   }
@@ -42,11 +42,11 @@ class Pdf {
     _persianFont = Font.ttf(persianBytes.buffer.asByteData());
   }
 
-  Future<Document> printPreview(
+  Future<Document> generateEstimate(
       {required String language,
-      required PageOrientation orientation,
-      required List<EstimateItemsModel> items,
-      required EstimateInfoModel invoiceInfo}) async {
+        required PageOrientation orientation,
+        required List<EstimateItemsModel> items,
+        required EstimateInfoModel info}) async {
     final document = Document(); // Create a new document each time
 
     document.addPage(MultiPage(
@@ -54,16 +54,30 @@ class Pdf {
       textDirection: pdfLanguage(language: language),
       orientation: orientation,
       build: (context) => [
-        header(invoiceInfo: invoiceInfo, language: language),
+        header(invoiceInfo: info, language: language),
         body(items: items, language: language),
+        buildTotal(items: items, info: info, language: language)
       ],
       header: (context) =>
-          buildTopHeader(invoiceInfo: invoiceInfo, language: language),
+          buildTopHeader(invoiceInfo: info, language: language),
       footer: (context) =>
-          footer(estimateInfo: invoiceInfo, language: language),
+          footer(estimateInfo: info, language: language),
     ));
 
     return document; // Return the document without saving it
+  }
+
+
+  Future<Document> printPreview({
+      required String language,
+      required PageOrientation orientation,
+      required List<EstimateItemsModel> items,
+      required EstimateInfoModel info}) async {
+    return generateEstimate(
+        language: language,
+        orientation: orientation,
+        items: items,
+        info: info);
   }
 
   Future<void> createInvoice({
@@ -73,26 +87,44 @@ class Pdf {
     required PageOrientation orientation,
   }) async {
     try {
-      final document = Document(); // Ensure a new instance is created
-
-      document.addPage(MultiPage(
-        margin: EdgeInsets.zero,
-        textDirection: pdfLanguage(language: language),
+      final document = await generateEstimate(
+        items: items,
+        info: info,
+        language: language,
         orientation: orientation,
-        build: (context) => [
-          header(invoiceInfo: info, language: language),
-          body(items: items, language: language),
-        ],
-        header: (context) =>
-            buildTopHeader(invoiceInfo: info, language: language),
-        footer: (context) => footer(estimateInfo: info, language: language),
-      ));
-      // Check if the PDF has content before saving
-      await saveDocument(suggestedName: "Invoice.pdf", pdf: pdf);
+      );
+
+      // Save the document
+      await saveDocument(suggestedName: "Invoice.pdf", pdf: document);
     } catch (e) {
       throw e.toString();
     }
   }
+
+
+  //Print PDF
+  Future<void> print({
+    required Printer selectedPrinter,
+    required String language,
+    required EstimateInfoModel invoiceInfo,
+    required List<EstimateItemsModel> items,
+    required PageOrientation orientation,
+  }) async {
+    final document = await generateEstimate(
+      items: items,
+      info: invoiceInfo,
+      language: language,
+      orientation: orientation,
+    );
+
+    await Printing.directPrintPdf(
+      printer: selectedPrinter,
+      onLayout: (PdfPageFormat format) async {
+        return document.save();
+      },
+    );
+  }
+
 
   static body(
       {required List<EstimateItemsModel> items, required String language}) {
@@ -205,9 +237,11 @@ class Pdf {
     return language == 'English' ? pw.TextDirection.ltr : pw.TextDirection.rtl;
   }
 
-  static TextStyle textStyle({required String text}) {
+  static TextStyle textStyle({required String text, double? fontSize}) {
     bool persian = _isPersian(text);
-    return TextStyle(font: persian ? persianGlobalFont : englishGlobalFont);
+    return TextStyle(
+        font: persian ? persianGlobalFont : englishGlobalFont,
+        fontSize: fontSize);
   }
 
   static Future<File?> saveDocument({
@@ -249,34 +283,7 @@ class Pdf {
     }
   }
 
-  //Print PDF
-  Future<void> print(
-      {required Printer selectedPrinter,
-      required String language,
-      required EstimateInfoModel invoiceInfo,
-      required List<EstimateItemsModel> items,
-      required PageOrientation orientation}) async {
-    pdf.addPage(MultiPage(
-      margin: EdgeInsets.zero,
-      textDirection: pdfLanguage(language: language),
-      orientation: orientation,
-      build: (context) => [
-        header(invoiceInfo: invoiceInfo, language: language),
-        body(items: items, language: language),
-      ],
-      header: (context) =>
-          buildTopHeader(invoiceInfo: invoiceInfo, language: language),
-      footer: (context) =>
-          footer(estimateInfo: invoiceInfo, language: language),
-    ));
 
-    await Printing.directPrintPdf(
-      printer: selectedPrinter,
-      onLayout: (PdfPageFormat format) async {
-        return pdf.save();
-      },
-    );
-  }
 
   static Widget buildTopHeader(
       {required EstimateInfoModel invoiceInfo, required String language}) {
@@ -344,12 +351,14 @@ class Pdf {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   //Title
-                  buildTextWidget(text: invoiceDateText),
+                  buildTextWidget(text: invoiceDateText, fontSize: 12),
                   //Data
                   Text(
                     invoiceInfo.invoiceDate,
                     style: TextStyle(
-                        fontWeight: FontWeight.bold, color: PdfColors.cyan),
+                        fontWeight: FontWeight.normal,
+                        color: PdfColors.black,
+                        fontSize: 10),
                   ),
                 ],
               ),
@@ -360,13 +369,13 @@ class Pdf {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  buildTextWidget(text: invoiceNumberText),
+                  buildTextWidget(text: invoiceNumberText, fontSize: 12),
                   Text(
                     invoiceInfo.invoiceNumber,
                     style: TextStyle(
-                      color: PdfColors.cyan,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        color: PdfColors.black,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 11),
                   ),
                 ],
               ),
@@ -387,9 +396,10 @@ class Pdf {
     );
   }
 
-  static Widget buildTextWidget({required text}) {
+  static Widget buildTextWidget({required String text, double? fontSize}) {
     return Text(text,
-        style: textStyle(text: text), textDirection: textDirection(text: text));
+        style: textStyle(text: text, fontSize: fontSize),
+        textDirection: textDirection(text: text));
   }
 
   static Widget buildTableHeader({
@@ -398,7 +408,7 @@ class Pdf {
   }) {
     final Map<String, List<String>> titles = {
       "English": [
-        "NO",
+        "#",
         "Item Description",
         "QTY",
         "Rate",
@@ -406,8 +416,8 @@ class Pdf {
         "Discount",
         "Total"
       ],
-      "فارسی": ["ردیف", "توضیحات", "تعداد", "نرخ", "مالیات", "تخفیف", "مجموع"],
-      "پشتو": ["شمېره", "توضیحات", "شمېر", "نرخ", "مالیه", "تخفیف", "مجموع"],
+      "فارسی": ["#", "توضیحات", "تعداد", "نرخ", "مالیات", "تخفیف", "مجموع"],
+      "پشتو": ["#", "توضیحات", "شمېر", "نرخ", "مالیه", "تخفیف", "مجموع"],
     };
 
     // Get the correct language titles and reverse them if Persian or Pashto
@@ -427,7 +437,7 @@ class Pdf {
                 ? pw.TextDirection.ltr
                 : pw.TextDirection.rtl, // Force RTL for Persian & Pashto
 
-            headerStyle: textStyle(text: localizedTitles.first),
+            headerStyle: textStyle(text: localizedTitles.first, fontSize: 10),
             oddRowDecoration: const BoxDecoration(
               color: PdfColors.cyan50,
             ),
@@ -435,12 +445,12 @@ class Pdf {
               border: Border(
                 bottom: BorderSide(
                   color: PdfColors.cyan, // Set your preferred color here
-                  width: 1.7, // Set your preferred width here
+                  width: 1.5, // Set your preferred width here
                 ),
               ),
             ),
             border: null, // Disable default borders
-            headerHeight: 35,
+            headerHeight: 30,
             columnWidths: language == "English"
                 ? {
                     0: const pw.FixedColumnWidth(35),
@@ -495,7 +505,7 @@ class Pdf {
                   language == "English" ? row : row.reversed.toList();
               // Return each row with the proper textStyle for each cell
               return languageAdjustedRow.map((cell) {
-                return buildTextWidget(text: cell.toString());
+                return buildTextWidget(text: cell.toString(), fontSize: 10);
               }).toList();
             }).toList(),
           ),
@@ -508,6 +518,138 @@ class Pdf {
           ), // Optional spacing after the border
         ],
       ),
+    );
+  }
+
+  static Widget buildTotal({
+    required List<EstimateItemsModel> items,
+    required EstimateInfoModel info,
+    required String language,
+  }) {
+    String vatTitle = language == "English"
+        ? "VAT"
+        : language == "فارسی"
+            ? "مالیات"
+            : language == "پشتو"
+                ? "مالیات"
+                : "VAT";
+    String subtotalTitle = language == "English"
+        ? "SUBTOTAL"
+        : language == "فارسی"
+            ? "مجموعه فرعی"
+            : language == "پشتو"
+                ? "مجموعه فرعی"
+                : "SUBTOTAL";
+    String discountTitle = language == "English"
+        ? "DISCOUNT"
+        : language == "فارسی"
+            ? "تخفیف"
+            : language == "پشتو"
+                ? "تخفیف"
+                : "DISCOUNT";
+    String totalTitle = language == "English"
+        ? "TOTAL"
+        : language == "فارسی"
+            ? "مجموعه"
+            : language == "پشتو"
+                ? "مجموعه"
+                : "TOTAL";
+    double calculateSubtotal() {
+      double subtotal = 0.0;
+      for (var item in items) {
+        subtotal += item.quantity * item.amount;
+      }
+      return subtotal;
+    }
+
+    double calculateTotalVat() {
+      double totalVat = 0.0;
+      for (var item in items) {
+        totalVat += (item.quantity * item.amount) * (item.tax / 100);
+      }
+      return totalVat;
+    }
+
+    double calculateDiscount() {
+      double totalDiscount = 0.0;
+      for (var item in items) {
+        totalDiscount += (item.quantity * item.amount) * (item.discount / 100);
+      }
+      return totalDiscount;
+    }
+
+    double calculateTotal() {
+      double subtotal = calculateSubtotal();
+      double totalVat = calculateTotalVat();
+      double totalDiscount = calculateDiscount();
+      return subtotal + totalVat - totalDiscount;
+    }
+
+    final subtotal = calculateSubtotal();
+    final totalTax = calculateTotalVat();
+    final discount = calculateDiscount();
+    final total = calculateTotal();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: Align(
+          alignment: language == "English"
+              ? Alignment.bottomRight
+              : Alignment.bottomLeft,
+          child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 2),
+              width: 180,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          buildTextWidget(text: subtotalTitle, fontSize: 10),
+                          Text(
+                              "${subtotal.toStringAsFixed(2)} ${info.currency}",
+                              style: TextStyle(
+                                  fontSize: 10, fontWeight: FontWeight.normal)),
+                        ]),
+                    SizedBox(height: 4),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          buildTextWidget(text: vatTitle, fontSize: 10),
+                          Text(
+                              "${totalTax.toStringAsFixed(2)} ${info.currency}",
+                              style: TextStyle(
+                                  fontSize: 10, fontWeight: FontWeight.normal)),
+                        ]),
+                    SizedBox(height: 4),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          buildTextWidget(text: discountTitle, fontSize: 10),
+                          Text(
+                              "${discount.toStringAsFixed(2)} ${info.currency}",
+                              style: TextStyle(
+                                  fontSize: 10, fontWeight: FontWeight.normal)),
+                        ]),
+                    Container(
+                        margin: EdgeInsets.symmetric(vertical: 6),
+                        width: 180,
+                        height: 1.5,
+                        decoration: const BoxDecoration(
+                          color: PdfColors.cyan,
+                        )),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          buildTextWidget(text: totalTitle),
+                          Text("${total.toStringAsFixed(2)} ${info.currency}",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  color: PdfColors.cyan)),
+                        ]),
+                  ]))),
     );
   }
 }

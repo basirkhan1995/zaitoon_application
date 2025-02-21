@@ -105,5 +105,12 @@
   "supplier": "Supplier",
   "termsAndCondition": "Terms & Condition",
   "action": "Actions",
-  "addItem": "Add Item"
+  "addItem": "Add Item",
+  "create": "CREATE",
+  "sellPrice": "Sell Price",
+  "buyPrice": "Buy Price",
+  "quantity": "Quantity",
+  "productName": "Product name",
+  "newProductTitle": "NEW PRODUCT",
+  "serialNumber": "SerialNumber"
 }

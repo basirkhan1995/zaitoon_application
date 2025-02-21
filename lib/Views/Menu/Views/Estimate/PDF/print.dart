@@ -30,83 +30,68 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
 
   // Track the current orientation
   pw.PageOrientation selectedOrientation = pw.PageOrientation.portrait;
-  EstimateInfoModel estimateInfo = EstimateInfoModel();
-  List<EstimateItemsModel> estimateItems = [];
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        if (state is AuthenticatedState) {
-          estimateInfo.supplier = state.user.businessName ?? "";
-          estimateInfo.supplierAddress = state.user.address ?? "";
-          estimateInfo.supplierMobile = state.user.mobile1 ?? "";
-          estimateInfo.supplierTelephone = state.user.mobile2 ?? "";
-          estimateInfo.logo = state.user.companyLogo;
-          estimateInfo.supplierEmail = state.user.email ?? "";
-          estimateInfo.invoiceNumber = invoiceNumber.text;
-          estimateInfo.clientName = clientName.text;
-        }
-        return AlertDialog(
-          contentPadding: EdgeInsets.zero,
-          insetPadding: EdgeInsets.zero,
-          titlePadding: EdgeInsets.zero, // Removes padding around the title
-          actionsPadding: EdgeInsets.zero,
+    return AlertDialog(
+      contentPadding: EdgeInsets.zero,
+      insetPadding: EdgeInsets.zero,
+      titlePadding: EdgeInsets.zero, // Removes padding around the title
+      actionsPadding: EdgeInsets.zero,
 
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
 
-          content: Container(
-            margin: EdgeInsets.zero,
-            padding: EdgeInsets.zero,
-            height: MediaQuery.sizeOf(context).height * .9,
-            width: MediaQuery.sizeOf(context).width * .9,
-            decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainer,
-                borderRadius: BorderRadius.circular(8)),
-            child: Column(
-              children: [
-                //Title
-                Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Theme.of(context).colorScheme.surface),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      content: Container(
+        margin: EdgeInsets.zero,
+        padding: EdgeInsets.zero,
+        height: MediaQuery.sizeOf(context).height * .9,
+        width: MediaQuery.sizeOf(context).width * .9,
+        decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(8)),
+        child: Column(
+          children: [
+            //Title
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Theme.of(context).colorScheme.surface),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            const Icon(Icons.print),
-                            const SizedBox(width: 10),
-                            Text(
-                              "Print preview",
-                              style: const TextStyle(fontSize: 17),
-                            )
-                          ],
-                        ),
-                        IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            icon: const Icon(Icons.clear))
+                        const Icon(Icons.print),
+                        const SizedBox(width: 10),
+                        Text(
+                          "Print preview",
+                          style: const TextStyle(fontSize: 17),
+                        )
                       ],
                     ),
-                  ),
+                    IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.clear))
+                  ],
                 ),
-
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [box(), Expanded(child: printPreview())],
-                  ),
-                )
-              ],
+              ),
             ),
-          ),
-        );
-      },
+
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [box(), Expanded(child: printPreview())],
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -143,8 +128,9 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                   final document = await Pdf().printPreview(
                       language: selectedLanguage ?? "English",
                       orientation: selectedOrientation,
-                      invoiceInfo: widget.info,
-                      items: widget.items);
+                      info: widget.info,
+                      items: widget.items
+                  );
                   return document.save(); // Save and return the document
                 },
               ),
@@ -221,8 +207,9 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                           selectedPrinter: selectedPrinter!,
                           language: selectedLanguage ?? "English",
                           orientation: selectedOrientation,
-                          invoiceInfo: estimateInfo,
-                          items: estimateItems);
+                          invoiceInfo: widget.info,
+                          items: widget.items
+                      );
                     }),
                 ZOutlineButton(
                     width: double.infinity,

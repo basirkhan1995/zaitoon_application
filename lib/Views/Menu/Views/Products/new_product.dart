@@ -7,6 +7,7 @@ import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:zaitoon_invoice/Components/Widgets/products_input.dart';
 import '../../../../Components/Widgets/units_drop.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NewProduct extends StatefulWidget {
   const NewProduct({super.key});
@@ -31,6 +32,7 @@ class _NewProductState extends State<NewProduct> {
   final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       insetPadding: EdgeInsets.zero,
@@ -60,6 +62,7 @@ class _NewProductState extends State<NewProduct> {
   }
 
   Widget buildTitle() {
+    final locale = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Row(
@@ -68,7 +71,7 @@ class _NewProductState extends State<NewProduct> {
         children: [
           Icon(Icons.shopping_cart_outlined),
           Text(
-            "NEW PRODUCT",
+            locale.newProductTitle,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           Expanded(
@@ -93,6 +96,7 @@ class _NewProductState extends State<NewProduct> {
   }
 
   Widget buildBody() {
+    final locale = AppLocalizations.of(context)!;
     return Form(
       key: formKey,
       child: Padding(
@@ -112,18 +116,18 @@ class _NewProductState extends State<NewProduct> {
                   },
                 ),
               ),
-              title: "Product name",
+              title: locale.productName,
               isRequire: true,
               controller: productName,
               validator: (value) {
                 if (value.isEmpty) {
-                  return "Product name is required";
+                  return locale.required(locale.productName);
                 }
                 return null;
               },
             ),
             NumberInputField(
-              title: "Quantity",
+              title: locale.quantity,
               controller: initialQty,
               onSelectedId: (value) {
                 inventoryId = value;
@@ -131,14 +135,15 @@ class _NewProductState extends State<NewProduct> {
             ),
             SizedBox(height: 5),
             InputFieldEntitled(
-                title: "Serial Number", controller: serialNumber),
+                title: locale.serialNumber,
+                controller: serialNumber),
             Row(
               spacing: 10,
               children: [
                 Expanded(
                     child: InputFieldEntitled(
                   controller: buyPrice,
-                  title: "Buy price",
+                  title: locale.buyPrice,
                   trailing: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 6.0),
                     child: CurrenciesDropdown(
@@ -152,7 +157,7 @@ class _NewProductState extends State<NewProduct> {
                 Expanded(
                   child: InputFieldEntitled(
                     controller: sellPrice,
-                    title: "Sell price",
+                    title: locale.sellPrice,
                     trailing: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6.0),
                       child: CurrenciesDropdown(
@@ -173,6 +178,7 @@ class _NewProductState extends State<NewProduct> {
   }
 
   Widget buildAction() {
+    final locale = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5),
       child: Row(
@@ -182,7 +188,7 @@ class _NewProductState extends State<NewProduct> {
         children: [
           ZOutlineButton(
               height: 50,
-              label: Text("CREATE"),
+              label: Text(locale.create),
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   context.read<ProductsCubit>().addProductEvent(
@@ -194,11 +200,12 @@ class _NewProductState extends State<NewProduct> {
                       inventory: inventoryId,
                       qty: int.parse(initialQty.text));
                 }
+                Navigator.of(context).pop();
               }),
           ZOutlineButton(
               backgroundHover: Theme.of(context).colorScheme.error,
               height: 50,
-              label: Text("CANCEL"),
+              label: Text(locale.cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               }),

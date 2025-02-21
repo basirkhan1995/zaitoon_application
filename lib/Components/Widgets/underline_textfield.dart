@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class UnderlineTextfield extends StatelessWidget {
   final String title;
   final String? hintText;
+  final TextAlign textAlign;
   final Color enabledColor;
   final bool isRequired;
   final bool isEnabled;
+  final List<TextInputFormatter>? inputFormatter;
   final bool readOnly;
   final FocusNode? focusNode;
   final TextEditingController? controller;
   final VoidCallback? onTap;
   final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onChanged;
+
   final double? width;
   const UnderlineTextfield({
     super.key,
     this.enabledColor = Colors.cyan,
     this.onChanged,
+    this.textAlign = TextAlign.start,
+    this.inputFormatter,
     this.controller,
     this.focusNode,
     this.isEnabled = true,
@@ -58,6 +64,8 @@ class UnderlineTextfield extends StatelessWidget {
             onTap: onTap,
             onChanged: onChanged,
             validator: validator,
+            textAlign: textAlign,
+            inputFormatters: inputFormatter,
             readOnly:
                 readOnly, // Make the field read-only to prevent manual input.
             decoration: InputDecoration(

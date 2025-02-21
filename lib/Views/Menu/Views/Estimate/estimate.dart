@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -14,8 +15,7 @@ import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/New/product_textfield.
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/print.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/customer_searchable_field.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/estimate_pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
+import 'package:zaitoon_invoice/Views/Menu/Views/Products/new_product.dart';
 
 class EstimateView extends StatefulWidget {
   const EstimateView({super.key});
@@ -46,14 +46,11 @@ class _EstimateViewState extends State<EstimateView> {
 
   @override
   Widget build(BuildContext context) {
-    final estimatePdf =
-        InvoiceComponents(localizations: AppLocalizations.of(context)!);
 
     return Scaffold(
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
           if (state is AuthenticatedState) {
-            //estimateDetails.currency = state.user.currencyCode ?? "";
             estimateDetails.supplier = state.user.businessName ?? "";
             estimateDetails.supplierAddress = state.user.address ?? "";
             estimateDetails.supplierMobile = state.user.mobile1 ?? "";
@@ -151,6 +148,7 @@ class _EstimateViewState extends State<EstimateView> {
                   }
                   return null;
                 },
+
                 isRequire: true,
                 end: IconButton(
                   padding: EdgeInsets.zero,
@@ -185,7 +183,7 @@ class _EstimateViewState extends State<EstimateView> {
   }
 
   void initialDate() {
-    invoiceNumber.text = "INV0001";
+    invoiceNumber.text = "INV000001";
     final now = DateTime.now();
     final defaultIssueDate = DateFormat('MMM dd, yyyy').format(now);
     final defaultDueDate =
@@ -371,30 +369,34 @@ class _EstimateViewState extends State<EstimateView> {
                         child: Text("#",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color:
-                                    Theme.of(context).colorScheme.onPrimary)),
+                                color: Theme.of(context).colorScheme.onPrimary)),
                       ),
                       Text(AppLocalizations.of(context)!.description,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onPrimary)),
                       Text(AppLocalizations.of(context)!.qty,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onPrimary)),
                       Text(AppLocalizations.of(context)!.rate,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onPrimary)),
                       Text(AppLocalizations.of(context)!.discount,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onPrimary)),
                       Text(AppLocalizations.of(context)!.tax,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onPrimary)),
                       Text(AppLocalizations.of(context)!.total,
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onPrimary)),
@@ -430,7 +432,11 @@ class _EstimateViewState extends State<EstimateView> {
                               padding: EdgeInsets.symmetric(horizontal: 5),
                               iconSize: 15,
                               constraints: BoxConstraints(),
-                              onPressed: () {},
+                              onPressed: () {
+                                showDialog(context: context, builder: (context){
+                                  return NewProduct();
+                                });
+                              },
                               icon: Icon(Icons.add_circle_outline_rounded)),
                           controller: item.controller,
                           onChanged: (value) {
@@ -446,22 +452,31 @@ class _EstimateViewState extends State<EstimateView> {
                           },
                           hintText: "",
                         ),
+
+                        //QTY
                         UnderlineTextfield(
                           enabledColor: Colors.cyan,
+                          textAlign: TextAlign.center,
+                          inputFormatter: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           title: "",
                           onChanged: (value) {
                             context.read<EstimateBloc>().add(
                                   UpdateItemEvent(
                                     index,
                                     item.copyWith(
-                                        quantity: int.tryParse(
-                                                item.controller!.text) ??
-                                            1),
+                                        quantity: int.tryParse(item.controller!.text) ?? 1),
                                   ),
                                 );
                           },
                         ),
+                        //Price
                         UnderlineTextfield(
+                          textAlign: TextAlign.center,
+                          inputFormatter: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           enabledColor: Colors.teal,
                           title: "",
                           onChanged: (value) {
@@ -474,7 +489,13 @@ class _EstimateViewState extends State<EstimateView> {
                                 );
                           },
                         ),
+                        //Discount
                         UnderlineTextfield(
+                          textAlign: TextAlign.center,
+                          inputFormatter: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(3), // Restrict input to 3 characters
+                          ],
                           enabledColor: Colors.green,
                           title: "",
                           onChanged: (value) {
@@ -489,6 +510,11 @@ class _EstimateViewState extends State<EstimateView> {
                           },
                         ),
                         UnderlineTextfield(
+                          textAlign: TextAlign.center,
+                          inputFormatter: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(3), // Restrict input to 3 characters
+                          ],
                           enabledColor: Colors.red,
                           title: "",
                           onChanged: (value) {
@@ -502,6 +528,10 @@ class _EstimateViewState extends State<EstimateView> {
                           },
                         ),
                         UnderlineTextfield(
+                          textAlign: TextAlign.center,
+                          inputFormatter: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           readOnly: true,
                           title: "",
                           hintText: rowTotal,

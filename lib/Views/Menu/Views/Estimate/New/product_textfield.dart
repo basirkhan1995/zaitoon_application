@@ -88,7 +88,7 @@ class _ProductTextFieldState extends State<ProductTextField> {
               if (state is ProductSearchingError) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(state.error.toString()),
+                  child: Text(state.error.toString(),style: TextStyle(color: Theme.of(context).colorScheme.error),),
                 );
               }
               if (state is LoadedProductsState) {
@@ -172,7 +172,7 @@ class _ProductTextFieldState extends State<ProductTextField> {
       widget.validator ?? _customValidator, // Use custom validator
       decoration: InputDecoration(
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(vertical: 5),
+        contentPadding: const EdgeInsets.symmetric(vertical: 12),
         suffixIcon: widget.trailing,
         suffix: widget.end,
         suffixIconConstraints: const BoxConstraints(),

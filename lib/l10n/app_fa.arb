@@ -105,5 +105,12 @@
   "supplier": "عرضه کننده",
   "termsAndCondition": "قوانین و شرایط",
   "action": "عملیات",
-  "addItem": "اضافه کردن"
+  "addItem": "اضافه کردن",
+  "create": "ثبت کردن",
+  "sellPrice": "قیمت فروش",
+  "buyPrice": "قیمت خرید",
+  "quantity": "تعداد",
+  "productName": "اسم محصول",
+  "newProductTitle": "محصول جدید",
+  "serialNumber": "شناسه محصول"
 }

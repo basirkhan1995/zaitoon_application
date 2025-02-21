@@ -105,5 +105,12 @@
   "supplier": "عرضه کونکی",
   "termsAndCondition": "شرایط او قوانین",
   "action": "عملیات",
-  "addItem": "اضافه کول"
+  "addItem": "اضافه کول",
+  "create": "ثبتول",
+  "sellPrice": "فروش قیمت",
+  "buyPrice": "خرید قیمت",
+  "quantity": "تعداد",
+  "productName": "محصول نوم",
+  "newProductTitle": "نوی محصول",
+  "serialNumber": "محصول شناسه"
 }
