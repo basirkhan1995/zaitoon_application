@@ -94,7 +94,7 @@ class Tables {
 
   static String accountsTable = '''
   CREATE TABLE IF NOT EXISTS $accountTableName(
-  accId INTEGER PRIMARY KEY AUTOINCREMENT,
+  accId INTEGER PRIMARY KEY,
   accountNumber TEXT UNIQUE,
   accountName TEXT NOT NULL,
   mobile TEXT,

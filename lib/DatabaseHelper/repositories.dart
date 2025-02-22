@@ -67,19 +67,20 @@ class Repositories {
     stmt4.dispose();
 
     final stmt5 = db.prepare('''INSERT INTO ${Tables.accountTableName} 
-    (accountName, mobile, address, email, createdBy, accountCategory, accountDefaultCurrency)
-    VALUES (?,?,?,?,?,?,?)
+    (accId,accountName, mobile, address, email, createdBy, accountCategory, accountDefaultCurrency)
+    VALUES (?,?,?,?,?,?,?,?)
      ''');
 
     //Create New Account
     stmt5.execute([
+      100,
       usr.ownerName, // Account Name
       usr.mobile1, // Mobile
       usr.address, // Address
       usr.email, //  Email
       userId, //  Created By
       8, // Account Category - admin
-      'USD' // account default currency
+      'AFN' // account default currency
     ]);
     stmt5.dispose();
 

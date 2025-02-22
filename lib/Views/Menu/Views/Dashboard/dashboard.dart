@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/MainMenu/menu_cubit.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/Products/new_product.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../Components/Widgets/onhover_widget.dart';
 
 class DashboardView extends StatefulWidget {
@@ -13,9 +12,10 @@ class DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<DashboardView> {
-  final customer = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -29,41 +29,9 @@ class _DashboardViewState extends State<DashboardView> {
                   onTap: () {
                     context.read<MenuCubit>().onChangedEvent(index: 2);
                   },
-                  label: "New Estimate",
+                  label: locale.newEstimate,
                   fontSize: 18,
                   icon: Icons.shopping_cart_outlined,
-                  foregroundColor: Theme.of(context).colorScheme.onSurface,
-                  color: Colors.cyan.withValues(alpha: .3),
-                  hoverColor: Colors.cyan,
-                ),
-                HoverWidget(
-                  height: 80,
-                  onTap: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return NewProduct();
-                        });
-                  },
-                  label: "Deposit",
-                  fontSize: 18,
-                  icon: Icons.arrow_downward_rounded,
-                  foregroundColor: Theme.of(context).colorScheme.onSurface,
-                  color: Colors.cyan.withValues(alpha: .3),
-                  hoverColor: Colors.cyan,
-                ),
-                HoverWidget(
-                  height: 80,
-                  onTap: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return NewProduct();
-                        });
-                  },
-                  label: "Withdraw",
-                  fontSize: 18,
-                  icon: Icons.arrow_upward_rounded,
                   foregroundColor: Theme.of(context).colorScheme.onSurface,
                   color: Colors.cyan.withValues(alpha: .3),
                   hoverColor: Colors.cyan,

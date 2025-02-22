@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -73,18 +73,45 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
-  // Step titles
-  final List<String> steps = [
-    'Step 1',
-    'Step 2',
-    'Step 3',
-  ];
+  @override
+  Widget build(BuildContext context) {
+    databaseName.text = businessName.text.removeWhiteSpace(businessName.text);
+    final locale = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: ()=>Navigator.of(context).pop(),
+            icon: Icon(Icons.clear,size: 24)),
+        titleSpacing: 0,
+        title: Text(locale.registerCompany),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            stepper(),
+            registerForm(_currentStep), // Show the content widget dynamically
+            actionButton(), // Navigation buttons
+          ],
+        ),
+      ),
+    );
+  }
 
-  final List<String> stepsTitle = [
-    'General',
-    'User Account',
-    'Database',
-  ];
+  Widget registerForm(int step) {
+    switch (step) {
+      case 0:
+        return personalInformation();
+      case 1:
+        return userInformation();
+      case 2:
+        return databaseInformation();
+      default:
+        return const Text('Unknown Step');
+    }
+  }
+
 
   // Function to move to the next step
   void _nextStep() {
@@ -162,7 +189,7 @@ class _RegisterViewState extends State<RegisterView> {
             strokeWidth: 2.0,
             color: progressColor,
             backgroundColor:
-                Colors.grey.withValues(alpha: .2), // Background circle
+            Colors.grey.withValues(alpha: .2), // Background circle
           ),
         ),
         // Icon in the center
@@ -173,34 +200,16 @@ class _RegisterViewState extends State<RegisterView> {
           color: index < _currentStep
               ? Colors.green
               : (index == _currentStep
-                  ? Theme.of(context).colorScheme.primary
-                  : Colors.grey),
+              ? Theme.of(context).colorScheme.primary
+              : Colors.grey),
           size: 22,
         ),
       ],
     );
   }
 
-  Widget appBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 2),
-      child: Row(
-        spacing: 5,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.clear,
-                size: 20,
-              )),
-          Text("REGISTER")
-        ],
-      ),
-    );
-  }
-
   Widget userInformation() {
+    final locale = AppLocalizations.of(context)!;
     return SingleChildScrollView(
       child: Form(
         key: form2,
@@ -216,11 +225,11 @@ class _RegisterViewState extends State<RegisterView> {
                 InputFieldEntitled(
                   controller: username,
                   isRequire: true,
-                  title: "Username",
+                  title: locale.username,
                   icon: Icons.person,
                   validator: (value) {
                     if (value.isEmpty) {
-                      return "Username is required";
+                      return locale.required(locale.username);
                     }
                     return null;
                   },
@@ -229,11 +238,11 @@ class _RegisterViewState extends State<RegisterView> {
                   securePassword: true,
                   controller: password,
                   isRequire: true,
-                  title: "Password",
+                  title: locale.password,
                   icon: Icons.lock,
                   validator: (value) {
                     if (value.isEmpty) {
-                      return "Password is required";
+                      return locale.required(locale.password);
                     }
                     return null;
                   },
@@ -242,13 +251,13 @@ class _RegisterViewState extends State<RegisterView> {
                   controller: confirmPassword,
                   securePassword: true,
                   isRequire: true,
-                  title: "Re-enter password",
+                  title: locale.confirmPassword,
                   icon: Icons.lock,
                   validator: (value) {
                     if (value.isEmpty) {
-                      return "Re-enter password is required";
+                      return locale.required(locale.confirmPassword);
                     } else if (password.text != confirmPassword.text) {
-                      return "Passwords don't match";
+                      return locale.passwordNotMatch;
                     }
                     return null;
                   },
@@ -262,6 +271,7 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Widget personalInformation() {
+    final locale = AppLocalizations.of(context)!;
     return Form(
       key: form1,
       child: SingleChildScrollView(
@@ -283,11 +293,11 @@ class _RegisterViewState extends State<RegisterView> {
                         inputAction: TextInputAction.next,
                         isRequire: true,
                         controller: ownerName,
-                        title: "Your Name",
+                        title: locale.yourName,
                         icon: Icons.person,
                         validator: (value) {
                           if (value.isEmpty) {
-                            return "Your Name is required";
+                            return locale.required(locale.yourName);
                           }
                           return null;
                         },
@@ -298,11 +308,11 @@ class _RegisterViewState extends State<RegisterView> {
                         inputAction: TextInputAction.next,
                         controller: businessName,
                         isRequire: true,
-                        title: "Business Name",
+                        title: locale.businessName,
                         icon: Icons.business,
                         validator: (value) {
                           if (value.isEmpty) {
-                            return "Business Name is required";
+                            return locale.required(locale.businessName);
                           }
                           return null;
                         },
@@ -312,7 +322,7 @@ class _RegisterViewState extends State<RegisterView> {
                 ),
                 InputFieldEntitled(
                     inputAction: TextInputAction.next,
-                    title: "Email",
+                    title: locale.email,
                     icon: Icons.email,
                     controller: email),
                 Row(
@@ -323,12 +333,12 @@ class _RegisterViewState extends State<RegisterView> {
                         inputAction: TextInputAction.next,
                         inputFormat: [FilteringTextInputFormatter.digitsOnly],
                         isRequire: true,
-                        title: "Moble 1",
+                        title: locale.mobile,
                         controller: mobile1,
                         icon: Icons.phone_android_rounded,
                         validator: (value) {
                           if (value.isEmpty) {
-                            return "Mobile is required";
+                            return locale.required(locale.mobile);
                           }
                           return null;
                         },
@@ -338,7 +348,7 @@ class _RegisterViewState extends State<RegisterView> {
                       child: InputFieldEntitled(
                           inputFormat: [FilteringTextInputFormatter.digitsOnly],
                           inputAction: TextInputAction.next,
-                          title: "Mobile 2",
+                          title: locale.mobile2,
                           controller: mobile2,
                           icon: Icons.phone_android_rounded),
                     ),
@@ -348,11 +358,11 @@ class _RegisterViewState extends State<RegisterView> {
                   inputAction: TextInputAction.done,
                   controller: address,
                   isRequire: true,
-                  title: "Address",
+                  title: locale.address,
                   icon: Icons.phone_android_rounded,
                   validator: (value) {
                     if (value.isEmpty) {
-                      return "Address is required";
+                      return locale.required(locale.address);
                     }
                     return null;
                   },
@@ -366,6 +376,7 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Widget databaseInformation() {
+    final locale = AppLocalizations.of(context)!;
     return Form(
       key: form3,
       child: SingleChildScrollView(
@@ -387,14 +398,14 @@ class _RegisterViewState extends State<RegisterView> {
                       onPressed: _pickDirectory, icon: Icon(Icons.folder)),
                   inputAction: TextInputAction.done,
                   controller: databaseName,
-                  title: "Database Name",
+                  title: locale.databaseName,
                   icon: Icons.storage,
                   onChanged: (text) {
                     databaseName.text.removeWhiteSpace(databaseName.text);
                   },
                   validator: (value) {
                     if (value.isEmpty) {
-                      return "Database is required";
+                      return locale.databaseName;
                     }
                     return null;
                   },
@@ -432,8 +443,8 @@ class _RegisterViewState extends State<RegisterView> {
                 color: index < _currentStep
                     ? Colors.green
                     : index == _currentStep
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.grey,
+                    ? Theme.of(context).colorScheme.primary
+                    : Colors.grey,
               ),
           ],
         );
@@ -442,6 +453,19 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Widget stepperTitles() {
+    final locale = AppLocalizations.of(context)!;
+    // Step titles
+    final List<String> steps = [
+      locale.step1,
+      locale.step2,
+      locale.step3,
+    ];
+
+    final List<String> stepsTitle = [
+      locale.general,
+      locale.userAccount,
+      locale.database,
+    ];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -459,17 +483,17 @@ class _RegisterViewState extends State<RegisterView> {
             ),
             Text(
               index == _currentStep
-                  ? "In progress"
+                  ? locale.inProgress
                   : index < _currentStep
-                      ? "Completed"
-                      : "Pending",
+                  ? locale.completed
+                  : locale.pending,
               style: TextStyle(
                   fontSize: 11,
                   color: index == _currentStep
                       ? Colors.blue
                       : index < _currentStep
-                          ? Colors.green
-                          : Colors.grey),
+                      ? Colors.green
+                      : Colors.grey),
             ),
           ],
         );
@@ -478,6 +502,7 @@ class _RegisterViewState extends State<RegisterView> {
   }
 
   Widget actionButton() {
+    final locale = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: AppBackground(
@@ -488,11 +513,11 @@ class _RegisterViewState extends State<RegisterView> {
           children: [
             TextButton(
               onPressed: _previousStep,
-              child: Text(_currentStep == 0 ? 'Back' : 'Previous'),
+              child: Text(_currentStep == 0 ? locale.back : locale.previous),
             ),
             TextButton(
               onPressed: _currentStep == 2 ? _create : _nextStep,
-              child: Text(_currentStep == 2 ? 'Create' : 'Next'),
+              child: Text(_currentStep == 2 ? locale.create : locale.next),
             ),
           ],
         ),
@@ -515,37 +540,4 @@ class _RegisterViewState extends State<RegisterView> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    databaseName.text = businessName.text.removeWhiteSpace(businessName.text);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Register Company"),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            stepper(),
-            registerForm(_currentStep), // Show the content widget dynamically
-            actionButton(), // Navigation buttons
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget registerForm(int step) {
-    switch (step) {
-      case 0:
-        return personalInformation();
-      case 1:
-        return userInformation();
-      case 2:
-        return databaseInformation();
-      default:
-        return const Text('Unknown Step');
-    }
-  }
 }

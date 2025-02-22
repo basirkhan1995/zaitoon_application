@@ -76,11 +76,17 @@ class _EstimateViewState extends State<EstimateView> {
     final locale = AppLocalizations.of(context)!;
     final theme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(locale.newEstimate, style: theme.titleLarge),
+          Row(
+            spacing: 5,
+            children: [
+              Icon(Icons.account_balance_wallet_outlined),
+              Text(locale.newEstimate, style: theme.titleMedium),
+            ],
+          ),
           BlocBuilder<LanguageCubit, Locale>(
             builder: (context, locale) {
               return ZOutlineButton(
@@ -110,6 +116,7 @@ class _EstimateViewState extends State<EstimateView> {
   Widget buildEstimate(BuildContext context) {
     return AppBackground(
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      margin: EdgeInsets.symmetric(vertical: 2,horizontal: 10),
       child: SingleChildScrollView(
         child: Column(
           children: [

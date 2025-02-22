@@ -41,7 +41,7 @@ class _LoginDialogState extends State<LoginDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       insetPadding: EdgeInsets.zero,
@@ -90,28 +90,28 @@ class _LoginDialogState extends State<LoginDialog> {
                   InputFieldEntitled(
                     focusNode: focusNode,
                     icon: Icons.account_circle_rounded,
-                    title: "Username",
+                    title: localizations.username,
                     controller: username,
-                    onSubmit: (value) => login(localizations: localizations!),
+                    onSubmit: (value) => login(localizations: localizations),
                     validator: (value) {
                       if (value.isEmpty) {
-                        return "Username is required";
+                        return localizations.required(localizations.username);
                       }
                       return null;
                     },
                   ),
                   InputFieldEntitled(
                     icon: Icons.lock,
-                    title: "Password",
+                    title: localizations.password,
                     securePassword: true,
                     controller: password,
                     validator: (value) {
                       if (value.isEmpty) {
-                        return "Password is required";
+                        return localizations.required(localizations.password);
                       }
                       return null;
                     },
-                    onSubmit: (value) => login(localizations: localizations!),
+                    onSubmit: (value) => login(localizations: localizations),
                   ),
                   SizedBox(height: 5),
                   BlocBuilder<AuthCubit, AuthState>(
@@ -135,7 +135,7 @@ class _LoginDialogState extends State<LoginDialog> {
                     },
                   ),
                   Button(
-                      onPressed: () => login(localizations: localizations!),
+                      onPressed: () => login(localizations: localizations),
                       width: MediaQuery.sizeOf(context).width * .9,
                       height: 50,
                       label: state is LoadingState
@@ -145,7 +145,7 @@ class _LoginDialogState extends State<LoginDialog> {
                                   strokeWidth: 5,
                                   color: Theme.of(context).colorScheme.surface),
                             )
-                          : Text("LOGIN")),
+                          : Text(localizations.loginTitle)),
                   SizedBox(height: 20),
                 ],
               ),

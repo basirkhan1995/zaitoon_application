@@ -45,11 +45,11 @@ class DefaultValues {
   ''';
 
   static String defaultSystemAccounts = '''
-  INSERT INTO ${Tables.accountTableName} (accountName,accountCategory,createdBy,accountDefaultCurrency) VALUES 
-  ('Assets',7,1,'AFN'),
-  ('Profit',7,1,'AFN'),
-  ('Loss',7,1,'AFN'),
-  ('Expense',7,1,'AFN')
+  INSERT INTO ${Tables.accountTableName} (accId,accountName,accountCategory,createdBy,accountDefaultCurrency) VALUES 
+  (1,'Assets',7,1,'AFN'),
+  (2,'Profit',7,1,'AFN'),
+  (3,'Loss',7,1,'AFN'),
+  (4,'Expense',7,1,'AFN')
   ''';
 
   static String defaultProductCategory = '''

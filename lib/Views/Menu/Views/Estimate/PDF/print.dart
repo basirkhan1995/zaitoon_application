@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:zaitoon_invoice/Bloc/AuthCubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/PDF/pdf_language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/Printer/printer_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
@@ -11,6 +10,7 @@ import 'package:zaitoon_invoice/Json/estimate.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/document_language.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/printers_drop.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PdfPrintSetting extends StatefulWidget {
   final EstimateInfoModel info;
@@ -33,6 +33,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       insetPadding: EdgeInsets.zero,
@@ -55,10 +56,10 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
             //Title
             Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(4),
                   color: Theme.of(context).colorScheme.surface),
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
+                padding: EdgeInsets.symmetric(horizontal: 8,vertical: 6),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -68,7 +69,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                         const Icon(Icons.print),
                         const SizedBox(width: 10),
                         Text(
-                          "Print preview",
+                          locale.printPreview,
                           style: const TextStyle(fontSize: 17),
                         )
                       ],
@@ -142,6 +143,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
   }
 
   Widget box() {
+    final locale = AppLocalizations.of(context)!;
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       padding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -164,7 +166,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
           BlocBuilder<PrinterCubit, Printer?>(
             builder: (context, selectedPrinter) {
               return PrintersDropdown(
-                title: 'Printer',
+                title: locale.printer,
                 onSelected: (Printer printer) {
                   // Update printer state
                   context.read<PrinterCubit>().setPrinter(printer);
@@ -177,7 +179,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
           BlocBuilder<PDFLanguageCubit, String?>(
             builder: (context, selectedLanguage) {
               return PdfLanguageSelection(
-                title: 'Language',
+                title: locale.language,
                 onSelected: (value) {
                   // Update language state
                   context.read<PDFLanguageCubit>().setLanguage(value);
@@ -196,7 +198,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                     width: double.infinity,
                     height: 45,
                     icon: Icons.print,
-                    label: Text("Print"),
+                    label: Text(locale.print),
                     onPressed: () {
                       // Get the latest state values for printer and language
                       final selectedPrinter =

@@ -182,8 +182,7 @@ class Pdf {
                   children: [
                     buildTextWidget(text: clientTitleText),
                     SizedBox(height: 3),
-                    Text(invoiceInfo.clientName,
-                        style: textStyle(text: invoiceInfo.clientName)),
+                    buildTextWidget(text: invoiceInfo.clientName),
                   ])
             ]));
   }
