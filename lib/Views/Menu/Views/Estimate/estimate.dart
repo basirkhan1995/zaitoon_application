@@ -11,9 +11,9 @@ import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Components/Widgets/underline_textfield.dart';
 import 'package:zaitoon_invoice/Json/estimate.dart';
-import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/New/product_textfield.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/print.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/products_textfield.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/customer_searchable_field.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Products/new_product.dart';
 
@@ -46,7 +46,6 @@ class _EstimateViewState extends State<EstimateView> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
@@ -60,11 +59,13 @@ class _EstimateViewState extends State<EstimateView> {
             estimateDetails.invoiceNumber = invoiceNumber.text;
             estimateDetails.clientName = customer.text;
           }
-          return Column(
-            children: [
-              buildAppBar(context),
-              buildEstimate(context),
-            ],
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                buildAppBar(context),
+                buildEstimate(context),
+              ],
+            ),
           );
         },
       ),
@@ -109,12 +110,14 @@ class _EstimateViewState extends State<EstimateView> {
   Widget buildEstimate(BuildContext context) {
     return AppBackground(
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      child: Column(
-        children: [
-          buildInvoiceHeader(context),
-          buildEstimateItems(),
-          invoiceFooter(),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            buildInvoiceHeader(context),
+            buildEstimateItems(),
+            invoiceFooter(),
+          ],
+        ),
       ),
     );
   }
@@ -148,7 +151,6 @@ class _EstimateViewState extends State<EstimateView> {
                   }
                   return null;
                 },
-
                 isRequire: true,
                 end: IconButton(
                   padding: EdgeInsets.zero,
@@ -369,7 +371,8 @@ class _EstimateViewState extends State<EstimateView> {
                         child: Text("#",
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onPrimary)),
+                                color:
+                                    Theme.of(context).colorScheme.onPrimary)),
                       ),
                       Text(AppLocalizations.of(context)!.description,
                           style: TextStyle(
@@ -433,9 +436,11 @@ class _EstimateViewState extends State<EstimateView> {
                               iconSize: 15,
                               constraints: BoxConstraints(),
                               onPressed: () {
-                                showDialog(context: context, builder: (context){
-                                  return NewProduct();
-                                });
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return NewProduct();
+                                    });
                               },
                               icon: Icon(Icons.add_circle_outline_rounded)),
                           controller: item.controller,
@@ -466,7 +471,9 @@ class _EstimateViewState extends State<EstimateView> {
                                   UpdateItemEvent(
                                     index,
                                     item.copyWith(
-                                        quantity: int.tryParse(item.controller!.text) ?? 1),
+                                        quantity: int.tryParse(
+                                                item.controller!.text) ??
+                                            1),
                                   ),
                                 );
                           },
@@ -494,7 +501,8 @@ class _EstimateViewState extends State<EstimateView> {
                           textAlign: TextAlign.center,
                           inputFormatter: [
                             FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(3), // Restrict input to 3 characters
+                            LengthLimitingTextInputFormatter(
+                                3), // Restrict input to 3 characters
                           ],
                           enabledColor: Colors.green,
                           title: "",
@@ -513,7 +521,8 @@ class _EstimateViewState extends State<EstimateView> {
                           textAlign: TextAlign.center,
                           inputFormatter: [
                             FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(3), // Restrict input to 3 characters
+                            LengthLimitingTextInputFormatter(
+                                3), // Restrict input to 3 characters
                           ],
                           enabledColor: Colors.red,
                           title: "",

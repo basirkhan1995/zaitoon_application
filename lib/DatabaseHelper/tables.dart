@@ -100,7 +100,6 @@ class Tables {
   mobile TEXT,
   address TEXT,
   email TEXT,
-  balance REAL DEFAULT 0,
   accountCategory INTEGER,
   createdBy INTEGER,
   accountDefaultCurrency TEXT,

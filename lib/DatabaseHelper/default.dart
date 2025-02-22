@@ -4,8 +4,7 @@ class DefaultValues {
   static String defaultInventory = '''
   INSERT INTO ${Tables.inventoryTableName} (inventoryName) VALUES 
   ('Store'),
-  ('Godown'),
-  ('Ware house')
+  ('Warehouse')
   ''';
 
   static String defaultUnits = '''
@@ -43,6 +42,14 @@ class DefaultValues {
   (6,'Company'),
   (7,'System'),
   (8,'Admin')
+  ''';
+
+  static String defaultSystemAccounts = '''
+  INSERT INTO ${Tables.accountTableName} (accountName,accountCategory,createdBy,accountDefaultCurrency) VALUES 
+  ('Assets',7,1,'AFN'),
+  ('Profit',7,1,'AFN'),
+  ('Loss',7,1,'AFN'),
+  ('Expense',7,1,'AFN')
   ''';
 
   static String defaultProductCategory = '''

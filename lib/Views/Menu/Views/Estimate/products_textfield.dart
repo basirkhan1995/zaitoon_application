@@ -69,9 +69,9 @@ class _ProductTextFieldState extends State<ProductTextField> {
     _removeOverlay();
 
     final renderBox =
-    _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+        _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final overlay =
-    Overlay.of(context).context.findRenderObject() as RenderBox?;
+        Overlay.of(context).context.findRenderObject() as RenderBox?;
     if (renderBox == null || overlay == null) return;
 
     final position = renderBox.localToGlobal(Offset.zero, ancestor: overlay);
@@ -88,7 +88,11 @@ class _ProductTextFieldState extends State<ProductTextField> {
               if (state is ProductSearchingError) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(state.error.toString(),style: TextStyle(color: Theme.of(context).colorScheme.error),),
+                  child: Text(
+                    state.error.toString(),
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.error),
+                  ),
                 );
               }
               if (state is LoadedProductsState) {
@@ -118,7 +122,8 @@ class _ProductTextFieldState extends State<ProductTextField> {
                     );
                   },
                 );
-              }if(state is ProductsErrorState){
+              }
+              if (state is ProductsErrorState) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(state.error),
@@ -168,19 +173,17 @@ class _ProductTextFieldState extends State<ProductTextField> {
           });
         }
       },
-      validator:
-      widget.validator ?? _customValidator, // Use custom validator
+      validator: widget.validator ?? _customValidator, // Use custom validator
       decoration: InputDecoration(
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(vertical: 8),
         suffixIcon: widget.trailing,
         suffix: widget.end,
         suffixIconConstraints: const BoxConstraints(),
         hintText: widget.hintText,
         focusedBorder: UnderlineInputBorder(
             borderSide: BorderSide(
-                width: 1.5,
-                color: Theme.of(context).colorScheme.primary)),
+                width: 1.5, color: Theme.of(context).colorScheme.primary)),
         enabledBorder: const UnderlineInputBorder(
             borderSide: BorderSide(width: 1, color: Colors.grey)),
       ),

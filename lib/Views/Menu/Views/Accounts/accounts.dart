@@ -149,7 +149,8 @@ class _AccountsViewState extends State<AccountsView> {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(3),
                               color: backgroundColor.withValues(alpha: .2)),
-                          child: Text(account.accountNumber!,
+                          child: Text(
+                              account.accountNumber ?? account.accId.toString(),
                               style: textTheme.bodySmall)),
                     ],
                   ),

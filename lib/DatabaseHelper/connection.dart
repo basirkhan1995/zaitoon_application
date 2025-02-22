@@ -116,6 +116,7 @@ class DatabaseHelper {
       _db!.execute(DefaultValues.defaultInventory);
       _db!.execute(DefaultValues.defaultProductCategory);
       _db!.execute(DefaultValues.defaultTrnType);
+      _db!.execute(DefaultValues.defaultSystemAccounts);
     }
   }
 
@@ -123,6 +124,7 @@ class DatabaseHelper {
     if (_db != null) {
       //_db!.execute(Triggers.invoiceNumberTrigger);
       _db!.execute(Triggers.accountNumberTrigger);
+      _db!.execute(Triggers.accountIdTrigger);
       // _db!.execute(Triggers.inventoryTotalTrigger);
     }
   }

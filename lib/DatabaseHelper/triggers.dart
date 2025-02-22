@@ -76,4 +76,21 @@ BEGIN
 END;
 
  ''';
+
+  static String accountIdTrigger = '''
+ -- Trigger to set starting point for new records in accountsTbl
+CREATE TRIGGER set_account_id
+BEFORE INSERT ON ${Tables.accountTableName}
+FOR EACH ROW
+BEGIN
+  -- Check if the `sqlite_sequence` already exists for the accountsTbl
+  -- and set it to 100, so the next insert will start from 100.
+  UPDATE sqlite_sequence
+  SET seq = 99
+  WHERE name = ${Tables.accountTableName};
+  
+  -- Optionally: Add any other logic to handle specific insert actions
+END;
+
+ ''';
 }
