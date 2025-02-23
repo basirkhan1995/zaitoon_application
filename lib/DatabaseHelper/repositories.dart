@@ -271,10 +271,10 @@ class Repositories {
     final db = DatabaseHelper.db;
     // Check if the keyword is numeric
     final isNumeric = int.tryParse(keyword) != null;
-    final response = db.select( '''
+    final response = db.select('''
     SELECT accId, accountName FROM ${Tables.accountTableName} 
     WHERE (:keyword IS NULL OR :keyword = '' OR accId = :keyword OR accountName LIKE '%' || :keyword || '%')''',
-    isNumeric ? [keyword] : ["%$keyword%"]);
+        isNumeric ? [keyword] : ["%$keyword%"]);
     return response.map((e) => Accounts.fromMap(e)).toList();
   }
 
@@ -292,24 +292,24 @@ class Repositories {
     final invType = "IN";
 
     try {
-
       // Insert product into product table
       final stmt = db.prepare('''
       INSERT INTO ${Tables.productTableName} (productName, unit, category) 
       VALUES (?,?,?)''');
       stmt.execute([productName, unit, category]);
       final productId = db.lastInsertRowId; // Get productId after insert
+      print("Product ID: $productId");
       stmt.dispose();
 
       // Insert product inventory only if inventory and qty are greater than zero
-      if (inventory > 0 && qty > 0) {
+      if (qty > 0 && buyPrice > 0.0 && sellPrice > 0.0) {
         final stmt2 = db.prepare('''
         INSERT INTO ${Tables.productInventoryTableName} (product, inventory, qty, inventoryType, buyPrice, sellPrice) 
         VALUES (?,?,?,?,?,?)''');
         stmt2
             .execute([productId, inventory, qty, invType, buyPrice, sellPrice]);
         stmt2.dispose();
-      }else{
+      } else {
         null;
       }
 

@@ -31,13 +31,23 @@ class ProductsCubit extends Cubit<ProductsState> {
   }
 
   Future<void> productSearchingEvent({required String keyword}) async {
+    // Load all products when search is performed
+    loadProductsEvent();
+
     try {
-      final response =  await _repositories.searchProducts(keyword);
-       emit(LoadedProductsState(response));
-      if(response.isEmpty){
+      // Perform search when there's a keyword
+      final response = await _repositories.searchProducts(keyword);
+
+      // If no results found and keyword is not empty, show error message
+      if (response.isEmpty && keyword.isNotEmpty) {
         emit(ProductsErrorState("No item found"));
-      }if(keyword.isEmpty){
-        resetProductsEvent();
+      }
+
+      // If keyword is empty, load all products
+      if (keyword.isEmpty) {
+        loadProductsEvent();
+      } else {
+        emit(LoadedProductsState(response));
       }
     } catch (e) {
       emit(ProductsErrorState(e.toString()));

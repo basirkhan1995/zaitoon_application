@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/ProductsCubit/products_cubit.dart';
+import 'package:zaitoon_invoice/Components/Widgets/search_field.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Products/new_product.dart';
 
 class ProductsView extends StatefulWidget {
@@ -19,13 +20,11 @@ class _ProductsViewState extends State<ProductsView> {
     super.initState();
   }
 
-  final keyword = TextEditingController();
-
+  final searchProduct = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
@@ -35,45 +34,96 @@ class _ProductsViewState extends State<ProductsView> {
                   return NewProduct();
                 });
           }),
-      body: BlocBuilder<ProductsCubit, ProductsState>(
-        builder: (context, state) {
-          if (state is ProductsErrorState) {
-            return Text(state.error);
-          }
-          if (state is LoadedProductsState) {
-            if (state.products.isEmpty) {
-              return Text("No products");
-            }
-            return Column(
-              children: [
-                TextField(
-                  controller: keyword,
-                  onChanged: (value){
-                    context.read<ProductsCubit>().productSearchingEvent(keyword: keyword.text);
-                  },
-                ),
-                Expanded(
-                  child: ListView.builder(
-                      itemCount: state.products.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(state.products[index].productName ?? "null"),
-                          subtitle:
-                              Text(state.products[index].totalInventory.toString()),
-                          trailing: IconButton(
-                              onPressed: () {
-                                context.read<ProductsCubit>().deleteProduct(
-                                    id: state.products[index].productId!);
-                              },
-                              icon: Icon(Icons.delete)),
-                        );
-                      }),
-                ),
-              ],
-            );
-          }
-          return Container();
-        },
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SearchField(
+              icon: Icons.search,
+              controller: searchProduct,
+              onChanged: (value) {
+                context
+                    .read<ProductsCubit>()
+                    .productSearchingEvent(keyword: searchProduct.text);
+              },
+              hintText: "Search Products"),
+          Expanded(
+            child: BlocBuilder<ProductsCubit, ProductsState>(
+              builder: (context, state) {
+                if (state is ProductsErrorState) {
+                  return Center(
+                    child: Text(
+                      state.error,
+                      style: TextStyle(color: Colors.red, fontSize: 16),
+                    ),
+                  );
+                }
+
+                if (state is LoadedProductsState) {
+                  if (state.products.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.shopping_cart,
+                              size: 40, color: Colors.grey),
+                          SizedBox(height: 8),
+                          Text(
+                            "No products available",
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.separated(
+                    itemCount: state.products.length,
+                    itemBuilder: (context, index) {
+                      final product = state.products[index];
+                      return ListTile(
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                        leading: Icon(Icons.shopping_bag, color: Colors.blue),
+                        title: Text(
+                          product.productName ?? "Unnamed Product",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Product ID: ${product.productId}"),
+                            Text(
+                              "Avg Price: \$${product.averageBuyPrice?.toStringAsFixed(2) ?? ""}",
+                              style: TextStyle(color: Colors.green),
+                            ),
+                            product.totalInventory != null &&
+                                    product.totalInventory != 0
+                                ? Text("Inventory: ${product.totalInventory}")
+                                : SizedBox(),
+                          ],
+                        ),
+                        trailing: IconButton(
+                          onPressed: () {
+                            context
+                                .read<ProductsCubit>()
+                                .deleteProduct(id: product.productId!);
+                          },
+                          icon: Icon(Icons.delete, color: Colors.red),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return Divider(height: 1, color: Colors.grey[300]);
+                    },
+                  );
+                }
+
+                return Container(); // Return a blank container if no state matches
+              },
+            ),
+          )
+        ],
       ),
     );
   }

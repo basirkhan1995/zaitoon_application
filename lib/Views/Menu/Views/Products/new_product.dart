@@ -17,11 +17,22 @@ class NewProduct extends StatefulWidget {
 }
 
 class _NewProductState extends State<NewProduct> {
-  final productName = TextEditingController();
-  final buyPrice = TextEditingController();
-  final sellPrice = TextEditingController();
-  final initialQty = TextEditingController();
-  final serialNumber = TextEditingController();
+  TextEditingController productName = TextEditingController();
+  TextEditingController serialNumber = TextEditingController();
+  TextEditingController initialQty = TextEditingController();
+  TextEditingController buyPrice = TextEditingController();
+  TextEditingController sellPrice = TextEditingController();
+
+  @override
+  void dispose() {
+    // Dispose controllers when the widget is disposed to prevent memory leaks
+    initialQty.dispose();
+    buyPrice.dispose();
+    sellPrice.dispose();
+    productName.dispose();
+    serialNumber.dispose();
+    super.dispose();
+  }
 
   String selectedUnit = "";
   String selectedBuy = "";
@@ -32,7 +43,6 @@ class _NewProductState extends State<NewProduct> {
   final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
       insetPadding: EdgeInsets.zero,
@@ -135,8 +145,7 @@ class _NewProductState extends State<NewProduct> {
             ),
             SizedBox(height: 5),
             InputFieldEntitled(
-                title: locale.serialNumber,
-                controller: serialNumber),
+                title: locale.serialNumber, controller: serialNumber),
             Row(
               spacing: 10,
               children: [
@@ -192,15 +201,21 @@ class _NewProductState extends State<NewProduct> {
               onPressed: () {
                 if (formKey.currentState!.validate()) {
                   context.read<ProductsCubit>().addProductEvent(
-                      productName: productName.text,
+                      productName: productName.text.trim(),
                       unit: unitId,
                       category: categoryId,
-                      buyPrice: double.parse(buyPrice.text),
-                      sellPrice: double.parse(sellPrice.text),
+                      buyPrice: buyPrice.text.isNotEmpty
+                          ? double.tryParse(buyPrice.text.trim()) ?? 0.0
+                          : 0.0,
+                      sellPrice: sellPrice.text.trim().isNotEmpty
+                          ? double.tryParse(sellPrice.text.trim()) ?? 0.0
+                          : 0.0,
                       inventory: inventoryId,
-                      qty: int.parse(initialQty.text));
+                      qty: initialQty.text.trim().isNotEmpty
+                          ? int.parse(initialQty.text.trim())
+                          : 0);
+                  Navigator.of(context).pop();
                 }
-                Navigator.of(context).pop();
               }),
           ZOutlineButton(
               backgroundHover: Theme.of(context).colorScheme.error,
