@@ -83,8 +83,7 @@ class _ProductsViewState extends State<ProductsView> {
                       final product = state.products[index];
                       return ListTile(
                         contentPadding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                        leading: Icon(Icons.shopping_bag, color: Colors.blue),
+                            EdgeInsets.symmetric(vertical: 2, horizontal: 15),
                         title: Text(
                           product.productName ?? "Unnamed Product",
                           style: TextStyle(fontWeight: FontWeight.bold),
@@ -114,7 +113,7 @@ class _ProductsViewState extends State<ProductsView> {
                       );
                     },
                     separatorBuilder: (context, index) {
-                      return Divider(height: 1, color: Colors.grey[300]);
+                      return Divider(endIndent: 10,indent: 10, height: 1, color: Colors.grey[300]);
                     },
                   );
                 }
