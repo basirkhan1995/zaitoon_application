@@ -83,20 +83,7 @@ class _CustomStepperPageState extends State<CustomStepperPage> {
       children: List.generate(_totalSteps, (index) {
         return Row(
           children: [
-            // Build step icon
             _buildStepIndicator(index),
-            // Add horizontal line between step indicators
-            // if (index < _totalSteps - 1)
-            //   Container(
-            //     margin: EdgeInsets.symmetric(horizontal: 8),
-            //     width: 140,
-            //     height: 2,
-            //     color: index < _currentStep
-            //         ? Colors.green
-            //         : index == _currentStep
-            //             ? Theme.of(context).primaryColor
-            //             : Colors.grey,
-            //   ),
           ],
         );
       }),
