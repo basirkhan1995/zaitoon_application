@@ -224,7 +224,6 @@ class Repositories {
     stmt.dispose(); // Dispose prepared statement
 
     final affectedRows = db.updatedRows; // Store affected rows count
-
     return affectedRows; // Return count of updated rows
   }
 
@@ -298,7 +297,6 @@ class Repositories {
       VALUES (?,?,?)''');
       stmt.execute([productName, unit, category]);
       final productId = db.lastInsertRowId; // Get productId after insert
-      print("Product ID: $productId");
       stmt.dispose();
 
       // Insert product inventory only if inventory and qty are greater than zero
