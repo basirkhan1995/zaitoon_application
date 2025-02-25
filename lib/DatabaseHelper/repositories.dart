@@ -530,4 +530,27 @@ ORDER BY
         () => db.select('''SELECT * FROM ${Tables.inventoryTableName}'''));
     return response.map((row) => InventoryModel.fromMap(row)).toList();
   }
+
+  Future<int> addAccount({
+    required Accounts accounts
+    }) async {
+    final db = DatabaseHelper.db;
+    final stmt = await Future(() => db.prepare('''
+      INSERT INTO ${Tables.accountTableName} (
+      accountName, 
+      email,
+      mobile,
+      phone,
+      accountCategory, 
+      createdBy,
+      accountDefaultCurrency)
+      VALUES ()
+      '''));
+
+    stmt.execute();
+    final response = db.lastInsertRowId;
+    stmt.dispose();
+
+    return response;
+  }
 }

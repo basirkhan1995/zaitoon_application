@@ -3,8 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/AccountsCubit/accounts_cubit.dart';
 import 'package:zaitoon_invoice/Components/Other/extensions.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
+import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
+import 'package:zaitoon_invoice/Components/Widgets/search_field.dart';
 import 'package:zaitoon_invoice/Json/accounts_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class AccountsView extends StatefulWidget {
   const AccountsView({super.key});
 
@@ -21,49 +24,83 @@ class _AccountsViewState extends State<AccountsView> {
     super.initState();
   }
 
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<AccountsCubit, AccountsState>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          if (state is AccountsErrorState) {
-            return Text(state.error);
-          }
-
-          if (state is LoadedAccountsState) {
-            if (state.allAccounts.isEmpty) {
-              return Center(child: Text("No Accounts"));
-            }
-            return AppBackground(
-              padding: EdgeInsets.symmetric(vertical: 8,horizontal: 0),
-              child: Column(
-                children: [
-                  //Title
-                  buildTitle(),
-                  Divider(indent: 10, endIndent: 10),
-                  //Accounts
-                  Expanded(
-                    child: ListView.builder(
-                        padding: EdgeInsets.zero,
-                        itemCount: state.allAccounts.length,
-                        itemBuilder: (context, index) {
-                          final account = state.allAccounts[index];
-                          return Material(
-                            color: Colors.transparent, // Keep background transparent
-                            child: InkWell(
-                                hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: .09),
-                                onTap: (){},
-                                child: _buildAccounts(account)),
-                          );
-                        }),
-                  ),
-                ],
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SearchField(
+                  icon: Icons.search,
+                  controller: searchController,
+                  hintText: "Search here"),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: ZOutlineButton(
+                    height: 40, label: Text("New Account"), onPressed: () {
+                      
+                    }),
               ),
-            );
-          }
-          return Container();
-        },
+            ],
+          ),
+          Expanded(
+            child: BlocConsumer<AccountsCubit, AccountsState>(
+              listener: (context, state) {},
+              builder: (context, state) {
+                if (state is AccountsErrorState) {
+                  return Text(state.error);
+                }
+
+                if (state is LoadedAccountsState) {
+                  if (state.allAccounts.isEmpty) {
+                    return Center(child: Text("No Accounts"));
+                  }
+                  return AppBackground(
+                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                    child: Column(
+                      children: [
+                        //Title
+                        buildTitle(),
+                        Divider(indent: 10, endIndent: 10),
+                        //Accounts
+                        Expanded(
+                          child: ListView.builder(
+                              padding: EdgeInsets.zero,
+                              itemCount: state.allAccounts.length,
+                              itemBuilder: (context, index) {
+                                final account = state.allAccounts[index];
+                                return Material(
+                                  color: Colors
+                                      .transparent, // Keep background transparent
+                                  child: InkWell(
+                                      hoverColor: Theme.of(context)
+                                          .colorScheme
+                                          .primary
+                                          .withValues(alpha: .09),
+                                      onTap: () {},
+                                      child: _buildAccounts(account)),
+                                );
+                              }),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return Container();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -71,13 +108,14 @@ class _AccountsViewState extends State<AccountsView> {
   Widget buildTitle() {
     final locale = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5.0,horizontal: 10),
+      padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10),
       child: Row(
         children: [
           SizedBox(width: 10),
           Text(locale.id, style: Theme.of(context).textTheme.titleMedium),
           SizedBox(width: 70),
-          Text(locale.accountName, style: Theme.of(context).textTheme.titleMedium),
+          Text(locale.accountName,
+              style: Theme.of(context).textTheme.titleMedium),
           Expanded(
               child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -126,7 +164,7 @@ class _AccountsViewState extends State<AccountsView> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0,horizontal: 15),
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -166,7 +204,8 @@ class _AccountsViewState extends State<AccountsView> {
                   Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(3),
                           color: backgroundColor.withValues(alpha: .2),
@@ -176,7 +215,8 @@ class _AccountsViewState extends State<AccountsView> {
                       ),
                       Container(
                         margin: EdgeInsets.symmetric(horizontal: 5),
-                        padding: EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 3, vertical: 1),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(3),
                           color: backgroundColor.withValues(alpha: .2),
@@ -196,5 +236,4 @@ class _AccountsViewState extends State<AccountsView> {
       ),
     );
   }
-
 }
