@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/repositories.dart';
 import 'package:zaitoon_invoice/Json/accounts_model.dart';
+import 'package:zaitoon_invoice/Json/users.dart';
 
 part 'accounts_state.dart';
 
@@ -16,6 +17,16 @@ class AccountsCubit extends Cubit<AccountsState> {
     } catch (e) {
       emit(AccountsErrorState(e.toString()));
     }
+  }
+
+  Future<void> addAccountEvent({required Accounts accounts, Users? user})async{
+   try{
+     await _repositories.addAccount(accounts: accounts,user: user);
+     loadAccountsEvent();
+   }catch(e){
+     emit(AccountsErrorState(e.toString()));
+     print(e.toString());
+   }
   }
 
   Future<void> searchAccountEvent({required String keyword}) async {

@@ -1,6 +1,7 @@
 import 'package:zaitoon_invoice/DatabaseHelper/components.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/connection.dart';
 import 'package:zaitoon_invoice/DatabaseHelper/tables.dart';
+import 'package:zaitoon_invoice/Json/account_category.dart';
 import 'package:zaitoon_invoice/Json/accounts_model.dart';
 import 'package:zaitoon_invoice/Json/currencies_model.dart';
 import 'package:zaitoon_invoice/Json/inventory_model.dart';
@@ -282,26 +283,53 @@ class Repositories {
     return response.map((e) => Accounts.fromMap(e)).toList();
   }
 
-  Future<int> addAccount({required Accounts accounts}) async {
+  Future<int> addAccount({required Accounts accounts, Users? user}) async {
     final db = DatabaseHelper.db;
+
+    // Prepare statement for inserting into accounts table
     final stmt = await Future(() => db.prepare('''
-      INSERT INTO ${Tables.accountTableName} (
+    INSERT INTO ${Tables.accountTableName} (
       accountName, 
       email,
       mobile,
-      phone,
       accountCategory, 
       createdBy,
-      accountDefaultCurrency)
-      VALUES ()
-      '''));
+      accountDefaultCurrency
+    ) VALUES (?,?,?,?,?,?)
+  '''));
 
-    stmt.execute();
+    stmt.execute([
+      accounts.accountName,
+      accounts.email,
+      accounts.mobile,
+      accounts.accCategoryId,
+      accounts.createdBy,
+      accounts.currencyCode
+    ]);
+
     final response = db.lastInsertRowId;
     stmt.dispose();
 
+    // If the accountCategoryId is 1 (User Type Category), insert into userTable
+    if (accounts.accCategoryId == 1) {
+      final userStmt = await Future(() => db.prepare('''
+      INSERT INTO ${Tables.userTableName} (
+        username, 
+        password, 
+        createdBy
+      ) VALUES (?,?,?)
+    '''));
+
+      userStmt.execute([
+        user?.username ??"",    // Assuming email is the username
+        user?.password ?? "", // You need to add password in the Accounts model
+        user?.userId
+      ]);
+      userStmt.dispose();
+    }
     return response;
   }
+
 
   //Products
   Future<int> createProduct({
@@ -556,4 +584,15 @@ ORDER BY
         () => db.select('''SELECT * FROM ${Tables.inventoryTableName}'''));
     return response.map((row) => InventoryModel.fromMap(row)).toList();
   }
+
+  Future<List<AccountCategoryModel>> getAccountCategories() async {
+    final db = DatabaseHelper.db;
+    final response = await Future(() => db.select('''
+    SELECT * FROM accountCategoryTbl 
+    WHERE accCategoryName NOT IN ('Admin', 'System')
+  '''));
+    return response.map((row) => AccountCategoryModel.fromMap(row)).toList();
+  }
+
+
 }

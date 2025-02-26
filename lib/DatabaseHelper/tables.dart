@@ -40,7 +40,7 @@ class Tables {
   usrId INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE,
   password TEXT,
-  userStatus INTEGER,
+  userStatus INTEGER DEFAULT 1,
   businessId INTEGER NOT NULL,
   createdBy INTEGER,
   userCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,

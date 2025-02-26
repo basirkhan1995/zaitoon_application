@@ -7,6 +7,7 @@ import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:zaitoon_invoice/Components/Widgets/search_field.dart';
 import 'package:zaitoon_invoice/Json/accounts_model.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Accounts/new_account.dart';
 
 class AccountsView extends StatefulWidget {
   const AccountsView({super.key});
@@ -56,7 +57,11 @@ class _AccountsViewState extends State<AccountsView> {
                     height: 40,
                     icon: Icons.add,
                     label: Text("New Account"),
-                    onPressed: () {}),
+                    onPressed: () {
+                      showDialog(context: context, builder: (context){
+                        return NewAccount();
+                      });
+                    }),
               ),
             ],
           ),

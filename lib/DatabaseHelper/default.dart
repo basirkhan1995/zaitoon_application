@@ -34,12 +34,12 @@ class DefaultValues {
   static String defaultAccountCategory = '''
   
   INSERT INTO ${Tables.accountCategoryTableName} (accCategoryId, accCategoryName) VALUES
-  (1,'User'),
-  (2,'Bank'),
-  (3,'Customer'),
+  (1,'Customer'),
+  (2,'Company'),
+  (3,'User'),
   (4,'Saraf'),
-  (5,'Expense'),
-  (6,'Company'),
+  (5,'Bank'),
+  (6,'Expense'),
   (7,'System'),
   (8,'Admin')
   ''';
