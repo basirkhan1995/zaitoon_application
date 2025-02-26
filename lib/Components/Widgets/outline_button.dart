@@ -67,11 +67,12 @@ class ZOutlineButtonState extends State<ZOutlineButton> {
               widget.icon == null
                   ? const SizedBox()
                   : Icon(
-                widget.icon,
-                color: _isHovered
-                    ? widget.foregroundHover ?? theme.colorScheme.onPrimary
-                    : widget.textColor ?? Colors.grey,
-              ),
+                      widget.icon,
+                      color: _isHovered
+                          ? widget.foregroundHover ??
+                              theme.colorScheme.onPrimary
+                          : widget.textColor ?? Colors.grey,
+                    ),
               widget.icon == null ? const SizedBox() : const SizedBox(width: 5),
               // Label text with hover logic
               DefaultTextStyle.merge(

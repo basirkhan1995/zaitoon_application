@@ -271,10 +271,36 @@ class Repositories {
     // Check if the keyword is numeric
     final isNumeric = int.tryParse(keyword) != null;
     final response = db.select('''
-    SELECT accId, accountName FROM ${Tables.accountTableName} 
-    WHERE (:keyword IS NULL OR :keyword = '' OR accId = :keyword OR accountName LIKE '%' || :keyword || '%')''',
-        isNumeric ? [keyword] : ["%$keyword%"]);
+     SELECT acc.*, currency.currency_code, category.* 
+    FROM ${Tables.accountTableName} AS acc
+    INNER JOIN ${Tables.currencyTableName} AS currency 
+      ON acc.accountDefaultCurrency = currency.currency_code
+    INNER JOIN ${Tables.accountCategoryTableName} AS category 
+      ON acc.accountCategory = category.accCategoryId
+   WHERE ${isNumeric ? "accId = ?" : "accountName LIKE ? "}
+  ''', isNumeric ? [keyword] : ["%$keyword%"]);
     return response.map((e) => Accounts.fromMap(e)).toList();
+  }
+
+  Future<int> addAccount({required Accounts accounts}) async {
+    final db = DatabaseHelper.db;
+    final stmt = await Future(() => db.prepare('''
+      INSERT INTO ${Tables.accountTableName} (
+      accountName, 
+      email,
+      mobile,
+      phone,
+      accountCategory, 
+      createdBy,
+      accountDefaultCurrency)
+      VALUES ()
+      '''));
+
+    stmt.execute();
+    final response = db.lastInsertRowId;
+    stmt.dispose();
+
+    return response;
   }
 
   //Products
@@ -529,28 +555,5 @@ ORDER BY
     final response = await Future(
         () => db.select('''SELECT * FROM ${Tables.inventoryTableName}'''));
     return response.map((row) => InventoryModel.fromMap(row)).toList();
-  }
-
-  Future<int> addAccount({
-    required Accounts accounts
-    }) async {
-    final db = DatabaseHelper.db;
-    final stmt = await Future(() => db.prepare('''
-      INSERT INTO ${Tables.accountTableName} (
-      accountName, 
-      email,
-      mobile,
-      phone,
-      accountCategory, 
-      createdBy,
-      accountDefaultCurrency)
-      VALUES ()
-      '''));
-
-    stmt.execute();
-    final response = db.lastInsertRowId;
-    stmt.dispose();
-
-    return response;
   }
 }

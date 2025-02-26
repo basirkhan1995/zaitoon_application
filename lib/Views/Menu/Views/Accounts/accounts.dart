@@ -43,13 +43,20 @@ class _AccountsViewState extends State<AccountsView> {
               SearchField(
                   icon: Icons.search,
                   controller: searchController,
+                  onChanged: (value) {
+                    context
+                        .read<AccountsCubit>()
+                        .searchAccountEvent(keyword: searchController.text);
+                  },
                   hintText: "Search here"),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: ZOutlineButton(
-                    height: 40, label: Text("New Account"), onPressed: () {
-                      
-                    }),
+                    width: 160,
+                    height: 40,
+                    icon: Icons.add,
+                    label: Text("New Account"),
+                    onPressed: () {}),
               ),
             ],
           ),
@@ -58,20 +65,34 @@ class _AccountsViewState extends State<AccountsView> {
               listener: (context, state) {},
               builder: (context, state) {
                 if (state is AccountsErrorState) {
-                  return Text(state.error);
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.account_box,
+                        size: 45,
+                      ),
+                      Text(state.error),
+                    ],
+                  );
                 }
 
                 if (state is LoadedAccountsState) {
                   if (state.allAccounts.isEmpty) {
                     return Center(child: Text("No Accounts"));
                   }
+
                   return AppBackground(
                     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 0),
                     child: Column(
                       children: [
                         //Title
                         buildTitle(),
-                        Divider(indent: 10, endIndent: 10),
+                        Divider(
+                            indent: 10,
+                            endIndent: 10,
+                            color:
+                                Theme.of(context).colorScheme.surfaceContainer),
                         //Accounts
                         Expanded(
                           child: ListView.builder(
@@ -85,8 +106,8 @@ class _AccountsViewState extends State<AccountsView> {
                                   child: InkWell(
                                       hoverColor: Theme.of(context)
                                           .colorScheme
-                                          .primary
-                                          .withValues(alpha: .09),
+                                          .surfaceContainer
+                                          .withValues(alpha: .5),
                                       onTap: () {},
                                       child: _buildAccounts(account)),
                                 );
@@ -112,19 +133,23 @@ class _AccountsViewState extends State<AccountsView> {
       child: Row(
         children: [
           SizedBox(width: 10),
-          Text(locale.id, style: Theme.of(context).textTheme.titleMedium),
+          Text(locale.id, style: Theme.of(context).textTheme.titleSmall),
           SizedBox(width: 70),
           Text(locale.accountName,
-              style: Theme.of(context).textTheme.titleMedium),
+              style: Theme.of(context).textTheme.titleSmall),
           Expanded(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                locale.balance,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ],
+              child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  locale.balance,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ],
+            ),
           )),
         ],
       ),
@@ -185,7 +210,7 @@ class _AccountsViewState extends State<AccountsView> {
           Row(
             children: [
               CircleAvatar(
-                radius: 25,
+                radius: 20,
                 backgroundColor: backgroundColor,
                 child: Text(
                   account.accountName!.getFirstLetter,
@@ -199,7 +224,7 @@ class _AccountsViewState extends State<AccountsView> {
                 children: [
                   Text(
                     account.accountName!,
-                    style: textTheme.titleMedium,
+                    style: textTheme.bodySmall,
                   ),
                   Row(
                     children: [

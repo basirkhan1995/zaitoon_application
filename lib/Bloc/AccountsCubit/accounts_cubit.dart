@@ -18,20 +18,18 @@ class AccountsCubit extends Cubit<AccountsState> {
     }
   }
 
-  Future<void> searchAccountEvent({required String keyword})async{
-    try{
-      final filteredAccount = await _repositories.searchAccounts(keyword: keyword);
-      emit(LoadedAccountsState(filteredAccount));
-      if(filteredAccount.isEmpty){
-        emit(AccountsErrorState("No account found"));
-      }if(keyword.isEmpty){
-      resetAccountEvent();
-     }
-
-    }catch(e){
+  Future<void> searchAccountEvent({required String keyword}) async {
+    try {
+      final response = await _repositories.searchAccounts(keyword: keyword);
+      emit(LoadedAccountsState(response));
+      // If no results found and keyword is not empty, show error message
+      if (response.isEmpty && keyword.isNotEmpty) {
+        emit(AccountsErrorState("No Account Found"));
+      }
+    } catch (e) {
       emit(AccountsErrorState(e.toString()));
     }
   }
 
-  void resetAccountEvent()=> emit(AccountsInitial());
+  void resetAccountEvent() => emit(AccountsInitial());
 }
