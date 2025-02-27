@@ -303,8 +303,8 @@ class Repositories {
       accounts.email,
       accounts.mobile,
       accounts.accCategoryId,
-      accounts.createdBy,
-      accounts.currencyCode
+      accounts.createdBy ?? 1,
+      "AFN"
     ]);
 
     final response = db.lastInsertRowId;
@@ -316,20 +316,21 @@ class Repositories {
       INSERT INTO ${Tables.userTableName} (
         username, 
         password, 
-        createdBy
-      ) VALUES (?,?,?)
+        createdBy,
+        businessId
+      ) VALUES (?,?,?,?)
     '''));
 
       userStmt.execute([
-        user?.username ??"",    // Assuming email is the username
-        user?.password ?? "", // You need to add password in the Accounts model
-        user?.userId
+        user?.username,
+        user?.password,
+        user?.userId ?? 1,
+        user?.businessId ?? 1
       ]);
       userStmt.dispose();
     }
     return response;
   }
-
 
   //Products
   Future<int> createProduct({
@@ -593,6 +594,4 @@ ORDER BY
   '''));
     return response.map((row) => AccountCategoryModel.fromMap(row)).toList();
   }
-
-
 }

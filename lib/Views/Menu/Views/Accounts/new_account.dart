@@ -5,6 +5,7 @@ import 'package:zaitoon_invoice/Bloc/AccountsCubit/accounts_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/button.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
 import 'package:zaitoon_invoice/Json/accounts_model.dart';
+import 'package:zaitoon_invoice/Json/users.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Products/account_categories.dart';
 
 class NewAccount extends StatefulWidget {
@@ -21,8 +22,8 @@ class _NewAccountState extends State<NewAccount> {
 
   final userName = TextEditingController();
   final password = TextEditingController();
-   int accountCategory = 1;
-   String categoryName = "";
+  int accountCategory = 1;
+  String categoryName = "";
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -38,7 +39,6 @@ class _NewAccountState extends State<NewAccount> {
         decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(8)),
-
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -85,38 +85,35 @@ class _NewAccountState extends State<NewAccount> {
     );
   }
 
-  Widget body(){
+  Widget body() {
     final locale = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
       child: Column(
         children: [
-         InputFieldEntitled(
-             controller: accountName,
-             isRequire: true,
-             title: locale.accountName,
-             validator: (value){
-               if(value.isEmpty){
-                 return locale.required(locale.accountName);
-               }
-               return null;
-             },
-           trailing: Padding(
-             padding: const EdgeInsets.symmetric(horizontal: 6.0),
-             child: AccountCategoryDropdown(
-               width: 150,
-
-               onSelected: (unit) {
+          InputFieldEntitled(
+            controller: accountName,
+            isRequire: true,
+            title: locale.accountName,
+            validator: (value) {
+              if (value.isEmpty) {
+                return locale.required(locale.accountName);
+              }
+              return null;
+            },
+            trailing: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 6.0),
+              child: AccountCategoryDropdown(
+                width: 150,
+                onSelected: (unit) {
                   categoryName = unit;
-               },
-               onSelectedId: (value) {
-
+                },
+                onSelectedId: (value) {
                   accountCategory = value;
-
-               },
-             ),
-           ),
-         ),
+                },
+              ),
+            ),
+          ),
           InputFieldEntitled(
             controller: phone,
             title: locale.mobile,
@@ -125,26 +122,34 @@ class _NewAccountState extends State<NewAccount> {
             controller: email,
             title: locale.email,
           ),
-
-         accountCategory == 1? InputFieldEntitled(
-            controller: userName,
-            title: locale.username,
-          ) : SizedBox(),
-         accountCategory == 1? InputFieldEntitled(
-            controller: password,
-            title: locale.password,
-          ) : SizedBox(),
-
-          Button(label: Text("Create"), onPressed: (){
-            context.read<AccountsCubit>().addAccountEvent(
-                accounts: Accounts(
-                  email: email.text,
-                  mobile: phone.text,
-                  accountName: accountName.text,
-                  accCategoryId: accountCategory,
-                ));
-          })
-
+          accountCategory == 1
+              ? InputFieldEntitled(
+                  controller: userName,
+                  title: locale.username,
+                )
+              : SizedBox(),
+          accountCategory == 1
+              ? InputFieldEntitled(
+                  controller: password,
+                  title: locale.password,
+                )
+              : SizedBox(),
+          Button(
+              label: Text("Create"),
+              onPressed: () {
+                context.read<AccountsCubit>().addAccountEvent(
+                    user: Users(
+                        username: userName.text,
+                        password: password.text,
+                        userId: 1,
+                        businessId: 1),
+                    accounts: Accounts(
+                      email: email.text,
+                      mobile: phone.text,
+                      accountName: accountName.text,
+                      accCategoryId: accountCategory,
+                    ));
+              })
         ],
       ),
     );
