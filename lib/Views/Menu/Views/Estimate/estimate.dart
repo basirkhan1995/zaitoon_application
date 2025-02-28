@@ -478,8 +478,7 @@ class _EstimateViewState extends State<EstimateView> {
                                     index,
                                     item.copyWith(
                                         quantity: int.tryParse(
-                                                item.controller!.text) ??
-                                            1),
+                                                item.controller!.text) ?? 1),
                                   ),
                                 );
                           },
