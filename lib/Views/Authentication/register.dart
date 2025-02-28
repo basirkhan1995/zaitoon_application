@@ -138,7 +138,7 @@ class _RegisterViewState extends State<RegisterView> {
               email: email.text,
               address: address.text,
               businessName: businessName.text,
-              ownerName: ownerName.text,
+              accountName: ownerName.text,
               mobile2: mobile2.text),
           path: documentDirectory ?? "",
           dbName: "${databaseName.text}.db");

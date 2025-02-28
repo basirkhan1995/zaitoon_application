@@ -29,6 +29,7 @@ class _AccountSettingsState extends State<AccountSettings> {
   Users? usr;
   int? businessId;
   int? userId;
+  int? accId;
   final formKey = GlobalKey<FormState>();
   Uint8List _companyLogo = Uint8List(0);
 
@@ -76,9 +77,10 @@ class _AccountSettingsState extends State<AccountSettings> {
                     if (state is AuthenticatedState) {
                       usr = state.user;
                       userId = state.user.userId;
+                      accId = usr?.accId;
                       businessId = state.user.businessId;
 
-                      ownerName.text = usr?.ownerName ?? "";
+                      ownerName.text = usr?.accountName ?? "";
                       businessName.text = usr?.businessName ?? "";
                       email.text = usr?.email ?? "";
                       mobile1.text = usr?.mobile1 ?? "";
@@ -178,7 +180,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                           style: const TextStyle(
                               fontSize: 24, fontWeight: FontWeight.bold),
                         ),
-                        Text(usr!.ownerName ?? "Name"),
+                        Text(usr!.accountName ?? "Name"),
                       ],
                     ),
                   ],
@@ -208,6 +210,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                       !readOnly
                           ? TextButton(
                               onPressed: () {
+                                print("AccId: $accId");
                                 if (formKey.currentState!.validate()) {
                                   _companyLogo.isNotEmpty
                                       ? context.read<AuthCubit>().uploadLogoEvent(
@@ -220,8 +223,9 @@ class _AccountSettingsState extends State<AccountSettings> {
                                       ? context.read<AuthCubit>().updateAccount(
                                           user: Users(
                                               userId: userId,
+                                              accId: accId,
                                               businessId: businessId,
-                                              ownerName: ownerName.text,
+                                              accountName: ownerName.text,
                                               businessName: businessName.text,
                                               address: address.text,
                                               email: email.text,

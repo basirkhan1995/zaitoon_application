@@ -35,6 +35,7 @@ class _AccountsViewState extends State<AccountsView> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return Scaffold(
       body: Column(
         children: [
@@ -49,14 +50,14 @@ class _AccountsViewState extends State<AccountsView> {
                         .read<AccountsCubit>()
                         .searchAccountEvent(keyword: searchController.text);
                   },
-                  hintText: "Search here"),
+                  hintText: locale.searchAccounts),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: ZOutlineButton(
                     width: 160,
                     height: 40,
                     icon: Icons.add,
-                    label: Text("New Account"),
+                    label: Text(AppLocalizations.of(context)!.newAccountTitle),
                     onPressed: () {
                       showDialog(context: context, builder: (context){
                         return NewAccount();
@@ -84,7 +85,13 @@ class _AccountsViewState extends State<AccountsView> {
 
                 if (state is LoadedAccountsState) {
                   if (state.allAccounts.isEmpty) {
-                    return Center(child: Text("No Accounts"));
+                    return Center(child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.account_box,size: 25),
+                        Text(locale.noAccountMessage),
+                      ],
+                    ));
                   }
 
                   return AppBackground(
@@ -137,7 +144,7 @@ class _AccountsViewState extends State<AccountsView> {
       padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10),
       child: Row(
         children: [
-          SizedBox(width: 10),
+          SizedBox(width: 30),
           Text(locale.id, style: Theme.of(context).textTheme.titleSmall),
           SizedBox(width: 70),
           Text(locale.accountName,
@@ -205,6 +212,7 @@ class _AccountsViewState extends State<AccountsView> {
           SizedBox(
             width: 40,
             child: Text(
+              textAlign: TextAlign.center,
               account.accId.toString(),
               style: textTheme.bodyMedium,
             ),
@@ -229,7 +237,7 @@ class _AccountsViewState extends State<AccountsView> {
                 children: [
                   Text(
                     account.accountName!,
-                    style: textTheme.bodySmall,
+                    style: textTheme.bodyLarge,
                   ),
                   Row(
                     children: [

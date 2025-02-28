@@ -26,13 +26,14 @@ class Tables {
   static String metaDataTable = '''
   CREATE TABLE IF NOT EXISTS $appMetadataTableName (
   bId INTEGER PRIMARY KEY AUTOINCREMENT,
-  ownerName TEXT NOT NULL,
+  owner INTEGER,
   businessName TEXT NOT NULL,
   companyLogo BLOB,
   address TEXT,
   mobile1 TEXT,
   mobile2 TEXT,
-  email TEXT
+  email TEXT,
+  FOREIGN KEY (owner) REFERENCES $accountTableName (accId) ON DELETE CASCADE
   )''';
 
   static String userTable = '''
@@ -42,9 +43,10 @@ class Tables {
   password TEXT,
   userStatus INTEGER DEFAULT 1,
   businessId INTEGER NOT NULL,
-  createdBy INTEGER,
+  usrOwner INTEGER,
   userCreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   userUpdatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (usrOwner) REFERENCES $accountTableName (accId) ON DELETE CASCADE
   FOREIGN KEY (businessId) REFERENCES $appMetadataTableName (bId) ON DELETE CASCADE
   )''';
 

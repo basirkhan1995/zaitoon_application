@@ -21,12 +21,31 @@ class Repositories {
     await DatabaseHelper.initDatabase(path: path, dbName: dbName);
     final db = DatabaseHelper.db;
 
+    final stmt5 = db.prepare('''INSERT INTO ${Tables.accountTableName} 
+    (accId,accountName, mobile, address, email, createdBy, accountCategory, accountDefaultCurrency)
+    VALUES (?,?,?,?,?,?,?,?)
+     ''');
+
+    //Create New Account
+    stmt5.execute([
+      100,
+      usr.accountName, // Account Name
+      usr.mobile1, // Mobile
+      usr.address, // Address
+      usr.email, //  Email
+      1, //  Created By
+      8, // Account Category - admin
+      'AFN' // account default currency
+    ]);
+    final accId = db.lastInsertRowId;
+    stmt5.dispose();
+
     final stmt = db.prepare('''INSERT INTO ${Tables.appMetadataTableName}
-    (ownerName,businessName,email,address,mobile1,mobile2) values (?,?,?,?,?,?)''');
+    (owner,businessName,email,address,mobile1,mobile2) values (?,?,?,?,?,?)''');
 
     //Business
     stmt.execute([
-      usr.ownerName,
+      accId,
       usr.businessName,
       usr.email,
       usr.address,
@@ -38,7 +57,7 @@ class Repositories {
     stmt.dispose();
 
     final stmt2 = db.prepare('''INSERT INTO ${Tables.userTableName}
-    (businessId, userStatus, username, password, createdBy) 
+    (businessId, userStatus, username, password, usrOwner) 
     values(?,?,?,?,?)''');
 
     final hashedPassword = DatabaseComponents.hashPassword(usr.password!);
@@ -47,7 +66,7 @@ class Repositories {
       usr.userStatus, //User Status default 1
       usr.username, //Username//CreatedBy - userId
       hashedPassword, // Encrypted Password
-      usr.userId ?? businessId
+      accId
     ]);
     final userId = db.lastInsertRowId;
     stmt2.dispose();
@@ -67,23 +86,7 @@ class Repositories {
     stmt4.execute([permissionId, userId]);
     stmt4.dispose();
 
-    final stmt5 = db.prepare('''INSERT INTO ${Tables.accountTableName} 
-    (accId,accountName, mobile, address, email, createdBy, accountCategory, accountDefaultCurrency)
-    VALUES (?,?,?,?,?,?,?,?)
-     ''');
 
-    //Create New Account
-    stmt5.execute([
-      100,
-      usr.ownerName, // Account Name
-      usr.mobile1, // Mobile
-      usr.address, // Address
-      usr.email, //  Email
-      userId, //  Created By
-      8, // Account Category - admin
-      'AFN' // account default currency
-    ]);
-    stmt5.dispose();
 
     return businessId;
   }
@@ -124,9 +127,10 @@ class Repositories {
   Future<Users> getCurrentUser({required username}) async {
     final db = DatabaseHelper.db;
     final usr = db.select('''
-    SELECT user.*, meta.*
+    SELECT user.*, meta.*, account.*, category.accCategoryName
     FROM ${Tables.userTableName} as user INNER JOIN ${Tables.appMetadataTableName} as meta
-    ON user.businessId = meta.bId
+    ON user.businessId = meta.bId INNER JOIN ${Tables.accountTableName} as account ON user.usrOwner = account.accId
+    INNER JOIN ${Tables.accountCategoryTableName} as category ON account.accountCategory = category.accCategoryId
     WHERE username = ?
    ''', [username]);
     if (usr.isNotEmpty) {
@@ -140,9 +144,10 @@ class Repositories {
   Future<Users> getUserById({required int userId}) async {
     final db = DatabaseHelper.db;
     final usr = db.select('''
-    SELECT user.*, meta.*
+    SELECT user.*, meta.*, account.accId, account.accountName,category.accCategoryName
     FROM ${Tables.userTableName} as user INNER JOIN ${Tables.appMetadataTableName} as meta
-    ON user.businessId = meta.bId
+    ON user.businessId = meta.bId INNER JOIN ${Tables.accountTableName} as account ON user.usrOwner = account.accId
+    INNER JOIN ${Tables.accountCategoryTableName} as category ON account.accountCategory = category.accCategoryId
     WHERE user.usrId = ?
    ''', [userId]);
     if (usr.isNotEmpty) {
@@ -157,7 +162,6 @@ class Repositories {
     final stmt = db.prepare('''
     UPDATE ${Tables.appMetadataTableName} SET 
     businessName = ?, 
-    ownerName = ?, 
     mobile1 = ?, 
     mobile2 = ?, 
     address = ?, 
@@ -166,13 +170,19 @@ class Repositories {
     ''');
     stmt.execute([
       user.businessName,
-      user.ownerName,
       user.mobile1,
       user.mobile2,
       user.address,
       user.email,
       user.businessId,
     ]);
+    stmt.dispose();
+
+    final stmt2 = db.prepare('''
+    UPDATE ${Tables.accountTableName} SET accountName = ? where accId = ?
+    ''');
+    stmt2.execute([user.accountName, user.accId]);
+    stmt2.dispose();
     return db.updatedRows;
   }
 
@@ -187,6 +197,7 @@ class Repositories {
       user.companyLogo,
       user.businessId,
     ]);
+    stmt.dispose();
     return db.updatedRows;
   }
 
@@ -199,9 +210,9 @@ class Repositories {
     final db = DatabaseHelper.db;
 
     // Fetch user securely
-    final response = await Future(() => db.select(
+    final response = db.select(
         '''SELECT password FROM ${Tables.userTableName} WHERE usrId = ?''',
-        [userId]));
+        [userId]);
 
     if (response.isEmpty) {
       throw 'User not found'; // Handle non-existent user
@@ -219,7 +230,7 @@ class Repositories {
 
     // Perform update
     final stmt = db.prepare(
-        '''UPDATE ${Tables.userTableName} SET password = ? WHERE userId = ?''');
+        '''UPDATE ${Tables.userTableName} SET password = ? WHERE usrId = ?''');
 
     stmt.execute([newEncryptedPassword, userId]);
     stmt.dispose(); // Dispose prepared statement
@@ -231,14 +242,14 @@ class Repositories {
   Future<List<Accounts>> getAccounts() async {
     final db = DatabaseHelper.db;
 
-    final response = await Future(() => db.select('''
+    final response = db.select('''
     SELECT acc.*, currency.currency_code, category.* 
     FROM ${Tables.accountTableName} AS acc
     INNER JOIN ${Tables.currencyTableName} AS currency 
       ON acc.accountDefaultCurrency = currency.currency_code
     INNER JOIN ${Tables.accountCategoryTableName} AS category 
       ON acc.accountCategory = category.accCategoryId
-  ''')); // Run synchronously inside Future to prevent blocking
+   '''); // Run synchronously inside Future to prevent blocking
 
     return response.map((row) => Accounts.fromMap(row)).toList();
   }
@@ -283,7 +294,7 @@ class Repositories {
     return response.map((e) => Accounts.fromMap(e)).toList();
   }
 
-  Future<int> addAccount({required Accounts accounts, Users? user}) async {
+  Future<int> addAccount({required Accounts accounts, Users? usr}) async {
     final db = DatabaseHelper.db;
 
     // Prepare statement for inserting into accounts table
@@ -292,44 +303,43 @@ class Repositories {
       accountName, 
       email,
       mobile,
+      address,
       accountCategory, 
       createdBy,
       accountDefaultCurrency
-    ) VALUES (?,?,?,?,?,?)
+    ) VALUES (?,?,?,?,?,?,?)
   '''));
 
     stmt.execute([
       accounts.accountName,
       accounts.email,
       accounts.mobile,
+      accounts.address,
       accounts.accCategoryId,
       accounts.createdBy ?? 1,
       "AFN"
     ]);
 
-    final response = db.lastInsertRowId;
+    final accId = db.lastInsertRowId;
     stmt.dispose();
 
     // If the accountCategoryId is 1 (User Type Category), insert into userTable
-    if (accounts.accCategoryId == 1) {
-      final userStmt = await Future(() => db.prepare('''
-      INSERT INTO ${Tables.userTableName} (
-        username, 
-        password, 
-        createdBy,
-        businessId
-      ) VALUES (?,?,?,?)
-    '''));
+    if (accounts.accCategoryId == 3) {
+      final stmt2 = db.prepare('''INSERT INTO ${Tables.userTableName}
+    (businessId, userStatus, username, password, usrOwner) 
+    values(?,?,?,?,?)''');
 
-      userStmt.execute([
-        user?.username,
-        user?.password,
-        user?.userId ?? 1,
-        user?.businessId ?? 1
+      final hashedPassword = DatabaseComponents.hashPassword(usr?.password??"");
+      stmt2.execute([
+        1, //Business Id
+        1, //User Status default 1
+        usr?.username ?? "", //Username//CreatedBy - userId
+        hashedPassword, // Encrypted Password
+        accId
       ]);
-      userStmt.dispose();
+      stmt2.dispose();
     }
-    return response;
+    return accId;
   }
 
   //Products
@@ -563,6 +573,43 @@ ORDER BY
         () => db.select('''SELECT * FROM ${Tables.currencyTableName}'''));
     return response.map((row) => CurrenciesModel.fromMap(row)).toList();
   }
+  Future<int> addCurrency({required CurrenciesModel currency})async{
+    final db = DatabaseHelper.db;
+    final stmt = db.prepare('''
+     INSERT INTO ${Tables.currencyTableName}(currency_code, currency_name, symbol) VALUES (?,?,?)
+     ''');
+    stmt.execute([
+      currency.currencyCode,
+      currency.currencyName,
+      currency.symbol
+    ]);
+    stmt.dispose();
+
+    final result = db.lastInsertRowId;
+    return result;
+  }
+
+  Future<int> editCurrency({required CurrenciesModel cr})async{
+    final db = DatabaseHelper.db;
+    final stmt = db.prepare('''
+    UPDATE ${Tables.currencyTableName} SET currency_code = ?, currency_name = ?, symbol = ? WHERE currency_id = ?
+    ''');
+    stmt.execute([cr.currencyCode, cr.currencyName, cr.symbol,cr.currencyId]);
+    stmt.dispose();
+    final result = db.updatedRows;
+    return result;
+  }
+
+  Future<int> deleteCurrency({required int id})async{
+    final db = DatabaseHelper.db;
+    final stmt = db.prepare('''
+    DELETE FROM ${Tables.currencyTableName} WHERE currency_id = ?
+    ''');
+    stmt.execute([id]);
+    stmt.dispose();
+    final result = db.updatedRows;
+    return result;
+  }
 
   static Future<bool> checkIfProductExists(String productName) async {
     try {
@@ -578,11 +625,25 @@ ORDER BY
     }
   }
 
+  //Check if account is exists
+  static Future<bool> checkIfAccountExists({required String accountName}) async {
+    try {
+      final db = DatabaseHelper.db;
+      final result = db.select(
+        'SELECT COUNT(*) AS count FROM ${Tables.accountTableName} WHERE accountName = ?',
+        [accountName],
+      );
+      final count = result.first['count'] as int;
+      return count > 0; // Return true if the product already exists
+    } catch (e) {
+      return false;
+    }
+  }
+
   //Currencies
   Future<List<InventoryModel>> getInventories() async {
     final db = DatabaseHelper.db;
-    final response = await Future(
-        () => db.select('''SELECT * FROM ${Tables.inventoryTableName}'''));
+    final response = db.select('''SELECT * FROM ${Tables.inventoryTableName}''');
     return response.map((row) => InventoryModel.fromMap(row)).toList();
   }
 

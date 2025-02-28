@@ -204,17 +204,6 @@ class _ProductSearchableFieldState extends State<ProductSearchableField> {
             ),
           ),
         ),
-        // if (_selectedItemName != null && _currentSuggestions.isNotEmpty) // Display the selected item name
-        //   Padding(
-        //     padding: const EdgeInsets.only(top: 5.0),
-        //     child: Text(
-        //       "$_selectedItemName",
-        //       style: TextStyle(
-        //         color: Colors.grey[700],
-        //         fontWeight: FontWeight.w500,
-        //       ),
-        //     ),
-        //   ),
       ],
     );
   }

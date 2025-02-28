@@ -21,7 +21,7 @@ class AccountsCubit extends Cubit<AccountsState> {
 
   Future<void> addAccountEvent({required Accounts accounts, Users? user})async{
    try{
-     await _repositories.addAccount(accounts: accounts,user: user);
+     await _repositories.addAccount(accounts: accounts,usr: user);
      loadAccountsEvent();
    }catch(e){
      emit(AccountsErrorState(e.toString()));

@@ -130,5 +130,17 @@
   "printer": "دستگاه چاپ",
   "id": "شناسه",
   "accountName": "نام حساب",
-  "balance": "بیلانس"
+  "balance": "بیلانس",
+  "newAccountTitle": "حساب جدید",
+  "searchAccounts": "جستجو حسابها",
+  "noAccountMessage": "هیچ حسابی یافت نشد",
+  "noProducts": "هیج محصول یافت نشد",
+  "productSearch": "جستجو محصولات",
+  "inventory": "موجودی",
+  "averagePrice": "قیمت خرید",
+  "newKeyword": "جدید",
+  "currency_code": "کد ارز",
+  "currnecy_symbol": "سمبول",
+  "currency_name": "نام ارز",
+  "newCurrency": "ارز جدید"
 }

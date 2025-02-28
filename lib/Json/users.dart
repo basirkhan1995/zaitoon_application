@@ -10,12 +10,14 @@ class Users extends Equatable {
   final int? userId;
   final String? businessName;
   final int? businessId;
-  final String? ownerName;
+  final int? accId;
+  final String? accountName;
   final String? email;
   final String? address;
   final String? mobile1;
   final String? mobile2;
   final Uint8List? companyLogo;
+  final String? accountCategory;
   final String? username;
   final String? password;
   final int? userStatus;
@@ -24,10 +26,12 @@ class Users extends Equatable {
   const Users({
     this.userId,
     this.businessName,
+    this.accountCategory,
     this.businessId,
-    this.ownerName,
+    this.accId,
     this.email,
     this.address,
+    this.accountName,
     this.mobile1,
     this.mobile2,
     this.companyLogo,
@@ -42,7 +46,11 @@ class Users extends Equatable {
     String? businessName,
     int? businessId,
     String? ownerName,
+    String? accountName,
     String? email,
+    int? accId,
+    String? categoryName,
+    int? usrOwner,
     String? address,
     String? mobile1,
     String? mobile2,
@@ -56,12 +64,14 @@ class Users extends Equatable {
           userId: userId ?? this.userId,
           businessName: businessName ?? this.businessName,
           businessId: businessId ?? this.businessId,
-          ownerName: ownerName ?? this.ownerName,
+          accId: accId ?? this.accId,
           email: email ?? this.email,
           address: address ?? this.address,
+          accountCategory: accountCategory,
           mobile1: mobile1 ?? this.mobile1,
           mobile2: mobile2 ?? this.mobile2,
           companyLogo: companyLogo ?? this.companyLogo,
+          accountName: accountName ?? this.accountName,
           username: username ?? this.username,
           password: password ?? this.password,
           userStatus: userStatus ?? this.userStatus,
@@ -72,9 +82,11 @@ class Users extends Equatable {
         userId: json["usrId"],
         businessName: json["businessName"],
         businessId: json["bId"],
-        ownerName: json["ownerName"],
+        accId: json["accId"],
+        accountName: json["accountName"],
         email: json["email"],
         address: json["address"],
+        accountCategory: json["accCategoryName"],
         mobile1: json["mobile1"],
         mobile2: json["mobile2"],
         companyLogo: json["companyLogo"],
@@ -82,14 +94,15 @@ class Users extends Equatable {
         password: json["password"],
         userStatus: json["userStatus"],
         userRoleId: json["roleId"],
-
       );
 
   Map<String, dynamic> toMap() => {
         "usrId": userId,
         "businessName": businessName,
         "bId": businessId,
-        "fullName": ownerName,
+        "accCategoryName":accountCategory,
+        "accId": accId,
+        "accountName":accountName,
         "email": email,
         "address": address,
         "mobile1": mobile1,
@@ -106,13 +119,15 @@ class Users extends Equatable {
         userId,
         username,
         password,
-        ownerName,
         businessName,
         companyLogo,
         email,
+        accountCategory,
         address,
         mobile1,
         mobile2,
-        userRoleId
+        userRoleId,
+        accId,
+        accountName
       ];
 }

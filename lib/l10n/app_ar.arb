@@ -130,5 +130,17 @@
   "printer": "چاپ دستگاه ",
   "id": "شناسه",
   "accountName": "حساب نوم",
-  "balance": "بیلانس"
+  "balance": "بیلانس",
+  "newAccountTitle": "نوی حساب",
+  "searchAccounts": "حسابونه لتون",
+  "noAccountMessage": "حساب پیدا نسو",
+  "noProducts": "محصول پیدا نسو",
+  "productSearch": "محصولات لتون",
+  "inventory": "موجودی",
+  "averagePrice": "خرید قیمت",
+  "newKeyword": "نوی",
+  "currency_code": "ارز کد",
+  "currnecy_symbol": "سمبول",
+  "currency_name": "ارز نوم",
+  "newCurrency": "نوی ارز"
 }

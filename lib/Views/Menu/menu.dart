@@ -197,9 +197,12 @@ class _MenuPageState extends State<MenuPage> {
                           },
                           minVerticalPadding: 0,
                           title: Text(
-                            state.user.ownerName ?? "null",
+                            state.user.accountName ?? "null",
                             style: textTheme.titleMedium,
                           ),
+                        subtitle: Text(
+                          state.user.accountCategory ??""
+                        ),
                         );
                       }
                       return Text(state.toString());

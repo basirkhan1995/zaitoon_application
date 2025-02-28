@@ -4,6 +4,7 @@ import 'package:zaitoon_invoice/Bloc/CurrencyCubit/Currency/currency_cubit.dart'
 
 class CurrenciesDropdown extends StatefulWidget {
   final double? width;
+  final Color? color;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final String title;
@@ -16,6 +17,7 @@ class CurrenciesDropdown extends StatefulWidget {
     this.margin,
     this.radius = 4,
     this.width,
+    this.color,
     this.title = "",
     required this.onSelected,
   });
@@ -208,15 +210,15 @@ class _CurrenciesDropdownState extends State<CurrenciesDropdown> {
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 7),
                     decoration: BoxDecoration(
-                      color: color.primary,
+                      color: widget.color ?? color.primary,
                       borderRadius: BorderRadius.circular(widget.radius),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          selectedValue ?? "Currency",
-                          style: TextStyle(color: color.surface, fontSize: 13),
+                          selectedValue ?? "",
+                          style: TextStyle(color: color.surface, fontSize: 14,fontWeight: FontWeight.w500),
                         ),
                         Icon(
                             _isOpen ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,

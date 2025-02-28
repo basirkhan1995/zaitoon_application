@@ -19,5 +19,33 @@ class CurrencyCubit extends Cubit<CurrencyState> {
 
   }
 
+  Future<void> addCurrencyEvent({required CurrenciesModel currency})async{
+    try{
+      _repositories.addCurrency(currency: currency);
+      loadCurrenciesEvent();
+    }catch(e){
+      emit(CurrencyErrorState(e.toString()));
+    }
+  }
+
+
+  Future<void> editCurrencyEvent({required CurrenciesModel currency})async{
+    try{
+      _repositories.editCurrency(cr: currency);
+      loadCurrenciesEvent();
+    }catch(e){
+      emit(CurrencyErrorState(e.toString()));
+    }
+  }
+
+  Future<void> deleteCurrencyEvent({required int id})async{
+    try{
+      _repositories.deleteCurrency(id: id);
+      loadCurrenciesEvent();
+    }catch(e){
+      emit(CurrencyErrorState(e.toString()));
+    }
+  }
+
 
 }

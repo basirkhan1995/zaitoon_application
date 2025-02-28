@@ -128,7 +128,7 @@ class InputFieldEntitled extends StatelessWidget {
                               color: Theme.of(context).colorScheme.error),
                         ),
                         prefixIcon: icon != null ? Icon(icon, size: 18) : null,
-                        hintText: title,
+                        hintText: hint,
                         hintStyle: const TextStyle(
                             fontWeight: FontWeight.normal,
                             fontSize: 13,

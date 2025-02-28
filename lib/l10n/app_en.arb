@@ -130,5 +130,17 @@
   "printer": "Printer",
   "id": "ID",
   "accountName": "Account name",
-  "balance": "Balance"
+  "balance": "Balance",
+  "newAccountTitle": "New Account",
+  "searchAccounts": "Search accounts",
+  "noAccountMessage": "No Account found",
+  "noProducts": "No Products Available",
+  "productSearch": "Search Products",
+  "inventory": "Stock",
+  "averagePrice": "Avg Price",
+  "newKeyword": "NEW",
+  "currency_code": "Currency Code",
+  "currnecy_symbol": "Symbol",
+  "currency_name": "Currency name",
+  "newCurrency": "New Currency"
 }

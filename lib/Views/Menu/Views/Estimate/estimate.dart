@@ -11,11 +11,14 @@ import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Components/Widgets/underline_textfield.dart';
 import 'package:zaitoon_invoice/Json/estimate.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Accounts/new_account.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/print.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/products_textfield.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/customer_searchable_field.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Products/new_product.dart';
+
+import '../../../../Components/Widgets/currencies_drop.dart';
 
 class EstimateView extends StatefulWidget {
   const EstimateView({super.key});
@@ -164,7 +167,11 @@ class _EstimateViewState extends State<EstimateView> {
                   iconSize: 15,
                   constraints: BoxConstraints(),
                   icon: Icon(Icons.add_circle_outline_rounded),
-                  onPressed: () {},
+                  onPressed: () {
+                    showDialog(context: context, builder: (context){
+                      return NewAccount();
+                    });
+                  },
                 ),
               ),
             ],
@@ -231,8 +238,8 @@ class _EstimateViewState extends State<EstimateView> {
     }
   }
 
-  Widget buildTotal(
-      {required List<EstimateItemsModel> invoiceItems,
+  Widget buildTotal({
+        required List<EstimateItemsModel> invoiceItems,
       required EstimateInfoModel info}) {
     return BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
       final locale = AppLocalizations.of(context)!;
@@ -273,11 +280,6 @@ class _EstimateViewState extends State<EstimateView> {
       final totalDiscount = calculateDiscount();
       final total = calculateTotal();
 
-      String? currency;
-      if (state is AuthenticatedState) {
-        currency = "USD";
-        info.currency = "USD";
-      }
       return Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -287,46 +289,43 @@ class _EstimateViewState extends State<EstimateView> {
               spacing: 5,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+
+                textRich(title: locale.subtotal, value: subtotal, end: info.currency,color: Colors.cyan),
+                textRich(title: locale.tax, value: totalVat, end: info.currency,color: Colors.cyan),
+                textRich(title: locale.discount, value: totalDiscount, end: info.currency,color: Colors.cyan),
+
                 Row(
                   spacing: 5,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(locale.subtotal),
-                    Text("${subtotal.toStringAsFixed(2)} $currency",
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    CurrenciesDropdown(
+                      color: Colors.cyan,
+                      width: 75,
+                      radius: 2,
+                      onSelected: (value) {
+                        WidgetsBinding.instance.addPostFrameCallback((_){
+                          setState(() {
+                            info.currency = value;
+                          });
+                        });
+                      },
+                    ),
+                    Container(
+                      height: 38,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(2),
+                          color: Theme.of(context).colorScheme.primary),
+                      child: Text(
+                        "${locale.total}: ${total.toStringAsFixed(2)} ${info.currency}",
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+
                   ],
-                ),
-                Row(
-                  spacing: 5,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(AppLocalizations.of(context)!.tax),
-                    Text("${totalVat.toStringAsFixed(2)} $currency",
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                Row(
-                  spacing: 5,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(AppLocalizations.of(context)!.discount),
-                    Text("${totalDiscount.toStringAsFixed(2)} $currency",
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2),
-                      color: Theme.of(context).colorScheme.primary),
-                  child: Text(
-                    "${AppLocalizations.of(context)!.total}: ${total.toStringAsFixed(2)} $currency",
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        fontWeight: FontWeight.bold),
-                  ),
                 ),
               ],
             ),
@@ -620,6 +619,33 @@ class _EstimateViewState extends State<EstimateView> {
           )),
         ],
       ),
+    );
+  }
+
+  Widget textRich({required title, required value, required end, Color? color}){
+    return  Row(
+      spacing: 15,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(title),
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: "${value.toStringAsFixed(2)} ",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              TextSpan(
+                text: end,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: color ?? Colors.blue, // Change this to your preferred color
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

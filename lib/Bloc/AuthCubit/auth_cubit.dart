@@ -39,6 +39,7 @@ class AuthCubit extends Cubit<AuthState> {
     if (result['success']) {
       final usr = await repositories.getCurrentUser(username: user.username);
       emit(AuthenticatedState(usr));
+      print(usr);
     } else {
       String message;
 

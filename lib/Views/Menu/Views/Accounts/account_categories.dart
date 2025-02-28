@@ -16,7 +16,7 @@ class AccountCategoryDropdown extends StatefulWidget {
     this.padding,
     this.margin,
     this.onSelectedId,
-    this.radius = 4,
+    this.radius = 3,
     this.width,
     this.title = "",
     required this.onSelected,
