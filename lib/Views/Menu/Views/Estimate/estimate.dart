@@ -49,6 +49,7 @@ class _EstimateViewState extends State<EstimateView> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
     return Scaffold(
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
@@ -63,13 +64,62 @@ class _EstimateViewState extends State<EstimateView> {
             estimateDetails.clientName = customer.text;
           }
           return SingleChildScrollView(
+
             child: Column(
               children: [
                 buildAppBar(context),
-                buildEstimate(context),
+                Row(
+                  children: [
+                    // Your existing buildEstimate
+                    Expanded(
+                      child: buildEstimate(context),
+                    ),
+
+                    // New Expanded container with flex 3
+                    AppBackground(
+                      width: 300,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Column(
+                          spacing: 20,
+                          children: [
+                            CurrenciesDropdown(
+                              title: AppLocalizations.of(context)!.currency,
+                              width: double.infinity,
+                              radius: 4,
+                              onSelected: (value) {
+                                WidgetsBinding.instance.addPostFrameCallback((_){
+                                  setState(() {
+                                    estimateDetails.currency = value;
+                                  });
+                                });
+                              },
+                            ),
+
+                            UnderlineTextfield(
+                              title: locale.invoiceDate,
+                              isRequired: true,
+                              controller: issueDate,
+                              trailing: Icon(Icons.date_range_rounded,size: 20),
+                              onTap: () => datePicker(context, issueDate, "issueDate"),
+                            ),
+                            UnderlineTextfield(
+                              title: locale.dueDate,
+                              isRequired: true,
+                              controller: dueDate,
+                              trailing: Icon(Icons.date_range_rounded,size: 20),
+                              onTap: () => datePicker(context, dueDate, "dueDate"),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           );
+
         },
       ),
     );
@@ -135,7 +185,7 @@ class _EstimateViewState extends State<EstimateView> {
   Widget buildInvoiceHeader(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -177,23 +227,7 @@ class _EstimateViewState extends State<EstimateView> {
             ],
           ),
         ),
-        Column(
-          spacing: 20,
-          children: [
-            UnderlineTextfield(
-              title: locale.invoiceDate,
-              isRequired: true,
-              controller: issueDate,
-              onTap: () => datePicker(context, issueDate, "issueDate"),
-            ),
-            UnderlineTextfield(
-              title: locale.dueDate,
-              isRequired: true,
-              controller: dueDate,
-              onTap: () => datePicker(context, dueDate, "dueDate"),
-            ),
-          ],
-        ),
+
       ],
     );
   }
@@ -294,38 +328,20 @@ class _EstimateViewState extends State<EstimateView> {
                 textRich(title: locale.tax, value: totalVat, end: info.currency,color: Colors.cyan),
                 textRich(title: locale.discount, value: totalDiscount, end: info.currency,color: Colors.cyan),
 
-                Row(
-                  spacing: 5,
-                  children: [
-                    CurrenciesDropdown(
-                      color: Colors.cyan,
-                      width: 75,
-                      radius: 2,
-                      onSelected: (value) {
-                        WidgetsBinding.instance.addPostFrameCallback((_){
-                          setState(() {
-                            info.currency = value;
-                          });
-                        });
-                      },
-                    ),
-                    Container(
-                      height: 38,
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(2),
-                          color: Theme.of(context).colorScheme.primary),
-                      child: Text(
-                        "${locale.total}: ${total.toStringAsFixed(2)} ${info.currency}",
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-
-                  ],
+                Container(
+                  height: 38,
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      color: Theme.of(context).colorScheme.primary),
+                  child: Text(
+                    "${locale.total}: ${total.toStringAsFixed(2)} ${info.currency}",
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
@@ -355,10 +371,8 @@ class _EstimateViewState extends State<EstimateView> {
                   1: FlexColumnWidth(10), // Item name gets more space
                   2: FixedColumnWidth(80), // Quantity
                   3: FixedColumnWidth(100), // Unit price
-                  4: FixedColumnWidth(100), // Discount
-                  5: FixedColumnWidth(80), // Tax
-                  6: FixedColumnWidth(110), // Total
-                  7: FixedColumnWidth(60), // Action Button
+                  4: FixedColumnWidth(110), // Total
+                  5: FixedColumnWidth(60), // Action Button
                 },
                 border: TableBorder.symmetric(
                   outside: BorderSide(
@@ -390,16 +404,6 @@ class _EstimateViewState extends State<EstimateView> {
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onPrimary)),
                       Text(AppLocalizations.of(context)!.rate,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onPrimary)),
-                      Text(AppLocalizations.of(context)!.discount,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onPrimary)),
-                      Text(AppLocalizations.of(context)!.tax,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -474,14 +478,15 @@ class _EstimateViewState extends State<EstimateView> {
                           title: "",
                           onChanged: (value) {
                             context.read<EstimateBloc>().add(
-                                  UpdateItemEvent(
-                                    index,
-                                    item.copyWith(
-                                        quantity: int.tryParse(
-                                                item.controller!.text) ?? 1),
-                                  ),
-                                );
+                              UpdateItemEvent(
+                                index,
+                                item.copyWith(
+                                  quantity: int.tryParse(value) ?? 1, // Correct field parsing
+                                ),
+                              ),
+                            );
                           },
+
                         ),
                         //Price
                         UnderlineTextfield(
@@ -501,46 +506,7 @@ class _EstimateViewState extends State<EstimateView> {
                                 );
                           },
                         ),
-                        //Discount
-                        UnderlineTextfield(
-                          textAlign: TextAlign.center,
-                          inputFormatter: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(
-                                3), // Restrict input to 3 characters
-                          ],
-                          enabledColor: Colors.green,
-                          title: "",
-                          onChanged: (value) {
-                            context.read<EstimateBloc>().add(
-                                  UpdateItemEvent(
-                                    index,
-                                    item.copyWith(
-                                        discount:
-                                            double.tryParse(value) ?? 0.0),
-                                  ),
-                                );
-                          },
-                        ),
-                        UnderlineTextfield(
-                          textAlign: TextAlign.center,
-                          inputFormatter: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(
-                                3), // Restrict input to 3 characters
-                          ],
-                          enabledColor: Colors.red,
-                          title: "",
-                          onChanged: (value) {
-                            context.read<EstimateBloc>().add(
-                                  UpdateItemEvent(
-                                    index,
-                                    item.copyWith(
-                                        tax: double.tryParse(value) ?? 0.0),
-                                  ),
-                                );
-                          },
-                        ),
+
                         UnderlineTextfield(
                           textAlign: TextAlign.center,
                           inputFormatter: [

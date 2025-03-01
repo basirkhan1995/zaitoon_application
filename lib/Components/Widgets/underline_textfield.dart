@@ -15,12 +15,13 @@ class UnderlineTextfield extends StatelessWidget {
   final VoidCallback? onTap;
   final FormFieldValidator<String>? validator;
   final ValueChanged<String>? onChanged;
-
+  final Widget? trailing;
   final double? width;
   const UnderlineTextfield({
     super.key,
     this.enabledColor = Colors.cyan,
     this.onChanged,
+    this.trailing,
     this.textAlign = TextAlign.start,
     this.inputFormatter,
     this.controller,
@@ -66,10 +67,10 @@ class UnderlineTextfield extends StatelessWidget {
             validator: validator,
             textAlign: textAlign,
             inputFormatters: inputFormatter,
-            readOnly:
-                readOnly, // Make the field read-only to prevent manual input.
+            readOnly: readOnly, // Make the field read-only to prevent manual input.
             decoration: InputDecoration(
               isDense: true,
+              suffix: trailing,
               contentPadding: const EdgeInsets.symmetric(vertical: 8),
               hintText: hintText,
               hintStyle: TextStyle(color: enabledColor),
