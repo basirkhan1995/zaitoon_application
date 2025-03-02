@@ -12,6 +12,16 @@ class AddItemEvent extends EstimateEvent {
   const AddItemEvent(this.items);
 }
 
+class UpdateTaxEvent extends EstimateEvent {
+  final double tax;
+  const UpdateTaxEvent(this.tax);
+}
+
+class UpdateDiscountEvent extends EstimateEvent {
+  final double discount;
+  const UpdateDiscountEvent(this.discount);
+}
+
 class RemoveItemEvent extends EstimateEvent {
   final int index;
   const RemoveItemEvent(this.index);

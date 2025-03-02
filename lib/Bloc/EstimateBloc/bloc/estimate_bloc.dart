@@ -9,6 +9,24 @@ part 'estimate_state.dart';
 class EstimateBloc extends Bloc<EstimateEvent, EstimateState> {
   final List<EstimateItemsModel> items = [];
   EstimateBloc() : super(EstimateInitial()) {
+    double tax = 0.0;
+    double discount = 0.0;
+
+    on<UpdateTaxEvent>((event, emit) {
+      tax = event.tax;
+      emit(EstimateItemsLoadedState(
+          items.map((item) => item.copyWith(tax: tax)).toList()));
+    });
+
+    on<UpdateDiscountEvent>((event, emit) {
+      discount = event.discount;
+      emit(EstimateItemsLoadedState(List.from(items)));
+    });
+
+    on<UpdateTaxEvent>((event, emit) {
+      emit(EstimateItemsLoadedState(
+          items.map((item) => item.copyWith(tax: event.tax)).toList()));
+    });
     on<LoadItemsEvent>((event, emit) {
       items.clear();
       try {

@@ -7,6 +7,7 @@ import 'package:zaitoon_invoice/Bloc/AuthCubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/EstimateBloc/bloc/estimate_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
+import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Components/Widgets/underline_textfield.dart';
@@ -17,7 +18,6 @@ import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/print.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/products_textfield.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/customer_searchable_field.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Products/new_product.dart';
-
 import '../../../../Components/Widgets/currencies_drop.dart';
 
 class EstimateView extends StatefulWidget {
@@ -47,9 +47,24 @@ class _EstimateViewState extends State<EstimateView> {
     super.initState();
   }
 
+  double calculateTotalVat() {
+    double totalVat = 0.0;
+    for (var item in estimateItems) {
+      totalVat += (item.quantity * item.amount) * (item.tax / 100);
+    }
+    return totalVat;
+  }
+
+  double calculateDiscount() {
+    double totalDiscount = 0.0;
+    for (var item in estimateItems) {
+      totalDiscount += (item.quantity * item.amount) * (item.discount / 100);
+    }
+    return totalDiscount;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final locale = AppLocalizations.of(context)!;
     return Scaffold(
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
@@ -64,112 +79,52 @@ class _EstimateViewState extends State<EstimateView> {
             estimateDetails.clientName = customer.text;
           }
           return SingleChildScrollView(
-
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 buildAppBar(context),
                 Row(
                   children: [
-                    // Your existing buildEstimate
                     Expanded(
                       child: buildEstimate(context),
                     ),
-
-                    // New Expanded container with flex 3
-                    AppBackground(
-                      width: 300,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Column(
-                          spacing: 20,
-                          children: [
-                            CurrenciesDropdown(
-                              title: AppLocalizations.of(context)!.currency,
-                              width: double.infinity,
-                              radius: 4,
-                              onSelected: (value) {
-                                WidgetsBinding.instance.addPostFrameCallback((_){
-                                  setState(() {
-                                    estimateDetails.currency = value;
-                                  });
-                                });
-                              },
-                            ),
-
-                            UnderlineTextfield(
-                              title: locale.invoiceDate,
-                              isRequired: true,
-                              controller: issueDate,
-                              trailing: Icon(Icons.date_range_rounded,size: 20),
-                              onTap: () => datePicker(context, issueDate, "issueDate"),
-                            ),
-                            UnderlineTextfield(
-                              title: locale.dueDate,
-                              isRequired: true,
-                              controller: dueDate,
-                              trailing: Icon(Icons.date_range_rounded,size: 20),
-                              onTap: () => datePicker(context, dueDate, "dueDate"),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    buildEstimateExtra(),
                   ],
                 ),
               ],
             ),
           );
-
         },
       ),
     );
   }
 
+  //Appbar
   Widget buildAppBar(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     final theme = Theme.of(context).textTheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             spacing: 5,
             children: [
-              Icon(Icons.account_balance_wallet_outlined),
+              Icon(Icons.file_copy_rounded),
               Text(locale.newEstimate, style: theme.titleMedium),
             ],
           ),
-          BlocBuilder<LanguageCubit, Locale>(
-            builder: (context, locale) {
-              return ZOutlineButton(
-                  height: 45,
-                  width: 120,
-                  icon: FontAwesomeIcons.solidFilePdf,
-                  label: Text("PDF"),
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return PdfPrintSetting(
-                              info: estimateDetails,
-                              items: estimateItems,
-                            );
-                          });
-                    }
-                  });
-            },
-          )
         ],
       ),
     );
   }
 
+  //Estimate
   Widget buildEstimate(BuildContext context) {
     return AppBackground(
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      margin: EdgeInsets.symmetric(vertical: 2,horizontal: 10),
+      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -182,22 +137,109 @@ class _EstimateViewState extends State<EstimateView> {
     );
   }
 
+  //Extra Details
+  Widget buildEstimateExtra() {
+    final locale = AppLocalizations.of(context)!;
+    return AppBackground(
+      width: 300,
+      height: MediaQuery.of(context).size.height,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: SingleChildScrollView(
+          child: Column(
+            spacing: 20,
+            children: [
+              CurrenciesDropdown(
+                title: AppLocalizations.of(context)!.currency,
+                width: double.infinity,
+                radius: 4,
+                onSelected: (value) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    setState(() {
+                      estimateDetails.currency = value;
+                    });
+                  });
+                },
+              ),
+              AppBackground(
+                height: 160,
+                margin: EdgeInsets.zero,
+                child: Column(
+                  spacing: 20,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    UnderlineTextfield(
+                      title: locale.invoiceDate,
+                      isRequired: true,
+                      controller: issueDate,
+                      trailing: Icon(Icons.date_range_rounded, size: 20),
+                      onTap: () => datePicker(context, issueDate, "issueDate"),
+                    ),
+                    UnderlineTextfield(
+                      title: locale.dueDate,
+                      isRequired: true,
+                      controller: dueDate,
+                      trailing: Icon(Icons.date_range_rounded, size: 20),
+                      onTap: () => datePicker(context, dueDate, "dueDate"),
+                    ),
+                  ],
+                ),
+              ),
+              AppBackground(
+                height: 110,
+                margin: EdgeInsets.zero,
+                child: Row(
+                  spacing: 5,
+                  children: [
+                    Expanded(
+                      child: InputFieldEntitled(
+                        title: locale.tax,
+                        onChanged: (value) {
+                          setState(() {
+                            final tax = calculateTotalVat();
+                            context
+                                .read<EstimateBloc>()
+                                .add(UpdateTaxEvent(tax));
+                          });
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: InputFieldEntitled(
+                        title: locale.discount,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              //Create PDF
+              pdfButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget buildInvoiceHeader(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: Column(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
+          child: Row(
             spacing: 20,
             children: [
               UnderlineTextfield(
+                width: 120,
                 title: locale.invoiceNumber,
                 isRequired: true,
                 controller: invoiceNumber,
               ),
               AccountSearchableInputField(
+                width: 250,
                 title: locale.customer,
                 controller: customer,
                 onChanged: (value) {
@@ -218,62 +260,23 @@ class _EstimateViewState extends State<EstimateView> {
                   constraints: BoxConstraints(),
                   icon: Icon(Icons.add_circle_outline_rounded),
                   onPressed: () {
-                    showDialog(context: context, builder: (context){
-                      return NewAccount();
-                    });
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return NewAccount();
+                        });
                   },
                 ),
               ),
             ],
           ),
         ),
-
       ],
     );
   }
 
-  void initialDate() {
-    invoiceNumber.text = "INV000001";
-    final now = DateTime.now();
-    final defaultIssueDate = DateFormat('MMM dd, yyyy').format(now);
-    final defaultDueDate =
-        DateFormat('MMM dd, yyyy').format(now.add(const Duration(days: 7)));
-
-    // Set default values in text controllers
-    issueDate.text = defaultIssueDate;
-    dueDate.text = defaultDueDate;
-
-    // Update the invoiceInfo object with default dates
-    estimateDetails.invoiceDate = DateFormat('MMM dd, yyyy').format(now);
-    estimateDetails.dueDate =
-        DateFormat('MMM dd, yyyy').format(now.add(const Duration(days: 7)));
-  }
-
-  Future<void> datePicker(BuildContext context,
-      TextEditingController controller, String field) async {
-    final DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (pickedDate != null) {
-      String formattedDate = DateFormat('MMM dd, yyyy').format(pickedDate);
-      setState(() {
-        controller.text = formattedDate;
-
-        // Update the respective field in the model
-        if (field == "issueDate") {
-          estimateDetails.invoiceDate = formattedDate;
-        } else if (field == "dueDate") {
-          estimateDetails.dueDate = formattedDate;
-        }
-      });
-    }
-  }
-
-  Widget buildTotal({
-        required List<EstimateItemsModel> invoiceItems,
+  Widget buildTotal(
+      {required List<EstimateItemsModel> invoiceItems,
       required EstimateInfoModel info}) {
     return BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
       final locale = AppLocalizations.of(context)!;
@@ -283,23 +286,6 @@ class _EstimateViewState extends State<EstimateView> {
           subtotal += item.quantity * item.amount;
         }
         return subtotal;
-      }
-
-      double calculateTotalVat() {
-        double totalVat = 0.0;
-        for (var item in invoiceItems) {
-          totalVat += (item.quantity * item.amount) * (item.tax / 100);
-        }
-        return totalVat;
-      }
-
-      double calculateDiscount() {
-        double totalDiscount = 0.0;
-        for (var item in invoiceItems) {
-          totalDiscount +=
-              (item.quantity * item.amount) * (item.discount / 100);
-        }
-        return totalDiscount;
       }
 
       double calculateTotal() {
@@ -323,11 +309,21 @@ class _EstimateViewState extends State<EstimateView> {
               spacing: 5,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-
-                textRich(title: locale.subtotal, value: subtotal, end: info.currency,color: Colors.cyan),
-                textRich(title: locale.tax, value: totalVat, end: info.currency,color: Colors.cyan),
-                textRich(title: locale.discount, value: totalDiscount, end: info.currency,color: Colors.cyan),
-
+                textRich(
+                    title: locale.subtotal,
+                    value: subtotal,
+                    end: info.currency,
+                    color: Colors.cyan),
+                textRich(
+                    title: locale.tax,
+                    value: totalVat,
+                    end: info.currency,
+                    color: Colors.cyan),
+                textRich(
+                    title: locale.discount,
+                    value: totalDiscount,
+                    end: info.currency,
+                    color: Colors.cyan),
                 Container(
                   height: 38,
                   margin: const EdgeInsets.symmetric(vertical: 8),
@@ -478,15 +474,15 @@ class _EstimateViewState extends State<EstimateView> {
                           title: "",
                           onChanged: (value) {
                             context.read<EstimateBloc>().add(
-                              UpdateItemEvent(
-                                index,
-                                item.copyWith(
-                                  quantity: int.tryParse(value) ?? 1, // Correct field parsing
-                                ),
-                              ),
-                            );
+                                  UpdateItemEvent(
+                                    index,
+                                    item.copyWith(
+                                      quantity: int.tryParse(value) ??
+                                          1, // Correct field parsing
+                                    ),
+                                  ),
+                                );
                           },
-
                         ),
                         //Price
                         UnderlineTextfield(
@@ -587,8 +583,9 @@ class _EstimateViewState extends State<EstimateView> {
     );
   }
 
-  Widget textRich({required title, required value, required end, Color? color}){
-    return  Row(
+  Widget textRich(
+      {required title, required value, required end, Color? color}) {
+    return Row(
       spacing: 15,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -604,7 +601,8 @@ class _EstimateViewState extends State<EstimateView> {
                 text: end,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: color ?? Colors.blue, // Change this to your preferred color
+                  color: color ??
+                      Colors.blue, // Change this to your preferred color
                 ),
               ),
             ],
@@ -612,5 +610,70 @@ class _EstimateViewState extends State<EstimateView> {
         ),
       ],
     );
+  }
+
+  //PDF Button
+  Widget pdfButton() {
+    return BlocBuilder<LanguageCubit, Locale>(
+      builder: (context, locale) {
+        return ZOutlineButton(
+            height: 45,
+            width: double.infinity,
+            icon: FontAwesomeIcons.solidFilePdf,
+            label: Text("PDF"),
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return PdfPrintSetting(
+                        info: estimateDetails,
+                        items: estimateItems,
+                      );
+                    });
+              }
+            });
+      },
+    );
+  }
+
+  void initialDate() {
+    invoiceNumber.text = "INV000001";
+    final now = DateTime.now();
+    final defaultIssueDate = DateFormat('MMM dd, yyyy').format(now);
+    final defaultDueDate =
+        DateFormat('MMM dd, yyyy').format(now.add(const Duration(days: 7)));
+
+    // Set default values in text controllers
+    issueDate.text = defaultIssueDate;
+    dueDate.text = defaultDueDate;
+
+    // Update the invoiceInfo object with default dates
+    estimateDetails.invoiceDate = DateFormat('MMM dd, yyyy').format(now);
+    estimateDetails.dueDate =
+        DateFormat('MMM dd, yyyy').format(now.add(const Duration(days: 7)));
+  }
+
+  Future<void> datePicker(BuildContext context,
+      TextEditingController controller, String field) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null) {
+      String formattedDate = DateFormat('MMM dd, yyyy').format(pickedDate);
+      setState(() {
+        controller.text = formattedDate;
+
+        // Update the respective field in the model
+        if (field == "issueDate") {
+          estimateDetails.invoiceDate = formattedDate;
+        } else if (field == "dueDate") {
+          estimateDetails.dueDate = formattedDate;
+        }
+      });
+    }
   }
 }
