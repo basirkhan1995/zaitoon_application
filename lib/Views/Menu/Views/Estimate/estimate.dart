@@ -80,7 +80,6 @@ class _EstimateViewState extends State<EstimateView> {
           }
           return SingleChildScrollView(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 buildAppBar(context),
                 Row(
@@ -125,14 +124,12 @@ class _EstimateViewState extends State<EstimateView> {
     return AppBackground(
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            buildInvoiceHeader(context),
-            buildEstimateItems(),
-            invoiceFooter(),
-          ],
-        ),
+      child: Column(
+        children: [
+          buildInvoiceHeader(context),
+          buildEstimateItems(),
+          invoiceFooter(),
+        ],
       ),
     );
   }
@@ -145,78 +142,76 @@ class _EstimateViewState extends State<EstimateView> {
       height: MediaQuery.of(context).size.height,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: SingleChildScrollView(
-          child: Column(
-            spacing: 20,
-            children: [
-              CurrenciesDropdown(
-                title: AppLocalizations.of(context)!.currency,
-                width: double.infinity,
-                radius: 4,
-                onSelected: (value) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    setState(() {
-                      estimateDetails.currency = value;
-                    });
+        child: Column(
+          spacing: 20,
+          children: [
+            CurrenciesDropdown(
+              title: AppLocalizations.of(context)!.currency,
+              width: double.infinity,
+              radius: 4,
+              onSelected: (value) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  setState(() {
+                    estimateDetails.currency = value;
                   });
-                },
+                });
+              },
+            ),
+            AppBackground(
+              height: 160,
+              margin: EdgeInsets.zero,
+              child: Column(
+                spacing: 20,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  UnderlineTextfield(
+                    title: locale.invoiceDate,
+                    isRequired: true,
+                    controller: issueDate,
+                    trailing: Icon(Icons.date_range_rounded, size: 20),
+                    onTap: () => datePicker(context, issueDate, "issueDate"),
+                  ),
+                  UnderlineTextfield(
+                    title: locale.dueDate,
+                    isRequired: true,
+                    controller: dueDate,
+                    trailing: Icon(Icons.date_range_rounded, size: 20),
+                    onTap: () => datePicker(context, dueDate, "dueDate"),
+                  ),
+                ],
               ),
-              AppBackground(
-                height: 160,
-                margin: EdgeInsets.zero,
-                child: Column(
-                  spacing: 20,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    UnderlineTextfield(
-                      title: locale.invoiceDate,
-                      isRequired: true,
-                      controller: issueDate,
-                      trailing: Icon(Icons.date_range_rounded, size: 20),
-                      onTap: () => datePicker(context, issueDate, "issueDate"),
+            ),
+            AppBackground(
+              height: 110,
+              margin: EdgeInsets.zero,
+              child: Row(
+                spacing: 5,
+                children: [
+                  Expanded(
+                    child: InputFieldEntitled(
+                      title: locale.tax,
+                      onChanged: (value) {
+                        setState(() {
+                          final tax = calculateTotalVat();
+                          context
+                              .read<EstimateBloc>()
+                              .add(UpdateTaxEvent(tax));
+                        });
+                      },
                     ),
-                    UnderlineTextfield(
-                      title: locale.dueDate,
-                      isRequired: true,
-                      controller: dueDate,
-                      trailing: Icon(Icons.date_range_rounded, size: 20),
-                      onTap: () => datePicker(context, dueDate, "dueDate"),
+                  ),
+                  Expanded(
+                    child: InputFieldEntitled(
+                      title: locale.discount,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              AppBackground(
-                height: 110,
-                margin: EdgeInsets.zero,
-                child: Row(
-                  spacing: 5,
-                  children: [
-                    Expanded(
-                      child: InputFieldEntitled(
-                        title: locale.tax,
-                        onChanged: (value) {
-                          setState(() {
-                            final tax = calculateTotalVat();
-                            context
-                                .read<EstimateBloc>()
-                                .add(UpdateTaxEvent(tax));
-                          });
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: InputFieldEntitled(
-                        title: locale.discount,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            ),
 
-              //Create PDF
-              pdfButton(),
-            ],
-          ),
+            //Create PDF
+            pdfButton(),
+          ],
         ),
       ),
     );
@@ -224,54 +219,53 @@ class _EstimateViewState extends State<EstimateView> {
 
   Widget buildInvoiceHeader(BuildContext context) {
     final locale = AppLocalizations.of(context)!;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
-          child: Row(
-            spacing: 20,
-            children: [
-              UnderlineTextfield(
-                width: 120,
-                title: locale.invoiceNumber,
-                isRequired: true,
-                controller: invoiceNumber,
-              ),
-              AccountSearchableInputField(
-                width: 250,
-                title: locale.customer,
-                controller: customer,
-                onChanged: (value) {
-                  setState(() {
-                    estimateDetails.clientName = customer.text;
-                  });
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            UnderlineTextfield(
+              width: 120,
+              title: locale.invoiceNumber,
+              isRequired: true,
+              controller: invoiceNumber,
+            ),
+            SizedBox(width: 20),
+            AccountSearchableInputField(
+              width: 250,
+              title: locale.customer,
+              controller: customer,
+              onChanged: (value) {
+                setState(() {
+                  estimateDetails.clientName = customer.text;
+                });
+              },
+              validator: (value) {
+                if (value.isEmpty) {
+                  return locale.required(locale.client);
+                }
+                return null;
+              },
+              isRequire: true,
+              end: IconButton(
+                padding: EdgeInsets.zero,
+                iconSize: 15,
+                constraints: BoxConstraints(),
+                icon: Icon(Icons.add_circle_outline_rounded),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return NewAccount();
+                      });
                 },
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return locale.required(locale.client);
-                  }
-                  return null;
-                },
-                isRequire: true,
-                end: IconButton(
-                  padding: EdgeInsets.zero,
-                  iconSize: 15,
-                  constraints: BoxConstraints(),
-                  icon: Icon(Icons.add_circle_outline_rounded),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return NewAccount();
-                        });
-                  },
-                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
