@@ -86,7 +86,7 @@ class _MenuPageState extends State<MenuPage> {
       ],
     );
   }
-
+  //Side menu
   Widget sideMenu({required List<MenuComponents> items}) {
     final locale = AppLocalizations.of(context)!;
     final theme = Theme.of(context).colorScheme;
