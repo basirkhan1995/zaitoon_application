@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
@@ -10,6 +12,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Json/invoice_model.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Invoice/currency.dart';
+
+import '../../../../Bloc/EstimateBloc/bloc/estimate_bloc.dart';
+import '../../../../Json/estimate.dart';
+import '../Accounts/new_account.dart';
+import '../Estimate/customer_searchable_field.dart';
+import '../Estimate/products_textfield.dart';
+import '../Products/new_product.dart';
 
 class InvoiceView extends StatefulWidget {
   const InvoiceView({super.key});
@@ -24,13 +33,13 @@ class _InvoiceViewState extends State<InvoiceView> {
   final invoiceNumber = TextEditingController();
   final dueDate = TextEditingController();
   final invoiceDate = TextEditingController();
-  List<InvoiceItems> invoiceItems = [];
+  List<EstimateItemsModel> invoiceItems = [];
 
   final invoiceDetails = InvoiceDetails();
   final pdf = Pdf();
   @override
   void initState() {
-    invoiceItems.add(InvoiceItems(controller: TextEditingController()));
+    invoiceItems.add(EstimateItemsModel(controller: TextEditingController()));
     initialDate();
     WidgetsBinding.instance.addPostFrameCallback((_) {});
     super.initState();
@@ -45,33 +54,237 @@ class _InvoiceViewState extends State<InvoiceView> {
       ),
       body: Column(
         children: [
-          // Top part of the screen (Items + Right Side)
+          buildInvoice()
+
+        ],
+      ),
+    );
+  }
+
+  Widget buildInvoice(){
+    return Expanded(
+      child: Row(
+        children: [
+          // Left side (Items) - Takes up remaining space
           Expanded(
-            child: Row(
+            child: Column(
               children: [
-                // Left side (Items) - Takes up remaining space
                 Expanded(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: AppBackground(
-                          child: Center(child: Text("Items")),
-                        ),
-                      ),
-                      AppBackground(
-                        height: 100,
-                        child: Center(child: Text("Items")),
-                      ),
-                    ],
+                  child: AppBackground(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          buildInvoiceHeader(context),
+                           
+                        ],
+                      )
                   ),
                 ),
-                // Right side (fixed width)
-                rightSide(context)
+                AppBackground(
+                  height: 150,
+                  child: Center(child: Text("Items")),
+                ),
               ],
             ),
           ),
+          // Right side (fixed width)
+          rightSide(context)
         ],
       ),
+    );
+  }
+
+  Widget buildEstimateItems() {
+    return BlocConsumer<EstimateBloc, EstimateState>(
+      listener: (context, state) {
+        if (state is EstimateItemsLoadedState) {
+          invoiceItems = state.items;
+        }
+      },
+      builder: (context, state) {
+        if (state is EstimateItemsLoadedState) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 20, right: 10, left: 10),
+            child: Form(
+              key: formKey,
+              child: Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.bottom,
+                columnWidths: const {
+                  0: FixedColumnWidth(40), // Adjust width for the first column
+                  1: FlexColumnWidth(10), // Item name gets more space
+                  2: FixedColumnWidth(80), // Quantity
+                  3: FixedColumnWidth(100), // Unit price
+                  4: FixedColumnWidth(110), // Total
+                  5: FixedColumnWidth(60), // Action Button
+                },
+                border: TableBorder.symmetric(
+                  outside: BorderSide(
+                      color: Colors.grey.withValues(alpha: .2),
+                      width: 1), // Table border outline
+                  inside: BorderSide.none, // No internal borders
+                ),
+                children: [
+                  // Header Row
+                  TableRow(
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary),
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: Text("#",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color:
+                                Theme.of(context).colorScheme.onPrimary)),
+                      ),
+                      Text(AppLocalizations.of(context)!.description,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onPrimary)),
+                      Text(AppLocalizations.of(context)!.qty,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onPrimary)),
+                      Text(AppLocalizations.of(context)!.rate,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onPrimary)),
+                      Text(AppLocalizations.of(context)!.total,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onPrimary)),
+                      Text(AppLocalizations.of(context)!.action,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onPrimary)),
+                    ],
+                  ),
+
+                  ...state.items.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final item = entry.value;
+
+                    int rowNumber = index + 1;
+                    final rowTotal = ((item.quantity * item.amount) -
+                        ((item.quantity * item.amount) *
+                            (item.discount / 100)) +
+                        ((item.quantity * item.amount) * (item.tax / 100)))
+                        .toStringAsFixed(2);
+                    item.total = double.parse(rowTotal);
+                    item.rowNumber = rowNumber;
+                    item.focusNode ??= FocusNode();
+                    return TableRow(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 0),
+                          child: Center(child: Text(rowNumber.toString())),
+                        ),
+                        ProductTextField(
+                          end: IconButton(
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              iconSize: 15,
+                              constraints: BoxConstraints(),
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return NewProduct();
+                                    });
+                              },
+                              icon: Icon(Icons.add_circle_outline_rounded)),
+                          controller: item.controller,
+                          onChanged: (value) {
+                            context.read<EstimateBloc>().add(
+                              UpdateItemEvent(
+                                index,
+                                item.copyWith(
+                                  itemId: value,
+                                  itemName: item.controller!.text,
+                                ),
+                              ),
+                            );
+                          },
+                          hintText: "",
+                        ),
+
+                        //QTY
+                        UnderlineTextfield(
+                          enabledColor: Colors.cyan,
+                          textAlign: TextAlign.center,
+                          inputFormatter: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          title: "",
+                          onChanged: (value) {
+                            context.read<EstimateBloc>().add(
+                              UpdateItemEvent(
+                                index,
+                                item.copyWith(
+                                  quantity: int.tryParse(value) ??
+                                      1, // Correct field parsing
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        //Price
+                        UnderlineTextfield(
+                          textAlign: TextAlign.center,
+                          inputFormatter: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          enabledColor: Colors.teal,
+                          title: "",
+                          onChanged: (value) {
+                            context.read<EstimateBloc>().add(
+                              UpdateItemEvent(
+                                index,
+                                item.copyWith(
+                                    amount: double.tryParse(value) ?? 0.00),
+                              ),
+                            );
+                          },
+                        ),
+
+                        UnderlineTextfield(
+                          textAlign: TextAlign.center,
+                          inputFormatter: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          readOnly: true,
+                          title: "",
+                          hintText: rowTotal,
+                        ),
+                        Center(
+                          child: IconButton(
+                            constraints: BoxConstraints(),
+                            iconSize: 18,
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.red.shade900,
+                            ),
+                            onPressed: () {
+                              context
+                                  .read<EstimateBloc>()
+                                  .add(RemoveItemEvent(index));
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  })
+                ],
+              ),
+            ),
+          );
+        }
+        return Container();
+      },
     );
   }
 
@@ -218,5 +431,58 @@ class _InvoiceViewState extends State<InvoiceView> {
         }
       });
     }
+  }
+
+  Widget buildInvoiceHeader(BuildContext context) {
+    final locale = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            UnderlineTextfield(
+              width: 120,
+              title: locale.invoiceNumber,
+              isRequired: true,
+              controller: invoiceNumber,
+            ),
+            SizedBox(width: 20),
+            AccountSearchableInputField(
+              width: 250,
+              title: locale.customer,
+              controller: customer,
+              onChanged: (value) {
+                setState(() {
+                  invoiceDetails.clientName = customer.text;
+                });
+              },
+              validator: (value) {
+                if (value.isEmpty) {
+                  return locale.required(locale.client);
+                }
+                return null;
+              },
+              isRequire: true,
+              end: IconButton(
+                padding: EdgeInsets.zero,
+                iconSize: 15,
+                constraints: BoxConstraints(),
+                icon: Icon(Icons.add_circle_outline_rounded),
+                onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return NewAccount();
+                      });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -19,14 +19,12 @@ class MenuCubit extends Cubit<MenuState> {
       5: prefs.getBool('menu_item_5') ?? true,  // Products
       6: prefs.getBool('menu_item_6') ?? true,  // Reports
     };
-
     emit(SelectedState(index: 0, visibleItems: visibleItems));
   }
 
 
   Future<void> _saveState(Map<int, bool> visibleItems) async {
     final prefs = await SharedPreferences.getInstance();
-
     // Save visibility state for each menu item
     for (var entry in visibleItems.entries) {
       await prefs.setBool('menu_item_${entry.key}', entry.value);
