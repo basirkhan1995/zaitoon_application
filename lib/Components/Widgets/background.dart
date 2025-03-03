@@ -28,7 +28,7 @@ class AppBackground extends StatelessWidget {
           BoxShadow(
               blurRadius: 1,
               spreadRadius: 0,
-              color: Colors.grey.withValues(alpha: .3))
+              color: Colors.grey.withValues(alpha: .5))
         ],
         borderRadius: BorderRadius.circular(borderRadius),
         color: Theme.of(context).colorScheme.surface,

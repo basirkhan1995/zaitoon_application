@@ -9,6 +9,7 @@ import 'package:zaitoon_invoice/Bloc/CurrencyCubit/Currency/currency_cubit.dart'
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/EstimateBloc/bloc/estimate_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/EstimateCubit/estimate_cubit.dart';
+import 'package:zaitoon_invoice/Bloc/InvoiceCubit/cubit/invoice_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/PDF/pdf_language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/General/general_cubit.dart';
@@ -71,7 +72,9 @@ class MyApp extends StatelessWidget {
         //Backup
         BlocProvider(create: (context) => BackupBloc()),
         //Account Categories
-        BlocProvider(create: (context) => AccountCategoryCubit(Repositories())..loadAccountCategoriesEvent()),
+        BlocProvider(
+            create: (context) => AccountCategoryCubit(Repositories())
+              ..loadAccountCategoriesEvent()),
         //Accounts
         BlocProvider(
             create: (context) =>
@@ -96,6 +99,7 @@ class MyApp extends StatelessWidget {
                 InventoryCubit(Repositories())..loadInventoryEvent()),
         BlocProvider(
             create: (context) => EstimateBloc()..add(LoadItemsEvent())),
+        BlocProvider(create: (context) => InvoiceCubit()),
       ],
       child: BlocBuilder<LanguageCubit, Locale>(
         builder: (context, locale) {

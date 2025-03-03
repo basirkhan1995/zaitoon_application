@@ -8,6 +8,7 @@ class InputFieldEntitled extends StatelessWidget {
   final bool isEnabled;
   final bool readOnly;
   final IconData? icon;
+  final double? iconSize;
   final String info;
   final Widget? end;
   final bool securePassword;
@@ -27,6 +28,7 @@ class InputFieldEntitled extends StatelessWidget {
   const InputFieldEntitled({
     super.key,
     required this.title,
+    this.iconSize,
     this.hint,
     this.readOnly = false,
     this.info = "",
@@ -52,7 +54,7 @@ class InputFieldEntitled extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 6),
       child: SizedBox(
         child: Column(
           children: [
@@ -67,7 +69,7 @@ class InputFieldEntitled extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         isRequire
                             ? Text(
@@ -98,8 +100,8 @@ class InputFieldEntitled extends StatelessWidget {
                       inputFormatters: inputFormat,
                       keyboardType: keyboardInputType,
                       controller: controller,
-
                       decoration: InputDecoration(
+                        suffixIconConstraints: BoxConstraints(),
                         suffixIcon: trailing,
                         suffix: end,
                         disabledBorder: OutlineInputBorder(
@@ -127,7 +129,9 @@ class InputFieldEntitled extends StatelessWidget {
                           borderSide: BorderSide(
                               color: Theme.of(context).colorScheme.error),
                         ),
-                        prefixIcon: icon != null ? Icon(icon, size: 18) : null,
+                        prefixIcon: icon != null
+                            ? Icon(icon, size: iconSize ?? 18)
+                            : null,
                         hintText: hint,
                         hintStyle: const TextStyle(
                             fontWeight: FontWeight.normal,
@@ -135,7 +139,7 @@ class InputFieldEntitled extends StatelessWidget {
                             color: Colors.grey),
                         isDense: compactMode,
                         contentPadding: EdgeInsets.symmetric(
-                          horizontal: 10,
+                            horizontal: 10,
                             vertical:
                                 5.0), // Adjust this value to control the height
                       ),
