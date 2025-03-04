@@ -5,6 +5,7 @@ class InvoiceDetails {
   String invoiceNumber;
   String? invoiceDate;
   String? invoiceDueDate;
+  String currency;
   double subtotal;
   double vat;
   double discount;
@@ -14,6 +15,7 @@ class InvoiceDetails {
     this.clientName = "",
     this.invoiceNumber = "INV000001",
     this.invoiceDate,
+    this.currency = "AFN",
     this.invoiceDueDate,
     this.subtotal = 0,
     this.vat = 0,
@@ -25,6 +27,7 @@ class InvoiceDetails {
     String? clientName,
     String? invoiceNumber,
     String? invoiceDate,
+    String? currency,
     String? invoiceDueDate,
     double? subtotal,
     double? vat,
@@ -36,6 +39,7 @@ class InvoiceDetails {
       invoiceNumber: invoiceNumber ?? this.invoiceNumber,
       invoiceDate: invoiceDate ?? this.invoiceDate,
       invoiceDueDate: invoiceDueDate ?? this.invoiceDueDate,
+      currency: currency ?? this.currency,
       subtotal: subtotal ?? this.subtotal,
       vat: vat ?? this.vat,
       discount: discount ?? this.discount,

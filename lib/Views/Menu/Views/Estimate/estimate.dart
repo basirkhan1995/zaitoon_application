@@ -274,6 +274,7 @@ class _EstimateViewState extends State<EstimateView> {
       required EstimateInfoModel info}) {
     return BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
       final locale = AppLocalizations.of(context)!;
+
       double calculateSubtotal() {
         double subtotal = 0.0;
         for (var item in invoiceItems) {
