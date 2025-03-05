@@ -49,7 +49,7 @@ class _InvoiceViewState extends State<InvoiceView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Invoice"),
+        title: Text(AppLocalizations.of(context)!.invoice),
         backgroundColor: Colors.transparent,
       ),
       body: Column(
@@ -79,28 +79,35 @@ class _InvoiceViewState extends State<InvoiceView> {
                     ),
                   )),
                 ),
-                AppBackground(
-                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                    margin:
-                        EdgeInsets.only(bottom: 8, top: 0, right: 8, left: 8),
-                    height: 155,
-                    child: BlocBuilder<InvoiceCubit, InvoiceState>(
-                      builder: (context, state) {
-                       if(state is LoadedInvoiceItemsState){
-                         return Row(
-                           mainAxisAlignment: MainAxisAlignment.end,
-                           crossAxisAlignment: CrossAxisAlignment.center,
-                           children: [
-                             total(invoiceItems: invoiceItems, info: invoiceDetails)
-                             // buildTotal(
-                             //     invoiceItems: invoiceItems,
-                             //     info: invoiceDetails),
-                           ],
-                         );
-                       }
-                       return Container();
-                      },
-                    )),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    AppBackground(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                        margin: EdgeInsets.only(
+                            bottom: 8, top: 0, right: 8, left: 8),
+                        height: 130,
+                        width: 250,
+                        child: BlocBuilder<InvoiceCubit, InvoiceState>(
+                          builder: (context, state) {
+                            if (state is LoadedInvoiceItemsState) {
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  total(
+                                      invoiceItems: invoiceItems,
+                                      info: invoiceDetails)
+                                ],
+                              );
+                            }
+                            return Container();
+                          },
+                        )),
+                  ],
+                )
               ],
             ),
           ),
@@ -112,23 +119,26 @@ class _InvoiceViewState extends State<InvoiceView> {
   }
 
   Widget addItem() {
-    return Row(
-      children: [
-        GestureDetector(
-            onTap: () {
-              setState(() {
-                context.read<InvoiceCubit>().addItemsEvent();
-              });
-            },
-            child: Chip(
-                side: BorderSide.none,
-                avatar: const Icon(Icons.add_circle_outline_rounded),
-                label: Text(
-                  AppLocalizations.of(context)!.addItem,
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.primary),
-                ))),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5),
+      child: Row(
+        children: [
+          GestureDetector(
+              onTap: () {
+                setState(() {
+                  context.read<InvoiceCubit>().addItemsEvent();
+                });
+              },
+              child: Chip(
+                  side: BorderSide.none,
+                  avatar: const Icon(Icons.add_circle_outline_rounded),
+                  label: Text(
+                    AppLocalizations.of(context)!.addItem,
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.primary),
+                  ))),
+        ],
+      ),
     );
   }
 
@@ -323,7 +333,6 @@ class _InvoiceViewState extends State<InvoiceView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            // Wrap scrollable content with SingleChildScrollView
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -336,7 +345,9 @@ class _InvoiceViewState extends State<InvoiceView> {
                       radius: 4,
                       onSelected: (value) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
-                          invoiceDetails.currency = value;
+                          setState(() {
+                            invoiceDetails.currency = value;
+                          });
                         });
                       },
                     ),
@@ -558,17 +569,17 @@ class _InvoiceViewState extends State<InvoiceView> {
 
     double calculateTotalVat() {
       double totalVat = 0.0;
-      for (var item in invoiceItems) {
-        totalVat += (item.quantity * item.amount) * (double.parse(vat.text) / 100);
-      }
+      double subtotal = calculateSubtotal();
+      totalVat += subtotal * (double.parse(vat.text)) / 100;
       return totalVat;
     }
 
     double calculateDiscount() {
       double totalDiscount = 0.0;
-      for (var item in invoiceItems) {
-        totalDiscount += (item.quantity * item.amount) * ( double.parse(discount.text) / 100);
-      }
+      double subtotal = calculateSubtotal();
+
+      totalDiscount += (subtotal * (double.parse(discount.text))) / 100;
+
       return totalDiscount;
     }
 
@@ -629,9 +640,25 @@ class _InvoiceViewState extends State<InvoiceView> {
     );
   }
 
+  Widget total2({required InvoiceDetails info}) {
+    return BlocBuilder<InvoiceCubit, InvoiceState>(
+      builder: (context, state) {
+        if (state is LoadedInvoiceItemsState) {
+          return TotalWidget(
+            invoiceItems: state.items,
+            info: info,
+            vat: vat.text,
+            discount: discount.text,
+          );
+        }
+        return Container();
+      },
+    );
+  }
+
   Widget total(
       {required List<InvoiceItems> invoiceItems,
-        required InvoiceDetails info}) {
+      required InvoiceDetails info}) {
     return ValueListenableBuilder<TextEditingValue>(
       valueListenable: vat,
       builder: (context, vatValue, child) {
@@ -641,8 +668,8 @@ class _InvoiceViewState extends State<InvoiceView> {
             return TotalWidget(
               invoiceItems: invoiceItems,
               info: info,
-              vat: vat,
-              discount: discount,
+              vat: vat.text,
+              discount: discount.text,
             );
           },
         );

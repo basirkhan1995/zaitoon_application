@@ -5,8 +5,8 @@ import '../../../../Json/invoice_model.dart';
 class TotalWidget extends StatefulWidget {
   final List<InvoiceItems> invoiceItems;
   final InvoiceDetails info;
-  final TextEditingController vat;
-  final TextEditingController discount;
+  final String vat;
+  final String discount;
 
   const TotalWidget({
     super.key,
@@ -35,17 +35,17 @@ class TotalWidgetState extends State<TotalWidget> {
 
     double calculateTotalVat() {
       double totalVat = 0.0;
-      for (var item in widget.invoiceItems) {
-        totalVat += (item.quantity * item.amount) * (double.tryParse(widget.vat.text) ?? 0.0 / 100);
-      }
+      double subtotal = calculateSubtotal();
+      totalVat += subtotal * (double.parse(widget.vat)) / 100;
       return totalVat;
     }
 
     double calculateDiscount() {
       double totalDiscount = 0.0;
-      for (var item in widget.invoiceItems) {
-        totalDiscount += (item.quantity * item.amount) * (double.tryParse(widget.discount.text) ?? 0.0 / 100);
-      }
+      double subtotal = calculateSubtotal();
+
+      totalDiscount += (subtotal * (double.parse(widget.discount))) / 100;
+
       return totalDiscount;
     }
 
@@ -62,10 +62,10 @@ class TotalWidgetState extends State<TotalWidget> {
     final total = calculateTotal();
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
           child: Column(
             spacing: 5,
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -85,19 +85,11 @@ class TotalWidgetState extends State<TotalWidget> {
                   value: totalDiscount,
                   end: widget.info.currency,
                   color: Colors.cyan),
-              Container(
-                height: 38,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(2),
-                    color: Theme.of(context).colorScheme.primary),
-                child: Text(
-                  "${locale.total}: ${total.toStringAsFixed(2)} ${widget.info.currency}",
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold),
-                ),
+              Text(
+                "${locale.total}: ${total.toStringAsFixed(2)} ${widget.info.currency}",
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -109,7 +101,7 @@ class TotalWidgetState extends State<TotalWidget> {
   Widget textRich(
       {required title, required value, required end, Color? color}) {
     return Row(
-      spacing: 15,
+      spacing: 5,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(title),
