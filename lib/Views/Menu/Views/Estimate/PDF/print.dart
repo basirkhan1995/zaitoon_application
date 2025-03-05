@@ -6,15 +6,15 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:zaitoon_invoice/Bloc/LanguageCubit/PDF/pdf_language_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/Printer/printer_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
-import 'package:zaitoon_invoice/Json/estimate.dart';
+import 'package:zaitoon_invoice/Json/invoice_model.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/document_language.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/printers_drop.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PdfPrintSetting extends StatefulWidget {
-  final EstimateInfoModel info;
-  final List<EstimateItemsModel> items;
+  final InvoiceDetails info;
+  final List<InvoiceItems> items;
   const PdfPrintSetting({super.key, required this.info, required this.items});
 
   @override
@@ -59,7 +59,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                   borderRadius: BorderRadius.circular(4),
                   color: Theme.of(context).colorScheme.surface),
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8,vertical: 6),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -130,8 +130,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                       language: selectedLanguage ?? "English",
                       orientation: selectedOrientation,
                       info: widget.info,
-                      items: widget.items
-                  );
+                      items: widget.items);
                   return document.save(); // Save and return the document
                 },
               ),
@@ -210,8 +209,7 @@ class _PdfPrintSettingState extends State<PdfPrintSetting> {
                           language: selectedLanguage ?? "English",
                           orientation: selectedOrientation,
                           invoiceInfo: widget.info,
-                          items: widget.items
-                      );
+                          items: widget.items);
                     }),
                 ZOutlineButton(
                     width: double.infinity,

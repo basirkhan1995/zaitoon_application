@@ -6,7 +6,7 @@ import 'package:pdf/widgets.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/services.dart';
 import 'package:printing/printing.dart';
-import 'package:zaitoon_invoice/Json/estimate.dart';
+import 'package:zaitoon_invoice/Json/invoice_model.dart';
 
 class Pdf {
   final pdf = Document();
@@ -44,9 +44,9 @@ class Pdf {
 
   Future<Document> generateEstimate(
       {required String language,
-        required PageOrientation orientation,
-        required List<EstimateItemsModel> items,
-        required EstimateInfoModel info}) async {
+      required PageOrientation orientation,
+      required List<InvoiceItems> items,
+      required InvoiceDetails info}) async {
     final document = Document(); // Create a new document each time
 
     document.addPage(MultiPage(
@@ -60,29 +60,24 @@ class Pdf {
       ],
       header: (context) =>
           buildTopHeader(invoiceInfo: info, language: language),
-      footer: (context) =>
-          footer(estimateInfo: info, language: language),
+      footer: (context) => footer(estimateInfo: info, language: language),
     ));
 
     return document; // Return the document without saving it
   }
 
-
-  Future<Document> printPreview({
-      required String language,
+  Future<Document> printPreview(
+      {required String language,
       required PageOrientation orientation,
-      required List<EstimateItemsModel> items,
-      required EstimateInfoModel info}) async {
+      required List<InvoiceItems> items,
+      required InvoiceDetails info}) async {
     return generateEstimate(
-        language: language,
-        orientation: orientation,
-        items: items,
-        info: info);
+        language: language, orientation: orientation, items: items, info: info);
   }
 
   Future<void> createInvoice({
-    required List<EstimateItemsModel> items,
-    required EstimateInfoModel info,
+    required List<InvoiceItems> items,
+    required InvoiceDetails info,
     required String language,
     required PageOrientation orientation,
   }) async {
@@ -101,13 +96,12 @@ class Pdf {
     }
   }
 
-
   //Print PDF
   Future<void> print({
     required Printer selectedPrinter,
     required String language,
-    required EstimateInfoModel invoiceInfo,
-    required List<EstimateItemsModel> items,
+    required InvoiceDetails invoiceInfo,
+    required List<InvoiceItems> items,
     required PageOrientation orientation,
   }) async {
     final document = await generateEstimate(
@@ -125,16 +119,14 @@ class Pdf {
     );
   }
 
-
-  static body(
-      {required List<EstimateItemsModel> items, required String language}) {
+  static body({required List<InvoiceItems> items, required String language}) {
     return Column(children: [
       buildTableHeader(items: items, language: language),
     ]);
   }
 
   static Widget header(
-      {required EstimateInfoModel invoiceInfo, required String language}) {
+      {required InvoiceDetails invoiceInfo, required String language}) {
     final supplierTitleText = language == "English"
         ? "Supplier"
         : language == "فارسی"
@@ -168,7 +160,7 @@ class Pdf {
                         style: textStyle(text: supplierTitleText),
                         textDirection: textDirection(text: supplierTitleText)),
                     SizedBox(height: 3),
-                    buildTextWidget(text: invoiceInfo.supplier),
+                    buildTextWidget(text: invoiceInfo.supplierName),
                     SizedBox(height: 3),
                     Text(invoiceInfo.supplierEmail),
                     SizedBox(height: 5),
@@ -188,7 +180,7 @@ class Pdf {
   }
 
   static Widget footer(
-      {required EstimateInfoModel estimateInfo, required String language}) {
+      {required InvoiceDetails estimateInfo, required String language}) {
     final timeStampText = language == "English"
         ? "Print time: "
         : language == "فارسی"
@@ -282,10 +274,8 @@ class Pdf {
     }
   }
 
-
-
   static Widget buildTopHeader(
-      {required EstimateInfoModel invoiceInfo, required String language}) {
+      {required InvoiceDetails invoiceInfo, required String language}) {
     final image = invoiceInfo.logo != null && invoiceInfo.logo!.isNotEmpty
         ? MemoryImage(invoiceInfo.logo!)
         : null;
@@ -314,7 +304,7 @@ class Pdf {
             children: [
               Row(children: [
                 image == null
-                    ? buildTextWidget(text: invoiceInfo.supplier)
+                    ? buildTextWidget(text: invoiceInfo.supplierName)
                     : Image(
                         image,
                         width: 70,
@@ -328,13 +318,14 @@ class Pdf {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              buildTextWidget(text: invoiceInfo.supplier),
+                              buildTextWidget(
+                                  text: invoiceInfo.supplierName, fontSize: 16),
                               SizedBox(height: 2),
                               Text(invoiceInfo.supplierMobile,
-                                  style: const TextStyle(fontSize: 10)),
+                                  style: const TextStyle(fontSize: 12)),
                               SizedBox(height: 2),
                               Text(invoiceInfo.supplierEmail,
-                                  style: TextStyle(fontSize: 10)),
+                                  style: TextStyle(fontSize: 12)),
                             ]),
                       )
                     : SizedBox()
@@ -402,21 +393,13 @@ class Pdf {
   }
 
   static Widget buildTableHeader({
-    required List<EstimateItemsModel> items,
+    required List<InvoiceItems> items,
     required String language,
   }) {
     final Map<String, List<String>> titles = {
-      "English": [
-        "#",
-        "Item Description",
-        "QTY",
-        "Rate",
-        "Tax",
-        "Discount",
-        "Total"
-      ],
-      "فارسی": ["#", "توضیحات", "تعداد", "نرخ", "مالیات", "تخفیف", "مجموع"],
-      "پشتو": ["#", "توضیحات", "شمېر", "نرخ", "مالیه", "تخفیف", "مجموع"],
+      "English": ["#", "Item Description", "QTY", "Rate", "Total"],
+      "فارسی": ["#", "توضیحات", "تعداد", "نرخ", "مجموع"],
+      "پشتو": ["#", "توضیحات", "شمېر", "نرخ", "مجموع"],
     };
 
     // Get the correct language titles and reverse them if Persian or Pashto
@@ -456,18 +439,14 @@ class Pdf {
                     1: const pw.FlexColumnWidth(10),
                     2: const pw.FixedColumnWidth(50),
                     3: const pw.FixedColumnWidth(70),
-                    4: const pw.FixedColumnWidth(50),
-                    5: const pw.FixedColumnWidth(65),
-                    6: const pw.FixedColumnWidth(70),
+                    4: const pw.FixedColumnWidth(70),
                   }
                 : {
-                    6: const pw.FixedColumnWidth(35),
-                    5: const pw.FlexColumnWidth(10),
-                    4: const pw.FixedColumnWidth(50),
-                    3: const pw.FixedColumnWidth(70),
-                    2: const pw.FixedColumnWidth(50),
-                    1: const pw.FixedColumnWidth(65),
-                    0: const pw.FixedColumnWidth(70),
+                    4: const pw.FixedColumnWidth(8),
+                    3: const pw.FixedColumnWidth(20),
+                    2: const pw.FixedColumnWidth(90),
+                    1: const pw.FixedColumnWidth(20),
+                    0: const pw.FixedColumnWidth(15),
                   },
             cellAlignments: language == "English"
                 ? {
@@ -475,14 +454,10 @@ class Pdf {
                     1: pw.Alignment.centerLeft, // Item name
                     2: pw.Alignment.center, // Quantity
                     3: pw.Alignment.center, // Unit price
-                    4: pw.Alignment.center, // Tax
-                    5: pw.Alignment.center, // Discount
-                    6: pw.Alignment.centerRight, // Total
+                    4: pw.Alignment.centerRight, // Total
                   }
                 : {
-                    6: pw.Alignment.centerLeft, // Total
-                    5: pw.Alignment.center, // Discount
-                    4: pw.Alignment.center, // Tax
+                    4: pw.Alignment.centerLeft, // Total
                     3: pw.Alignment.center, // Unit price
                     2: pw.Alignment.center, // Quantity
                     1: pw.Alignment.centerRight, // Item name
@@ -495,8 +470,6 @@ class Pdf {
                 e.itemName,
                 e.quantity,
                 e.amount,
-                e.tax,
-                e.discount,
                 e.total,
               ];
               // Reverse row data for Persian/Pashto
@@ -521,8 +494,8 @@ class Pdf {
   }
 
   static Widget buildTotal({
-    required List<EstimateItemsModel> items,
-    required EstimateInfoModel info,
+    required List<InvoiceItems> items,
+    required InvoiceDetails info,
     required String language,
   }) {
     String vatTitle = language == "English"
@@ -561,32 +534,15 @@ class Pdf {
       return subtotal;
     }
 
-    double calculateTotalVat() {
-      double totalVat = 0.0;
-      for (var item in items) {
-        totalVat += (item.quantity * item.amount) * (item.tax / 100);
-      }
-      return totalVat;
-    }
-
-    double calculateDiscount() {
-      double totalDiscount = 0.0;
-      for (var item in items) {
-        totalDiscount += (item.quantity * item.amount) * (item.discount / 100);
-      }
-      return totalDiscount;
-    }
-
     double calculateTotal() {
       double subtotal = calculateSubtotal();
-      double totalVat = calculateTotalVat();
-      double totalDiscount = calculateDiscount();
+      double totalVat = info.vat;
+      double totalDiscount = info.discount;
       return subtotal + totalVat - totalDiscount;
     }
 
     final subtotal = calculateSubtotal();
-    final totalTax = calculateTotalVat();
-    final discount = calculateDiscount();
+
     final total = calculateTotal();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -617,7 +573,7 @@ class Pdf {
                         children: [
                           buildTextWidget(text: vatTitle, fontSize: 10),
                           Text(
-                              "${totalTax.toStringAsFixed(2)} ${info.currency}",
+                              "${info.vat.toStringAsFixed(2)} ${info.currency}",
                               style: TextStyle(
                                   fontSize: 10, fontWeight: FontWeight.normal)),
                         ]),
@@ -627,7 +583,7 @@ class Pdf {
                         children: [
                           buildTextWidget(text: discountTitle, fontSize: 10),
                           Text(
-                              "${discount.toStringAsFixed(2)} ${info.currency}",
+                              "${info.discount.toStringAsFixed(2)} ${info.currency}",
                               style: TextStyle(
                                   fontSize: 10, fontWeight: FontWeight.normal)),
                         ]),

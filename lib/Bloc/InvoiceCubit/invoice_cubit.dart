@@ -31,38 +31,37 @@ class InvoiceCubit extends Cubit<InvoiceState> {
     }
   }
 
-
-  Future<void> invoiceLoadedEvent()async{
-    try{
-      if(items.isEmpty){
-        items.add(InvoiceItems(
-          controller: TextEditingController(),
-          quantity: 1
-        ));
+  Future<void> invoiceLoadedEvent() async {
+    items.clear();
+    try {
+      if (items.isEmpty) {
+        items.add(
+            InvoiceItems(controller: TextEditingController(), quantity: 1));
       }
       emit(LoadedInvoiceItemsState(List.from(items)));
-   }catch(e){
-     emit(ErrorInvoiceState(e.toString()));
-   }
+    } catch (e) {
+      emit(ErrorInvoiceState(e.toString()));
+    }
   }
 
-  Future<void> addItemsEvent()async{
-    try{
-      if(items.isNotEmpty){
+  Future<void> addItemsEvent() async {
+    try {
+      if (items.isNotEmpty) {
         items.add(InvoiceItems(
           controller: TextEditingController(),
           quantity: 1,
         ));
       }
       emit(LoadedInvoiceItemsState(List.from(items)));
-    }catch(e){
+    } catch (e) {
       emit(ErrorInvoiceState(e.toString()));
     }
   }
 
-  Future<void> updateItemsEvent({required int index, required InvoiceItems item})async{
-    try{
-      if(index >= 0 && index < items.length){
+  Future<void> updateItemsEvent(
+      {required int index, required InvoiceItems item}) async {
+    try {
+      if (index >= 0 && index < items.length) {
         items[index] = items[index].copyWith(
           rowNumber: item.rowNumber,
           itemName: item.itemName,
@@ -72,24 +71,19 @@ class InvoiceCubit extends Cubit<InvoiceState> {
         );
         emit(LoadedInvoiceItemsState(List.from(items)));
       }
-    }catch(e){
+    } catch (e) {
       emit(ErrorInvoiceState(e.toString()));
     }
   }
 
-  Future<void> removeItemsEvent({required int index})async{
-    try{
-      if(items.length > 1 && index < items.length){
+  Future<void> removeItemsEvent({required int index}) async {
+    try {
+      if (items.length > 1 && index < items.length) {
         items.removeAt(index);
         emit(LoadedInvoiceItemsState(List.from(items)));
       }
-    }catch(e){
+    } catch (e) {
       emit(ErrorInvoiceState(e.toString()));
     }
   }
-
-
-
-
 }
-

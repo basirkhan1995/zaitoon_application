@@ -7,7 +7,7 @@ part 'estimate_event.dart';
 part 'estimate_state.dart';
 
 class EstimateBloc extends Bloc<EstimateEvent, EstimateState> {
-  final List<EstimateItemsModel> items = [];
+  final List<InvoiceItems> items = [];
   EstimateBloc() : super(EstimateInitial()) {
     double tax = 0.0;
     double discount = 0.0;
@@ -31,7 +31,7 @@ class EstimateBloc extends Bloc<EstimateEvent, EstimateState> {
       items.clear();
       try {
         if (items.isEmpty) {
-          items.add(EstimateItemsModel(
+          items.add(InvoiceItems(
             controller: TextEditingController(),
             quantity: 1,
           ));
@@ -44,8 +44,8 @@ class EstimateBloc extends Bloc<EstimateEvent, EstimateState> {
 
     on<AddItemEvent>((event, emit) {
       if (event.items.isNotEmpty) {
-        items.add(EstimateItemsModel(
-            controller: TextEditingController(), quantity: 1));
+        items.add(
+            InvoiceItems(controller: TextEditingController(), quantity: 1));
         emit(EstimateItemsLoadedState(List.from(items)));
       }
     });

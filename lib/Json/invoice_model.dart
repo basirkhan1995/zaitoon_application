@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
 class InvoiceDetails {
   String clientName;
   String invoiceNumber;
-  String? invoiceDate;
-  String? invoiceDueDate;
+  String invoiceDate;
+  String invoiceDueDate;
+
+  String supplierName;
+  String supplierAddress;
+  String supplierEmail;
+  String supplierMobile;
+
+  Uint8List? logo;
   String currency;
   double subtotal;
   double vat;
@@ -14,9 +22,14 @@ class InvoiceDetails {
   InvoiceDetails({
     this.clientName = "",
     this.invoiceNumber = "INV000001",
-    this.invoiceDate,
+    this.invoiceDate = "",
+    this.supplierName = "",
+    this.supplierAddress = "",
+    this.supplierEmail = "",
+    this.supplierMobile = "",
+    this.logo,
     this.currency = "AFN",
-    this.invoiceDueDate,
+    this.invoiceDueDate = "",
     this.subtotal = 0,
     this.vat = 0,
     this.discount = 0,

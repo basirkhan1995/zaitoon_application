@@ -8,7 +8,7 @@ sealed class EstimateEvent extends Equatable {
 }
 
 class AddItemEvent extends EstimateEvent {
-  final List<EstimateItemsModel> items;
+  final List<InvoiceItems> items;
   const AddItemEvent(this.items);
 }
 
@@ -33,7 +33,7 @@ class ResetItemsEvent extends EstimateEvent {}
 
 class UpdateItemEvent extends EstimateEvent {
   final int index;
-  final EstimateItemsModel updatedInvoice;
+  final InvoiceItems updatedInvoice;
 
   const UpdateItemEvent(this.index, this.updatedInvoice);
 }

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:zaitoon_invoice/Bloc/AuthCubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Bloc/InvoiceCubit/invoice_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
@@ -11,6 +12,7 @@ import 'package:zaitoon_invoice/Components/Widgets/underline_textfield.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Json/invoice_model.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
+import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/print.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Invoice/currency.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Invoice/total.dart';
 import '../Accounts/new_account.dart';
@@ -41,7 +43,9 @@ class _InvoiceViewState extends State<InvoiceView> {
   void initState() {
     invoiceItems.add(InvoiceItems(controller: TextEditingController()));
     initialDate();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<InvoiceCubit>().invoiceLoadedEvent();
+    });
     super.initState();
   }
 
@@ -52,9 +56,23 @@ class _InvoiceViewState extends State<InvoiceView> {
         title: Text(AppLocalizations.of(context)!.invoice),
         backgroundColor: Colors.transparent,
       ),
-      body: Column(
-        children: [buildInvoice()],
-      ),
+      body: BlocBuilder<AuthCubit, AuthState>(builder: (context, state) {
+        if (state is AuthenticatedState) {
+          invoiceDetails.supplierName = state.user.businessName ?? "";
+          invoiceDetails.supplierAddress = state.user.address ?? "";
+          invoiceDetails.supplierMobile = state.user.mobile1 ?? "";
+          invoiceDetails.supplierMobile = state.user.mobile2 ?? "";
+          invoiceDetails.logo = state.user.companyLogo;
+          invoiceDetails.supplierEmail = state.user.email ?? "";
+          invoiceDetails.invoiceNumber = invoiceNumber.text;
+          invoiceDetails.clientName = customer.text;
+          invoiceDetails.vat = double.parse(vat.text);
+          invoiceDetails.discount = double.parse(discount.text);
+        }
+        return Column(
+          children: [buildInvoice()],
+        );
+      }),
     );
   }
 
@@ -88,8 +106,8 @@ class _InvoiceViewState extends State<InvoiceView> {
                             EdgeInsets.symmetric(vertical: 5, horizontal: 8),
                         margin: EdgeInsets.only(
                             bottom: 8, top: 0, right: 8, left: 8),
-                        height: 130,
-                        width: 250,
+                        height: 140,
+                        width: 300,
                         child: BlocBuilder<InvoiceCubit, InvoiceState>(
                           builder: (context, state) {
                             if (state is LoadedInvoiceItemsState) {
@@ -246,8 +264,8 @@ class _InvoiceViewState extends State<InvoiceView> {
                             context.read<InvoiceCubit>().updateItemsEvent(
                                 index: index,
                                 item: item.copyWith(
-                                    itemName: item.itemName,
-                                    controller: item.controller));
+                                  itemName: item.controller!.text,
+                                ));
                           },
                           hintText: "",
                         ),
@@ -424,7 +442,18 @@ class _InvoiceViewState extends State<InvoiceView> {
                   width: double.infinity,
                   icon: FontAwesomeIcons.solidFilePdf,
                   label: Text("PDF"),
-                  onPressed: () {}),
+                  onPressed: () {
+                    if (formKey.currentState!.validate()) {
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return PdfPrintSetting(
+                              info: invoiceDetails,
+                              items: invoiceItems,
+                            );
+                          });
+                    }
+                  }),
             ),
           ],
         ),

@@ -10,7 +10,7 @@ sealed class EstimateState extends Equatable {
 final class EstimateInitial extends EstimateState {}
 
 class EstimateItemsLoadedState extends EstimateState {
-  final List<EstimateItemsModel> items;
+  final List<InvoiceItems> items;
   const EstimateItemsLoadedState(this.items);
   @override
   List<Object> get props => [items];

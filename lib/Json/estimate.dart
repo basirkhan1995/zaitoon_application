@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
-class EstimateInfoModel {
+class InvoiceDetails {
   String clientName;
   String clientPhone;
   String clientAddress;
@@ -19,7 +19,7 @@ class EstimateInfoModel {
   String supplierEmail;
   Uint8List? logo;
 
-  EstimateInfoModel(
+  InvoiceDetails(
       {this.clientName = "",
       this.clientEmail = "",
       this.clientPhone = "",
@@ -38,7 +38,7 @@ class EstimateInfoModel {
       this.supplierMobile = ""});
 }
 
-class EstimateItemsModel {
+class InvoiceItems {
   int? rowNumber;
   int? invDetailId;
   int? itemId;
@@ -51,7 +51,7 @@ class EstimateItemsModel {
   double total;
   TextEditingController? controller;
   FocusNode? focusNode;
-  EstimateItemsModel({
+  InvoiceItems({
     this.rowNumber,
     this.invDetailId,
     this.itemId,
@@ -66,7 +66,7 @@ class EstimateItemsModel {
     this.focusNode,
   });
 
-  EstimateItemsModel copyWith({
+  InvoiceItems copyWith({
     TextEditingController? controller,
     int? quantity,
     double? amount,
@@ -77,7 +77,7 @@ class EstimateItemsModel {
     String? itemName,
     FocusNode? focusNode,
   }) {
-    return EstimateItemsModel(
+    return InvoiceItems(
       controller: controller ?? this.controller,
       quantity: quantity ?? this.quantity,
       amount: amount ?? this.amount,
@@ -103,6 +103,3 @@ class EstimateItemsModel {
     };
   }
 }
-
-
-

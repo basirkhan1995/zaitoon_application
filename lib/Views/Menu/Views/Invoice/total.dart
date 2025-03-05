@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import '../../../../Json/invoice_model.dart';
 
 class TotalWidget extends StatefulWidget {
@@ -36,7 +37,9 @@ class TotalWidgetState extends State<TotalWidget> {
     double calculateTotalVat() {
       double totalVat = 0.0;
       double subtotal = calculateSubtotal();
-      totalVat += subtotal * (double.parse(widget.vat)) / 100;
+      if (widget.vat.isNotEmpty) {
+        totalVat += subtotal * (double.parse(widget.vat)) / 100;
+      }
       return totalVat;
     }
 
@@ -44,7 +47,9 @@ class TotalWidgetState extends State<TotalWidget> {
       double totalDiscount = 0.0;
       double subtotal = calculateSubtotal();
 
-      totalDiscount += (subtotal * (double.parse(widget.discount))) / 100;
+      if (widget.discount.isNotEmpty) {
+        totalDiscount += (subtotal * (double.parse(widget.discount))) / 100;
+      }
 
       return totalDiscount;
     }
@@ -65,9 +70,9 @@ class TotalWidgetState extends State<TotalWidget> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12),
           child: Column(
-            spacing: 5,
+            spacing: 6,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               textRich(
@@ -85,11 +90,24 @@ class TotalWidgetState extends State<TotalWidget> {
                   value: totalDiscount,
                   end: widget.info.currency,
                   color: Colors.cyan),
-              Text(
-                "${locale.total}: ${total.toStringAsFixed(2)} ${widget.info.currency}",
-                style: TextStyle(
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 0),
+                margin: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+                decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold),
+                    borderRadius: BorderRadius.circular(4),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.withValues(alpha: .2),
+                          spreadRadius: 1)
+                    ]),
+                child: Text(
+                  "${locale.total}: ${total.toStringAsFixed(2)} ${widget.info.currency}",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).colorScheme.surface,
+                      fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
