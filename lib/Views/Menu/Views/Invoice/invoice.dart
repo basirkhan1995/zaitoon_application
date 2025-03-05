@@ -33,8 +33,8 @@ class _InvoiceViewState extends State<InvoiceView> {
   final invoiceNumber = TextEditingController();
   final dueDate = TextEditingController();
   final invoiceDate = TextEditingController();
-  final vat = TextEditingController(text: "0.0");
-  final discount = TextEditingController(text: "0.0");
+  final vat = TextEditingController(text: "0");
+  final discount = TextEditingController(text: "0");
   List<InvoiceItems> invoiceItems = [];
 
   final invoiceDetails = InvoiceDetails();
