@@ -5,7 +5,7 @@ import 'package:zaitoon_invoice/Bloc/PasswordCubit/password_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import '../../../../../../Components/Widgets/button.dart';
 import '../../../../../../Components/Widgets/inputfield_entitled.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../../../../l10n/app_localizations.dart';
 
 class PasswordSettings extends StatelessWidget {
   const PasswordSettings({super.key});

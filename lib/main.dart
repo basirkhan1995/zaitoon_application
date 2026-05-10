@@ -24,7 +24,6 @@ import 'package:zaitoon_invoice/Themes/themes.dart';
 import 'package:zaitoon_invoice/Views/DatabaseView/databases.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'Bloc/InvoiceCubit/invoice_cubit.dart';
 import 'Bloc/MenuCubit/MainMenu/menu_cubit.dart';
@@ -110,7 +109,6 @@ class MyApp extends StatelessWidget {
                 title: 'Zaitoon System',
                 debugShowCheckedModeBanner: false,
                 localizationsDelegates: [
-                  AppLocalizations.delegate,
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,

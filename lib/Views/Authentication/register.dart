@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,8 @@ import 'package:zaitoon_invoice/Components/Other/extensions.dart';
 import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
 import 'package:zaitoon_invoice/Json/users.dart';
+
+import '../../l10n/app_localizations.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});

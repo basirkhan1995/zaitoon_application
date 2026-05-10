@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Bloc/MenuCubit/MainMenu/menu_cubit.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../../Components/Widgets/onhover_widget.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({super.key});

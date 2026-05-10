@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Bloc/AccountsCubit/accounts_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/button.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
@@ -9,6 +8,8 @@ import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:zaitoon_invoice/Json/accounts_model.dart';
 import 'package:zaitoon_invoice/Json/users.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Accounts/account_categories.dart';
+
+import '../../../../l10n/app_localizations.dart';
 
 class NewAccount extends StatefulWidget {
   const NewAccount({super.key});

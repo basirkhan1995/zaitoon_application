@@ -10,7 +10,8 @@ import 'package:zaitoon_invoice/Json/invoice_model.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/document_language.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/printers_drop.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../../../../l10n/app_localizations.dart';
 
 class PdfPrintSetting extends StatefulWidget {
   final InvoiceDetails info;

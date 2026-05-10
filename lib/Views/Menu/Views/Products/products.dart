@@ -4,7 +4,8 @@ import 'package:zaitoon_invoice/Bloc/ProductsCubit/products_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:zaitoon_invoice/Components/Widgets/search_field.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Products/new_product.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../../../l10n/app_localizations.dart';
 
 class ProductsView extends StatefulWidget {
   const ProductsView({super.key});

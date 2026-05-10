@@ -4,7 +4,8 @@ import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/about.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/database_settings.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/general.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Settings/Views/invoice_settings.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../../../l10n/app_localizations.dart';
 
 class SettingsView extends StatefulWidget {
   const SettingsView({super.key});

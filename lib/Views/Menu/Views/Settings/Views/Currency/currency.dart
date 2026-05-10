@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Bloc/CurrencyCubit/Currency/currency_cubit.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:zaitoon_invoice/Json/currencies_model.dart';
 import '../../../../../../Components/Widgets/background.dart';
 import '../../../../../../Components/Widgets/button.dart';
 import '../../../../../../Components/Widgets/inputfield_entitled.dart';
+import '../../../../../../l10n/app_localizations.dart';
 
 
 class CurrencySettingsView extends StatefulWidget {

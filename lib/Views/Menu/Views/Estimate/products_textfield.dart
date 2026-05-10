@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Bloc/ProductsCubit/products_cubit.dart';
+
+import '../../../../l10n/app_localizations.dart';
 
 class ProductTextField extends StatefulWidget {
   final TextEditingController? controller;

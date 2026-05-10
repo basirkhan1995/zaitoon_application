@@ -7,7 +7,7 @@ import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:zaitoon_invoice/Components/Widgets/products_input.dart';
 import '../../../../Components/Widgets/units_drop.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class NewProduct extends StatefulWidget {
   const NewProduct({super.key});

@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:zaitoon_invoice/Bloc/DatabaseCubit/database_cubit.dart';
 import 'package:zaitoon_invoice/Components/Other/extensions.dart';
@@ -15,6 +14,7 @@ import 'package:zaitoon_invoice/Views/Authentication/login.dart';
 import 'package:zaitoon_invoice/Views/Authentication/register.dart';
 import 'package:zaitoon_invoice/Views/home.dart';
 import '../../Bloc/AuthCubit/auth_cubit.dart';
+import '../../l10n/app_localizations.dart';
 
 class DatabaseManager extends StatefulWidget {
   const DatabaseManager({super.key});

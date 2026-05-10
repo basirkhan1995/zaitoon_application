@@ -8,9 +8,10 @@ import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:zaitoon_invoice/Views/DatabaseView/databases.dart';
 import '../../../../../Bloc/BackupBloc/database_backup_bloc.dart';
 import '../../../../../Components/Other/functions.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 import '../../../../../Json/database_info.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class DatabaseSettings extends StatefulWidget {
   const DatabaseSettings({super.key});

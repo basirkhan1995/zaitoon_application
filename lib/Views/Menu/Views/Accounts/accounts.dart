@@ -6,8 +6,9 @@ import 'package:zaitoon_invoice/Components/Widgets/background.dart';
 import 'package:zaitoon_invoice/Components/Widgets/outline_button.dart';
 import 'package:zaitoon_invoice/Components/Widgets/search_field.dart';
 import 'package:zaitoon_invoice/Json/accounts_model.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Accounts/new_account.dart';
+
+import '../../../../l10n/app_localizations.dart';
 
 class AccountsView extends StatefulWidget {
   const AccountsView({super.key});

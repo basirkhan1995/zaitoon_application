@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:zaitoon_invoice/Bloc/AuthCubit/auth_cubit.dart';
 import 'package:zaitoon_invoice/Components/Other/functions.dart';
 import 'package:zaitoon_invoice/Components/Widgets/inputfield_entitled.dart';
 import 'dart:typed_data';
 import 'package:zaitoon_invoice/Json/users.dart';
+
+import '../../../../../../l10n/app_localizations.dart';
 
 class AccountSettings extends StatefulWidget {
   const AccountSettings({super.key});
@@ -210,7 +211,6 @@ class _AccountSettingsState extends State<AccountSettings> {
                       !readOnly
                           ? TextButton(
                               onPressed: () {
-                                print("AccId: $accId");
                                 if (formKey.currentState!.validate()) {
                                   _companyLogo.isNotEmpty
                                       ? context.read<AuthCubit>().uploadLogoEvent(
