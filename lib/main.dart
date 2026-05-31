@@ -27,6 +27,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zaitoon_invoice/Views/Menu/Views/Estimate/PDF/pdf.dart';
 import 'Bloc/InvoiceCubit/invoice_cubit.dart';
 import 'Bloc/MenuCubit/MainMenu/menu_cubit.dart';
+import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -109,6 +110,7 @@ class MyApp extends StatelessWidget {
                 title: 'Zaitoon System',
                 debugShowCheckedModeBanner: false,
                 localizationsDelegates: [
+                  AppLocalizations.delegate,
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
                   GlobalCupertinoLocalizations.delegate,
